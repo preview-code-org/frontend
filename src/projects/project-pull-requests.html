@@ -1,0 +1,19 @@
+<dom-module id="project-pull-requests">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    Project [[owner]] - [[name]]
+  </template>
+  <script>
+    Polymer({
+      is: 'project-pull-requests',
+      properties: {
+        owner: String,
+        name: String
+      }
+    });
+  </script>
+</dom-module>

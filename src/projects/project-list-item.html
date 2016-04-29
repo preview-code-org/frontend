@@ -1,0 +1,69 @@
+<dom-module id="project-list-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding-bottom: 5px;
+        margin-top: 5px;
+      }
+      :host:not(:last-of-type) .container {
+        border-bottom: black 1px solid;
+        padding-bottom: 5px;
+      }
+      .container {
+        display: flex;
+        margin-right: 10px;
+      }
+      .container div {
+        flex: 1;
+      }
+      .container div span {
+        display: inline-block;
+        width: 100%;
+      }
+      .container div span:first-of-type {
+        margin-bottom: 15px;
+      }
+      .activity {
+        text-align: right;
+      }
+      .title, .owner {
+        text-transform: capitalize;
+      }
+      .indicator-container {
+        max-width: 15px;
+      }
+      .indicator {
+        height: 15px;
+      }
+      .indicator.true {
+        background-color: green;
+      }
+      .indicator.false {
+        background-color: red;
+      }
+    </style>
+
+    <div class="container">
+      <div class="indicator-container">
+        <div class$="indicator [[project.indicator]]"> </div>
+      </div>
+      <div>
+        <span class="title">[[project.name]]</span>
+        <span class="owner">[[project.owner]]</span>
+      </div>
+      <div>
+        <span class="activity">[[project.activity]]</span>
+        <span class="numbers">[[project.issues]] issues - [[project.prs]] PRs</span>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'project-list-item',
+      properties: {
+        project: Object
+      }
+    });
+  </script>
+</dom-module>

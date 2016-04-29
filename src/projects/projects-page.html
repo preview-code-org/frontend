@@ -1,23 +1,38 @@
+<link rel="import" href="project-list-item.html">
+<link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="project-pull-requests.html">
+
 <dom-module id="projects-page">
   <template>
     <style>
       :host {
         display: block;
       }
+      .container {
+        display: flex;
+      }
+      .list, .project {
+        flex: 1;
+      }
+      .list {
+        border-right: black 1px solid;
+        max-width: 325px;
+      }
     </style>
-    <carbon-route route="{{route}}" pattern="/:user/:project" data="{{project}}" active="{{hasProject}}"></carbon-route>
-    <div>
-      Projects page.
-      <a href="/">Back to home.</a>
+    <carbon-route route="{{route}}" pattern="/:owner" data="{{owner}}" tail="{{ownerTail}}"></carbon-route>
+    <carbon-route route="{{ownerTail}}" pattern="/:name" data="{{name}}" active="{{hasProject}}"></carbon-route>
 
-      <div hidden$="{{hasProject}}">
-        Please select a project.
-
-        <a href="/projects/polymer/polymer">Polymer/polymer</a>
+    <div class="container">
+      <div class="list">
+        <template is="dom-repeat" items="[[projects]]" as="project">
+          <project-list-item project="[[project]]" on-tap="chooseProject"></project-list-item>
+        </template>
       </div>
 
-      <div hidden$="{{!hasProject}}">
-        The polymer project!
+      <div class="project">
+        <template is="dom-if" if="[[hasProject]]" restamp="true"></template>
+          <project-pull-requests owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
+        </template>
       </div>
     </div>
   </template>
@@ -28,7 +43,43 @@
         route: {
           type: Object,
           notify: true
+        },
+        projects: {
+          type: Array,
+          value: function() {
+            return [
+              {
+                owner: 'Polymer',
+                name: 'Polymer',
+                activity: '3 hours ago',
+                issues: 500,
+                prs: 20,
+                indicator: true
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'backend',
+                activity: '7 days ago',
+                issues: 20,
+                prs: 5,
+                indicator: true
+              }
+            ];
+          }
         }
+      },
+
+      chooseProject: function(e) {
+        this.set('owner.owner', e.model.project.owner);
+        this.set('name.name', e.model.project.name);
       }
     });
   </script>
