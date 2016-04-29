@@ -1,0 +1,39 @@
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/carbon-route/carbon-location.html">
+<link rel="import" href="../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="home-page.html">
+<link rel="import" href="projects/projects-page.html">
+<link rel="import" href="pull-requests-page.html">
+
+<dom-module id="rite-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <carbon-location route="{{route}}"></carbon-location>
+    <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
+
+    <iron-pages selected="{{page.page}}"
+                attr-for-selected="data-route"
+                fallback-selection="404">
+      <home-page data-route=""></home-page>
+      <projects-page data-route="projects" route="{{tail}}"></projects-page>
+      <pull-requests-page data-route="pull-requests"></pull-requests-page>
+      <section data-route="404">
+        Oops you hit a 404!
+
+        <a href="/">Head back home</a>
+      </section>
+    </iron-pages>
+  </template>
+  <script>
+    Polymer({
+      is: 'rite-app'
+    });
+  </script>
+</dom-module>

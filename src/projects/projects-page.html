@@ -1,0 +1,35 @@
+<dom-module id="projects-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <carbon-route route="{{route}}" pattern="/:user/:project" data="{{project}}" active="{{hasProject}}"></carbon-route>
+    <div>
+      Projects page.
+      <a href="/">Back to home.</a>
+
+      <div hidden$="{{hasProject}}">
+        Please select a project.
+
+        <a href="/projects/polymer/polymer">Polymer/polymer</a>
+      </div>
+
+      <div hidden$="{{!hasProject}}">
+        The polymer project!
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'projects-page',
+      properties: {
+        route: {
+          type: Object,
+          notify: true
+        }
+      }
+    });
+  </script>
+</dom-module>
