@@ -1,0 +1,85 @@
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<dom-module id="project-pull-request-list-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+        cursor: pointer;
+      }
+      paper-card {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+      .top-right-container, .reviewers {
+        text-align: right;
+        float:right;
+        margin-right:12px;
+      }
+      .title, .owner {
+        text-transform: capitalize;
+      }
+      .cistatus-container {
+        width: 35px;
+        float:left;
+      }
+      .cistatus {
+        height: 12px;
+        width: 12px;
+        display: inline-block;
+        border-radius:6px;
+      }
+      .cistatus.passed {
+        background-color: green;
+      }
+      .cistatus.failed {
+        background-color: red;
+      }
+      .cistatus-container{
+        overflow:hidden;
+        white-space:nowrap;
+      }
+      .pr-owner{
+        clear: left;
+        margin-left: 12px;
+      }
+      .reviewer.true {
+        color: green;
+      }
+      .reviewer.false {
+        color: red;
+      }
+    </style>
+    <paper-card>
+      <div class="top-container">
+        <div class="cistatus-container">
+          <span>CI: </span><div class$="cistatus [[pr.cistatus]]"> </div>
+        </div>
+        <div class="top-right-container">
+          <span class="status" hidden$="[[!showStatus]]">[[pr.status]] - </span>
+          <span class="timeopened">Open since [[pr.timeopened]]</span>
+        </div>
+      </div>
+      <div class="pr-owner">
+        <span class="title"><b>[[pr.title]]</b></span><br>
+        <span class="owner">[[pr.owner]]</span>
+      </div>
+      <div class="reviewers">
+        Reviewers:
+        <template is="dom-repeat" items="[[pr.reviewers]]" as="reviewer">
+          <img alt$="[[reviewer.name]]" title$="[[reviewer.name]]"
+               class="avatar" height="36" src$="[[reviewer.profile]]" width="36">
+        </template>
+      </div>
+    </paper-card>
+  </template>
+  <script>
+    Polymer({
+      is: 'project-pull-request-list-item',
+      properties: {
+        pr: Object,
+        showStatus: Boolean
+      }
+    });
+  </script>
+</dom-module>

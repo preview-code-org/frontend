@@ -1,6 +1,7 @@
 <link rel="import" href="project-list-item.html">
 <link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
 <link rel="import" href="project-pull-requests.html">
+<link rel="import" href="project-overview-page.html">
 
 <dom-module id="projects-page">
   <template>
@@ -21,12 +22,23 @@
         max-width: 325px;
         margin: 5px;
         padding-right: 5px;
-        overflow-y: scroll;
+      }
+      .project {
+        display: flex;
+      }
+      .list, project-overview-page, project-pull-requests {
+        overflow-y: auto;
         overflow-x: hidden;
+      }
+      project-overview-page, project-pull-requests {
+        flex: 1;
+      }
+      project-overview-page {
+        max-width: 500px;
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner" data="{{owner}}" tail="{{ownerTail}}"></carbon-route>
-    <carbon-route route="{{ownerTail}}" pattern="/:name" data="{{name}}" active="{{hasProject}}"></carbon-route>
+    <carbon-route route="{{ownerTail}}" pattern="/:name" data="{{name}}"></carbon-route>
 
     <div class="container">
       <div class="list">
@@ -36,8 +48,12 @@
       </div>
 
       <div class="project">
-        <template is="dom-if" if="[[hasProject]]" restamp="true"></template>
+        <template is="dom-if" if="[[_has(owner.owner, name.name)]]" restamp="true">
           <project-pull-requests owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
+          <project-overview-page owner="[[owner.owner]]" name="[[name.name]]"></project-overview-page>
+        </template>
+        <template is="dom-if" if="[[!_has(owner.owner, name.name)]]" restamp="true">
+          Choose a project on the left.
         </template>
       </div>
     </div>
@@ -149,6 +165,206 @@
                 issues: 20,
                 prs: 5,
                 indicator: true
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
               }
             ];
           }
@@ -158,6 +374,10 @@
       chooseProject: function(e) {
         this.set('owner.owner', e.model.project.owner);
         this.set('name.name', e.model.project.name);
+      },
+
+      _has: function(owner, name) {
+        return owner && name;
       }
     });
   </script>
