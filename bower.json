@@ -19,7 +19,8 @@
     "paper-elements": "polymerelements/paper-elements#^1.0.7",
     "carbon-elements": "polymerelements/carbon-elements#^0.1.0",
     "iron-elements": "polymerelements/iron-elements#^1.0.10",
-    "carbon-route": "TimvdLippe/carbon-route#subroute-updating"
+    "carbon-route": "TimvdLippe/carbon-route#subroute-updating",
+    "iron-lazy-pages": "^1.0.2"
   },
   "resolutions": {
     "carbon-route": "subroute-updating"
