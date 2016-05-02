@@ -13,6 +13,9 @@
       }
       paper-dropdown-menu {
         --paper-input-container-input-color: white;
+        --paper-input-container-underline-focus: {
+          background-color: white;
+        }
 
         --paper-input-container-label: {
           color: white;
@@ -43,7 +46,7 @@
     </paper-toolbar>
     <div class="list">
       <template is="dom-repeat" items="[[_filter(pullrequests, status)]]" as="pr">
-        <project-pull-request-list-item pr="[[pr]]" show-status="[[_equals('All', status)]]"></project-pull-request-list-item>
+        <project-pull-request-list-item tabindex="0" pr="[[pr]]" show-status="[[_equals('All', status)]]"></project-pull-request-list-item>
       </template>
     </div>
   </template>
