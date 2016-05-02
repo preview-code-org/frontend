@@ -1,3 +1,6 @@
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/editor-icons.html">
+
 <dom-module id="project-list-item">
   <template>
     <style>
@@ -13,7 +16,6 @@
         -ms-transition: background 200ms ease-in;
         -o-transition: background 200ms ease-in;
         transition: background 200ms ease-in;
-
       }
 
       :host:hover, :host[selected] {
@@ -24,11 +26,15 @@
         display: inline-block;
         width: 100%;
       }
-      .activity, .numbers {
+    
+      .activity, .issues, .pulls {
         color: var(--secondary-text-color);
         text-align: right;
-        float:right;
-        font-size: 0.75em;
+        float: right;
+        font-size: 0.85em;
+      }
+      .issues span, .pulls span {
+        vertical-align: middle;
       }
       .title {
         font-weight: 800;
@@ -40,7 +46,7 @@
         display: block;
         flex: 1;
         max-width: 6px;
-        height: 40px;
+        height: 64px;
         margin: auto 24px auto -12px;
       }
       .indicator.true {
@@ -66,6 +72,10 @@
       .project-stats > .activity, .project-info > .title {
         margin-bottom: 4px;
       }
+
+      iron-icon {
+        width: 20px;
+      }
     </style>
 
     <div class$="indicator [[project.indicator]]"></div>
@@ -76,7 +86,8 @@
     </div>
     <div class="project-stats">
       <div class="activity">[[project.activity]]</div>
-      <div class="numbers">[[project.issues]] issues - [[project.prs]] PRs</div>
+      <div class="issues" title="Open issues"><iron-icon icon="icons:error-outline"></iron-icon><span>[[project.issues]]</span></div>
+      <div class="pulls" title="Open pull requests"><iron-icon icon="editor:merge-type"></iron-icon><span>[[project.prs]]</span></div>
     </div>
   </template>
   <script>
