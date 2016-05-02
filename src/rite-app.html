@@ -26,22 +26,22 @@
         color:grey;
       }
       paper-tabs {
-        --paper-tabs-selection-bar-color: #31f0ef;
+        --paper-tabs-selection-bar-color: var(--secondary-action-red);
         margin-left: -55px;
-        color: #31f0ef;
+        color: var(--secondary-action-red);
         font-size: 13px;
       }
       paper-tab {
         @apply(--layout-flex-none);
         padding: 0;
-        --paper-tab-ink: #31f0ef;
+        --paper-tab-ink: var(--secondary-action-red);
       }
       paper-tab a {
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
         text-decoration: none;
         text-transform: uppercase;
-        color: #7c7c7c;
+        color: var(--primary-text-color);
         font-weight: 500;
         padding: 0 20px;
         height: 100%;
