@@ -55,7 +55,7 @@
     <div class="container">
       <div class="list">
         <template is="dom-repeat" items="[[projects]]" as="project">
-          <project-list-item project="[[project]]" hover="[[_isActiveProject(name.name, project, activeProject)]]" on-tap="chooseProject"></project-list-item>
+          <project-list-item project="[[project]]" selected="[[_isActiveProject(name.name, project, activeProject)]]" on-tap="chooseProject"></project-list-item>
         </template>
         <div class="last-project-item">
           <div class="dot"></div>
