@@ -3,15 +3,61 @@
     <style>
       :host {
         display: block;
+        flex:1;
+        text-align: center;
+      }
+      div{
+        margin-top:2%;
+      }
+      .button {
+        color:grey;
+        background-color: white;
+      }
+      .button-container {
+        display: block;
+      }
+      .logo {
+        height: 100px;
+        border-radius: 50px;
+      }
+      a {
+        display: inline-block;
+      }
+      .about {
+        margin-top:5%;
+      }
+      .about p {
+        margin-left:25%;
+        margin-right:25%;
+        margin-bottom: 2%;
+      }
+      .name {
+        margin-top:3%;
       }
     </style>
-    Home page
 
-    <a href="/projects">Go to projects.</a>
-  </template>
-  <script>
-    Polymer({
-      is: 'home-page'
-    });
-  </script>
+  <!-- Home page -->
+  <h1 class="name"> PReview Code </h1>
+  <div class="logo-container">
+    <img class="logo" src="http://blueseptember.org.au/wp-content/uploads/2015/07/Blue-square.jpg" />
+  </div>
+  <div class="button-container">
+    <a href="/projects">
+      <paper-button raised noink class="button">
+      <img height=30px src="https://assets-cdn.github.com/images/modules/logos_page/Octocat.png" /> Login with Github</paper-button> </a>
+      <a href="/projects"> <paper-button raised noink class="button">
+        <img height=30px src="https://bitbucket.org/account/bitbucket/avatar/48/?ts=1461265272" />
+        Login with Bitbucket </paper-button> </a> </div>
+        <div class="about">
+          <h1>About us</h1>
+          <p> A tool that has an improved version of a UI regarding code review, changing the way in which code is displayed to make it more dynamic so that it is easier for change authors to explain their changes and reviewers to understand them. </p>
+          <h4>Who are we</h4>
+          <p> We are 3 university students, who made this tool as end project for our bachelors Computer Science at the TU Delft.</p>
+        </div>
+        </template>
+<script>
+Polymer({
+  is: 'home-page'
+});
+</script>
 </dom-module>
