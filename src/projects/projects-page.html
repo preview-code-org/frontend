@@ -55,16 +55,17 @@
     <div class="container">
       <div class="list">
         <template is="dom-repeat" items="[[projects]]" as="project">
-          <project-list-item project="[[project]]" selected="[[_isActiveProject(name.name, project, activeProject)]]" on-tap="chooseProject"></project-list-item>
+          <project-list-item project="[[project]]" selected="[[_isActiveProject(name.name, project, activeProject)]]" on-tap="chooseProject"
+                             tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
         </template>
         <div class="last-project-item">
           <div class="dot"></div>
         </div>
       </div>
 
-      <div class="project">
+      <div class="project" id="project">
         <template is="dom-if" if="[[_has(owner.owner, name.name)]]" restamp="true">
-          <project-pull-requests owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
+          <project-pull-requests tabindex="0" owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
           <project-overview-page owner="[[owner.owner]]" name="[[name.name]]"></project-overview-page>
         </template>
         <template is="dom-if" if="[[!_has(owner.owner, name.name)]]" restamp="true">
@@ -318,6 +319,12 @@
         this.set('owner.owner', e.model.project.owner);
         this.set('name.name', e.model.project.name);
         this.activeProject = e.model.project;
+      },
+      maybeOpenProject: function(e) {
+        if (e.keyCode === 13) {
+          this.chooseProject(e);
+          this.querySelector('project-pull-requests').focus();
+        }
       },
       _has: function(owner, name) {
         return owner && name;
