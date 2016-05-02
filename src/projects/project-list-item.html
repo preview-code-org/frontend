@@ -6,35 +6,33 @@
         padding-bottom: 5px;
         margin-top: 5px;
       }
-      :host:not(:last-of-type) .container {
-        border-bottom: black 1px solid;
-        padding-bottom: 5px;
-      }
-      .container {
-        display: flex;
+      .paper-card {
+        margin-left: 5
+        px;
         margin-right: 10px;
+        width:100%;
       }
-      .container div {
-        flex: 1;
-      }
-      .container div span {
+
+      .paper-card div {
         display: inline-block;
-        width: 100%;
+        width:100%;
       }
-      .container div span:first-of-type {
-        margin-bottom: 15px;
-      }
-      .activity {
+
+      .activity, .numbers {
         text-align: right;
+        float:right;
+        margin-right:12px;
       }
       .title, .owner {
         text-transform: capitalize;
       }
       .indicator-container {
-        max-width: 15px;
+        float:left;
+        max-width: 12px;
       }
       .indicator {
-        height: 15px;
+        height: 12px;
+        border-radius:6px;
       }
       .indicator.true {
         background-color: green;
@@ -42,21 +40,35 @@
       .indicator.false {
         background-color: red;
       }
+      .activity-container{
+        overflow:hidden;
+        white-space:nowrap;
+      }
+      .top-container{
+        overflow: hidden;
+      }
+      .project-owner{
+        margin-left: 12px;
+      }
     </style>
 
-    <div class="container">
+    <!-- <div class="container"> -->
+    <paper-card class="paper-card">
+      <div class="top-container">
       <div class="indicator-container">
         <div class$="indicator [[project.indicator]]"> </div>
       </div>
-      <div>
-        <span class="title">[[project.name]]</span>
+        <span class="activity">[[project.activity]]</span>
+    </div>
+      <div class="project-owner">
+        <span class="title"><b>[[project.name]]</b></span><br>
         <span class="owner">[[project.owner]]</span>
       </div>
       <div>
-        <span class="activity">[[project.activity]]</span>
-        <span class="numbers">[[project.issues]] issues - [[project.prs]] PRs</span>
+          <span class="numbers">[[project.issues]] issues - [[project.prs]] PRs</span>
       </div>
-    </div>
+      </paper-card>
+    <!-- </div> -->
   </template>
   <script>
     Polymer({
