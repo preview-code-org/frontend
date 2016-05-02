@@ -54,25 +54,25 @@
         margin-top: 16px;
         background-color: var(--primary-background-color);
       }
-      #project-stats, #project-info {
+      .project-stats, .project-info {
         flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
 
       }
-      #project-stats > .activity, #project-info > .title {
+      .project-stats > .activity, .project-info > .title {
         margin-bottom: 4px;
       }
     </style>
 
     <div class$="indicator [[project.indicator]]"></div>
-    <div id="project-info">
+    <div class="project-info">
       <div class="title">[[project.name]]</div>
       <div class="owner">[[project.owner]]</div>
 
     </div>
-    <div id="project-stats">
+    <div class="project-stats">
       <div class="activity">[[project.activity]]</div>
       <div class="numbers">[[project.issues]] issues - [[project.prs]] PRs</div>
     </div>
