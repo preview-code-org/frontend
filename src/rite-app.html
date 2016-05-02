@@ -22,6 +22,7 @@
     <style>
       :host {
         display: block;
+        height: 100%;
         font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         color:grey;
       }
@@ -51,18 +52,25 @@
         @apply(--layout-flex-auto);
         @apply(--layout-center-center);
       }
+
+      paper-header-panel {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .paper-header {
+        flex: 0;
+      }
+      iron-pages {
+        flex: 1;
+        display: flex;
+      }
     </style>
     <carbon-location route="{{route}}"></carbon-location>
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
 
-    <app-header-layout>
-      <!-- main header -->
-      <app-header id="header" effects="waterfall">
-        <app-toolbar id="mainToolbar">
-          <div class="spacer">
-            <div class="logo">PReview Code</div>
-          </div>
-        </app-toolbar>
+    <paper-header-panel>
+      <div class="paper-header">
         <paper-tabs selected="{{page.page}}" scrollable attr-for-selected="data-route">
           <paper-tab data-route="">
             <a href="/">Home</a>
@@ -74,7 +82,7 @@
             <a href="/pull-requests">Pull requests</a>
           </paper-tab>
         </paper-tabs>
-      </app-header>
+      </div>
 
       <iron-pages selected="[[page.page]]"
                   attr-for-selected="data-route"
@@ -88,7 +96,7 @@
           <a href="/">Head back home</a>
         </section>
       </iron-pages>
-    </app-header-layout>
+    </paper-header-panel>
   </template>
   <script>
     Polymer({

@@ -6,10 +6,13 @@
   <template>
     <style>
       :host {
-        display: block;
+        display: flex;
+        flex: 1;
       }
       .container {
         display: flex;
+        flex: 1;
+        flex-direction: row;
       }
       .list, .project {
         flex: 1;
@@ -18,6 +21,7 @@
         max-width: 325px;
         margin: 5px;
         padding-right: 5px;
+        overflow: scroll;
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner" data="{{owner}}" tail="{{ownerTail}}"></carbon-route>
@@ -56,6 +60,78 @@
                 issues: 500,
                 prs: 20,
                 indicator: true
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
+              },
+              {
+                owner: 'preview-code',
+                name: 'frontend',
+                activity: '5 days ago',
+                issues: 15,
+                prs: 3,
+                indicator: false
               },
               {
                 owner: 'preview-code',
