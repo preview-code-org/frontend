@@ -5,6 +5,7 @@
         display: block;
         padding-bottom: 5px;
         margin-top: 5px;
+        cursor: pointer;
       }
       .paper-card {
         margin-left: 5
@@ -12,12 +13,10 @@
         margin-right: 10px;
         width:100%;
       }
-
       .paper-card div {
         display: inline-block;
         width:100%;
       }
-
       .activity, .numbers {
         text-align: right;
         float:right;
@@ -52,12 +51,11 @@
       }
     </style>
 
-    <!-- <div class="container"> -->
     <paper-card class="paper-card">
       <div class="top-container">
-      <div class="indicator-container">
-        <div class$="indicator [[project.indicator]]"> </div>
-      </div>
+        <div class="indicator-container">
+          <div class$="indicator [[project.indicator]]"> </div>
+        </div>
         <span class="activity">[[project.activity]]</span>
     </div>
       <div class="project-owner">
@@ -67,8 +65,7 @@
       <div>
           <span class="numbers">[[project.issues]] issues - [[project.prs]] PRs</span>
       </div>
-      </paper-card>
-    <!-- </div> -->
+    </paper-card>
   </template>
   <script>
     Polymer({
