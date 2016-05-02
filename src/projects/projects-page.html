@@ -323,7 +323,9 @@
       maybeOpenProject: function(e) {
         if (e.keyCode === 13) {
           this.chooseProject(e);
-          this.querySelector('project-pull-requests').focus();
+          this.async(function() {
+            this.querySelector('project-pull-requests').focus();
+          });
         }
       },
       _has: function(owner, name) {
