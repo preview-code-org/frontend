@@ -2,75 +2,90 @@
   <template>
     <style>
       :host {
-        display: block;
-        padding-bottom: 5px;
-        margin-top: 5px;
+        display: flex;
         cursor: pointer;
+        padding: 16px 16px 16px 12px;
+
+        border-bottom: solid 1px var(--primary-background-color);
+
+        -webkit-transition: background 200ms ease-in;
+        -moz-transition: background 200ms ease-in;
+        -ms-transition: background 200ms ease-in;
+        -o-transition: background 200ms ease-in;
+        transition: background 200ms ease-in;
+
       }
-      paper-card {
-        margin-left: 5px;
-        margin-right: 10px;
-        width:100%;
+
+      :host:hover, :host[selected] {
+        background-color: var(--primary-background-color);
       }
-      paper-card div {
+      div {
         display: inline-block;
-        width:100%;
+        width: 100%;
       }
       .activity, .numbers {
         text-align: right;
         float:right;
-        margin-right:12px;
+        font-size: 0.75em;
+      }
+      .title {
+        font-weight: 800;
       }
       .title, .owner {
         text-transform: capitalize;
       }
-      .indicator-container {
-        float:left;
-        max-width: 12px;
-      }
       .indicator {
-        height: 12px;
-        border-radius:6px;
+        display: block;
+        flex: 1;
+        max-width: 6px;
+        height: 40px;
+        margin: auto 24px auto -12px;
       }
       .indicator.true {
-        background-color: green;
+        background-color: var(--action-red);
       }
-      .indicator.false {
-        background-color: red;
+
+      .bottom-line {
+        display: block;
+        bottom: 0;
+        width: 80%;
+        margin: 0 auto;
+        height: 2px;
+        margin-top: 16px;
+        background-color: var(--primary-background-color);
       }
-      .activity-container{
-        overflow:hidden;
-        white-space:nowrap;
+      .project-stats, .project-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
       }
-      .top-container{
-        overflow: hidden;
-      }
-      .project-owner{
-        margin-left: 12px;
+      .project-stats > .activity, .project-info > .title {
+        margin-bottom: 4px;
       }
     </style>
 
-    <paper-card>
-      <div class="top-container">
-        <div class="indicator-container">
-          <div class$="indicator [[project.indicator]]"> </div>
-        </div>
-        <span class="activity">[[project.activity]]</span>
-      </div>
-      <div class="project-owner">
-        <span class="title"><b>[[project.name]]</b></span><br>
-        <span class="owner">[[project.owner]]</span>
-      </div>
-      <div>
-          <span class="numbers">[[project.issues]] issues - [[project.prs]] PRs</span>
-      </div>
-    </paper-card>
+    <div class$="indicator [[project.indicator]]"></div>
+    <div class="project-info">
+      <div class="title">[[project.name]]</div>
+      <div class="owner">[[project.owner]]</div>
+
+    </div>
+    <div class="project-stats">
+      <div class="activity">[[project.activity]]</div>
+      <div class="numbers">[[project.issues]] issues - [[project.prs]] PRs</div>
+    </div>
   </template>
   <script>
     Polymer({
       is: 'project-list-item',
       properties: {
-        project: Object
+        project: Object,
+        selected: {
+          type: String,
+          reflectToAttribute: true
+        }
       }
     });
   </script>
