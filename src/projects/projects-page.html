@@ -20,8 +20,7 @@
       }
       .list {
         max-width: 325px;
-        margin: 5px;
-        padding-right: 5px;
+        border-right: solid 4px var(--primary-background-color);
       }
       .project {
         display: flex;
@@ -35,6 +34,19 @@
       }
       project-overview-page {
         max-width: 400px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+
+      .last-project-item {
+        width: 100%;
+      }
+      .last-project-item .dot {
+        margin: 24px auto;
+        width: 16px;
+        height: 16px;
+        background-color: var(--secondary-background-color);
+        border-radius: 8px;
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner" data="{{owner}}" tail="{{ownerTail}}"></carbon-route>
@@ -43,8 +55,11 @@
     <div class="container">
       <div class="list">
         <template is="dom-repeat" items="[[projects]]" as="project">
-          <project-list-item project="[[project]]" on-tap="chooseProject"></project-list-item>
+          <project-list-item project="[[project]]" hover="[[_isActiveProject(name.name, project, activeProject)]]" on-tap="chooseProject"></project-list-item>
         </template>
+        <div class="last-project-item">
+          <div class="dot"></div>
+        </div>
       </div>
 
       <div class="project">
@@ -77,78 +92,6 @@
                 issues: 500,
                 prs: 20,
                 indicator: true
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                indicator: false
               },
               {
                 owner: 'preview-code',
@@ -374,10 +317,13 @@
       chooseProject: function(e) {
         this.set('owner.owner', e.model.project.owner);
         this.set('name.name', e.model.project.name);
+        this.activeProject = e.model.project;
       },
-
       _has: function(owner, name) {
         return owner && name;
+      },
+      _isActiveProject: function(name, project, activeProject) {
+        return !!name && project === activeProject;
       }
     });
   </script>
