@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="project-pull-request-list-item.html">
 
 <dom-module id="project-pull-requests">
@@ -23,10 +24,16 @@
       .title {
         text-transform: capitalize;
       }
+      .middle.title {
+        font-size: small;
+      }
     </style>
-    <paper-toolbar>
-      <span class="title">[[owner]] - [[name]]</span>
-      <paper-dropdown-menu label="Pull request status" value="{{status}}">
+    <iron-media-query query="(max-width: 1250px)" query-matches="{{small}}"></iron-media-query>
+
+    <paper-toolbar class="medium-tall">
+      <span class="top title">[[_withOwnerOnSmall(small, name, owner)]]</span>
+      <span class="middle title" hidden$="[[small]]">by [[owner]]</span>
+      <paper-dropdown-menu class$="[[_shouldBeAtTop(small)]]" label="Pull request status" value="{{status}}">
         <paper-menu class="dropdown-content">
           <paper-item>All</paper-item>
           <paper-item>Under review</paper-item>
@@ -130,6 +137,14 @@
 
       _equals: function(one, other) {
         return one === other;
+      },
+
+      _shouldBeAtTop: function(small) {
+        return small ? 'bottom' : 'top';
+      },
+
+      _withOwnerOnSmall: function(small, name, owner) {
+        return name + (small ? ' by ' + owner : '');
       }
     });
   </script>
