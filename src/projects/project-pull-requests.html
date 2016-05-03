@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="project-pull-request-list-item.html">
+<link rel="import" href="../list-items/preview-list.html">
 
 <dom-module id="project-pull-requests">
   <template>
@@ -50,11 +51,11 @@
         </paper-menu>
       </paper-dropdown-menu>
     </paper-toolbar>
-    <div class="list">
+    <preview-list>
       <template is="dom-repeat" items="[[_filter(pullrequests, status)]]" as="pr">
         <project-pull-request-list-item tabindex="0" pr="[[pr]]" show-status="[[_equals('All', status)]]"></project-pull-request-list-item>
       </template>
-    </div>
+    </preview-list>
   </template>
   <script>
     Polymer({

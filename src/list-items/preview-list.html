@@ -1,0 +1,24 @@
+<dom-module id="preview-list">
+  <template>
+    <style>
+      .last-item {
+        width: 100%;
+        margin: 24px auto;
+        width: 8px;
+        height: 8px;
+        background-color: var(--pr-status-color);
+        border-radius: 4px;
+      }
+    </style>
+
+
+    <content></content>
+    <div class="last-item"></div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'preview-list'
+    });
+  </script>
+</dom-module>
