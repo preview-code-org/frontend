@@ -1,0 +1,52 @@
+<dom-module id="list-item-label">
+  <template>
+    <style>
+    :host:first-child {
+      margin-bottom: 4px;
+    }
+
+    :host[type=title] {
+      font-weight: 800;
+      color: var(--primary-text-color);
+      font-size: 1em;
+      margin: 0;
+    }
+
+    :host[type=subtitle] {
+      font-weight: 400;
+    }
+
+    :host[type=info] {
+      color: var(--secondary-text-color);
+      text-align: right;
+      font-size: 0.85em;
+    }
+
+    :host span {
+      vertical-align: middle;
+    }
+
+    iron-icon {
+      width: 20px;
+    }
+    </style>
+
+    <template is="dom-if" if="[[icon]]">
+      <iron-icon icon="[[icon]]"></iron-icon>
+    </template>
+    <span><content></content></span>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'list-item-label',
+      properties: {
+        type: {
+          type: String,
+          reflectToAttribute: true
+        },
+        icon: String
+      }
+    });
+  </script>
+</dom-module>

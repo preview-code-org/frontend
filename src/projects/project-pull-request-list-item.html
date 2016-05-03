@@ -1,77 +1,53 @@
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-icons/device-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
 <dom-module id="project-pull-request-list-item">
   <template>
     <style>
-      :host {
-        display: block;
-        cursor: pointer;
-      }
-      paper-card {
-        width: 100%;
-        margin-bottom: 5px;
-      }
-      .top-right-container, .reviewers {
-        text-align: right;
-        float:right;
-        margin-right:12px;
-      }
-      .title, .owner {
-        text-transform: capitalize;
-      }
-      .cistatus-container {
-        width: 35px;
-        float:left;
-      }
-      .cistatus {
-        height: 12px;
-        width: 12px;
-        display: inline-block;
-        border-radius:6px;
-      }
-      .cistatus.passed {
-        background-color: green;
-      }
-      .cistatus.failed {
-        background-color: red;
-      }
-      .cistatus-container{
-        overflow:hidden;
-        white-space:nowrap;
-      }
-      .pr-owner{
-        clear: left;
-        margin-left: 12px;
-      }
-      .reviewer.true {
-        color: green;
-      }
-      .reviewer.false {
-        color: red;
-      }
+    .ci-status {
+      display: block;
+      height: 24px;
+      margin: 20px 12px 20px 0px;
+    }
+    .ci-status-failed {
+      color: var(--primary-action-red);
+    }
+    .ci-status-failed .passed {
+      display: none;
+    }
+
+    .ci-status-passed {
+      color: var(--primary-action-green);
+    }
+    .ci-status-passed > iron-icon.failed {
+      display: none;
+    }
     </style>
-    <paper-card>
-      <div class="top-container">
-        <div class="cistatus-container">
-          <span>CI: </span><div class$="cistatus [[pr.cistatus]]"> </div>
-        </div>
-        <div class="top-right-container">
-          <span class="status" hidden$="[[!showStatus]]">[[pr.status]] - </span>
-          <span class="timeopened">Open since [[pr.timeopened]]</span>
-        </div>
+
+    <column-list-item selected="[[selected]]">
+      <div class$="margin ci-status-[[pr.cistatus]]">
+        <iron-icon class="passed", icon="icons:check"></iron-icon>
+        <iron-icon class="failed", icon="icons:close"></iron-icon>
       </div>
-      <div class="pr-owner">
-        <span class="title"><b>[[pr.title]]</b></span><br>
-        <span class="owner">[[pr.owner]]</span>
+      <div class="main">
+        <list-item-label type="title">[[pr.title]]</list-item-label>
+        <list-item-label type="subtitle">[[pr.owner]]</list-item-label>
+        <list-item-label type="subtitle" title="Status" icon="icons:info" hidden$="[[!showStatus]]">[[pr.status]]</list-item-label>
       </div>
-      <div class="reviewers">
-        Reviewers:
-        <template is="dom-repeat" items="[[pr.reviewers]]" as="reviewer">
-          <img alt$="[[reviewer.name]]" title$="[[reviewer.name]]"
-               class="avatar" height="36" src$="[[reviewer.profile]]" width="36">
-        </template>
+      <div class="info">
+        <list-item-label type="info" title="Time open" icon="device:access-time">[[pr.timeopened]]</list-item-label>
+        <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.reviewers.length]]</list-item-label>
       </div>
-    </paper-card>
+    </column-list-item>
+    
+    <!-- Keep for future reference
+      Reviewers:
+      <template is="dom-repeat" items="[[pr.reviewers]]" as="reviewer">
+        <img alt$="[[reviewer.name]]" title$="[[reviewer.name]]"
+             class="avatar" height="36" src$="[[reviewer.profile]]" width="36">
+      </template>
+    -->
   </template>
   <script>
     Polymer({

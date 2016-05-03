@@ -11,36 +11,42 @@
       :host {
         display: block;
       }
+      paper-toolbar {
+        --paper-toolbar-color: var(--primary-text-color);
+        --paper-toolbar-background: var(--secondary-background-color);
+      }
       paper-dropdown-menu {
-        --paper-input-container-input-color: white;
+        --paper-input-container-input-color: var(--primary-text-color);
         --paper-input-container-underline-focus: {
-          background-color: white;
+          background-color: var(--primary-action-red);
         }
 
         --paper-input-container-label: {
-          color: white;
+          color: var(--primary-text-color);
         }
       }
       project-pull-request-list-item {
         width: 100%;
       }
-      .title {
+      header {
         text-transform: capitalize;
-      }
-      .middle.title {
-        font-size: small;
+        margin: 0 auto;
       }
     </style>
     <iron-media-query query="(max-width: 1250px)" query-matches="{{small}}"></iron-media-query>
 
     <paper-toolbar class="medium-tall">
-      <span class="top title">[[_withOwnerOnSmall(small, name, owner)]]</span>
-      <span class="middle title" hidden$="[[small]]">by [[owner]]</span>
+      <header>
+        <h2>
+          <span>[[_withOwnerOnSmall(small, name, owner)]]</span>
+          <span hidden$="[[small]]">by [[owner]]</span>
+        </h2>
+      </header>
       <paper-dropdown-menu class$="[[_shouldBeAtTop(small)]]" label="Pull request status" value="{{status}}">
         <paper-menu class="dropdown-content">
           <paper-item>All</paper-item>
           <paper-item>Under review</paper-item>
-          <paper-item>Waiting for contributor feedback</paper-item>
+          <paper-item>Waiting for contributor</paper-item>
         </paper-menu>
       </paper-dropdown-menu>
     </paper-toolbar>
@@ -111,7 +117,7 @@
             cistatus: 'failed',
             title: 'Fix all the things',
             owner: 'Thomas Smith',
-            status: 'Waiting for contributor feedback',
+            status: 'Waiting for contributor',
             timeopened: 12341235,
             reviewers: [
               {

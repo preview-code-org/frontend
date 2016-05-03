@@ -1,94 +1,28 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="column-list-item.html">
+<link rel="import" href="list-item-label.html">
 
 <dom-module id="project-list-item">
   <template>
     <style>
-      :host {
-        display: flex;
-        cursor: pointer;
-        padding: 16px 16px 16px 12px;
-
-        border-bottom: solid 1px var(--primary-background-color);
-
-        -webkit-transition: background 200ms ease-in;
-        -moz-transition: background 200ms ease-in;
-        -ms-transition: background 200ms ease-in;
-        -o-transition: background 200ms ease-in;
-        transition: background 200ms ease-in;
-      }
-
-      :host:hover, :host[selected] {
-        background-color: var(--primary-background-color);
-      }
-      div {
-        color: var(--primary-text-color);
-        display: inline-block;
-        width: 100%;
-      }
-    
-      .activity, .issues, .pulls {
-        color: var(--secondary-text-color);
-        text-align: right;
-        float: right;
-        font-size: 0.85em;
-      }
-      .issues span, .pulls span {
-        vertical-align: middle;
-      }
-      .title {
-        font-weight: 800;
-      }
-      .title, .owner {
-        text-transform: capitalize;
-      }
-      .indicator {
-        display: block;
-        flex: 1;
-        max-width: 6px;
-        height: 64px;
-        margin: auto 24px auto -12px;
-      }
-      .indicator.true {
+      .indicator-true {
         background-color: var(--primary-action-red);
-      }
-
-      .bottom-line {
-        display: block;
-        bottom: 0;
-        width: 80%;
-        margin: 0 auto;
-        height: 2px;
-        margin-top: 16px;
-        background-color: var(--primary-background-color);
-      }
-      .project-stats, .project-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-
-      }
-      .project-stats > .activity, .project-info > .title {
-        margin-bottom: 4px;
-      }
-
-      iron-icon {
-        width: 20px;
       }
     </style>
 
-    <div class$="indicator [[project.indicator]]"></div>
-    <div class="project-info">
-      <div class="title">[[project.name]]</div>
-      <div class="owner">[[project.owner]]</div>
-
-    </div>
-    <div class="project-stats">
-      <div class="activity">[[project.activity]]</div>
-      <div class="issues" title="Open issues"><iron-icon icon="icons:error-outline"></iron-icon><span>[[project.issues]]</span></div>
-      <div class="pulls" title="Open pull requests"><iron-icon icon="editor:merge-type"></iron-icon><span>[[project.prs]]</span></div>
-    </div>
+    <column-list-item selected="[[selected]]">
+      <div class$="margin indicator-[[project.indicator]]"></div>
+      <div class="main">
+        <list-item-label type="title">[[project.name]]</list-item-label>
+        <list-item-label type="subtitle">[[project.owner]]</list-item-label>
+      </div>
+      <div class="info">
+        <list-item-label type="info" title="Last activity">[[project.activity]]</list-item-label>
+        <list-item-label type="info" title="Open issues" icon="icons:error-outline">[[project.issues]]</list-item-label>
+        <list-item-label type="info" title="Open pull requests" icon="editor:merge-type">[[project.prs]]</list-item-label>
+      </div>
+    </column-list-item>
   </template>
   <script>
     Polymer({
@@ -96,8 +30,7 @@
       properties: {
         project: Object,
         selected: {
-          type: String,
-          reflectToAttribute: true
+          type: String
         }
       }
     });
