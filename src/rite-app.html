@@ -71,17 +71,19 @@
 
     <paper-header-panel>
       <div class="paper-header">
-        <paper-tabs selected="{{page.page}}" scrollable attr-for-selected="data-route">
-          <paper-tab data-route="">
-            <a href="/">Home</a>
-          </paper-tab>
-          <paper-tab data-route="projects">
-            <a href="/projects">My projects</a>
-          </paper-tab>
-          <paper-tab data-route="pull-requests">
-            <a href="/pull-requests">My pull requests</a>
-          </paper-tab>
-        </paper-tabs>
+        <template is="dom-if" if="[[!_equals('',page.page)]]" restamp="true">
+          <paper-tabs selected="{{page.page}}" scrollable attr-for-selected="data-route">
+            <paper-tab data-route="">
+              <a href="/">Home</a>
+            </paper-tab>
+            <paper-tab data-route="projects">
+              <a href="/projects">My projects</a>
+            </paper-tab>
+            <paper-tab data-route="pull-requests">
+              <a href="/pull-requests">My pull requests</a>
+            </paper-tab>
+          </paper-tabs>
+        </template>
       </div>
 
       <iron-pages selected="[[page.page]]"
@@ -99,8 +101,11 @@
     </paper-header-panel>
   </template>
   <script>
-    Polymer({
-      is: 'rite-app'
-    });
+  Polymer({
+    is: 'rite-app',
+    _equals: function(one, other) {
+      return one === other;
+    }
+  });
   </script>
 </dom-module>
