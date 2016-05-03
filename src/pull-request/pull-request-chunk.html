@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/Sortable/Sortable.html">
+
+<dom-module id="pull-request-chunk">
+  <template>
+    <style>
+      :host {
+        display: block;
+        flex: auto;
+        flex-basis: 250px;
+        flex-grow: 0;
+        flex-shrink: 0;
+        height: 250px;
+        border: black 1px solid;
+        margin: 5px;
+      }
+      .diff {
+        height: 50px;
+      }
+      .title {
+        height: 25px;
+        border-bottom: black 1px solid;
+      }
+      sortable-js {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+    <content select=".title"></content>
+    <sortable-js group="chunk" draggable=".diff">
+      <template is="dom-repeat" items="[[chunk.diff]]">
+        <div class="diff">[[item]]</div>
+      </template>
+    </sortable-js>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-chunk',
+      properties: {
+        chunk: Object,
+        title: String
+      },
+      attached: function() {
+        var diffs = this.$$('sortable-js').getElementsByClassName('diff');
+        for (var i = 0, l = diffs.length; i < l; i++) {
+          Sortable.create(diffs[i], {
+            group: 'chunk'
+          });
+        }
+      }
+    });
+  </script>
+</dom-module>

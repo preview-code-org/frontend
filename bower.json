@@ -20,7 +20,8 @@
     "carbon-elements": "polymerelements/carbon-elements#^0.1.0",
     "iron-elements": "polymerelements/iron-elements#^1.0.10",
     "carbon-route": "TimvdLippe/carbon-route#subroute-updating",
-    "iron-lazy-pages": "^1.0.2"
+    "iron-lazy-pages": "^1.0.2",
+    "Sortable": "TimvdLippe/Sortable#fix-es5-compilation"
   },
   "resolutions": {
     "carbon-route": "subroute-updating"
