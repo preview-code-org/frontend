@@ -30,10 +30,13 @@
       }
 
       ::content > .margin {
+        color: var(--primary-background-color);
         display: block;
-        width: 6px;
-        height: 64px;
-        margin: auto 24px auto -12px;
+        width: 24px;
+        -webkit-border-radius: 12px;
+        border-radius: 12px;
+        height: 24px;
+        margin: auto 12px auto 0;
       }
 
       ::content > .main,
@@ -41,7 +44,15 @@
         display: flex;
         flex: 1;
         flex-direction: column;
-        justify-content: space-between;
+      }
+      ::content > .info {
+        max-width: 100px;
+      }
+
+      ::content iron-icon {
+        /*width: 20px;
+        height: 20px;
+        margin: 2px;*/
       }
     </style>
 
