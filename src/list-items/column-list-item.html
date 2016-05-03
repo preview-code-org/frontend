@@ -1,0 +1,66 @@
+<dom-module id="column-list-item">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        cursor: pointer;
+        padding: 16px 16px 16px 12px;
+
+        border-bottom: solid 1px var(--secondary-background-color);
+
+        -webkit-transition: background 200ms ease-in;
+        -moz-transition: background 200ms ease-in;
+        -ms-transition: background 200ms ease-in;
+        -o-transition: background 200ms ease-in;
+        transition: background 200ms ease-in;
+      }
+
+      :host:hover, :host[selected] {
+        background-color: var(--secondary-background-color);
+      }
+
+      .bottom-line {
+        display: block;
+        bottom: 0;
+        width: 80%;
+        margin: 0 auto;
+        height: 2px;
+        margin-top: 16px;
+        background-color: var(--secondary-background-color);
+      }
+
+      ::content > .margin {
+        display: block;
+        width: 6px;
+        height: 64px;
+        margin: auto 24px auto -12px;
+      }
+
+      ::content > .main,
+      ::content > .info {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+    </style>
+
+    <content select=".margin"></content>
+    <content select=".main"></content>
+    <content select=".info"></content>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'column-list-item',
+      properties: {
+        project: Object,
+        selected: {
+          type: String,
+          reflectToAttribute: true
+        }
+      }
+    });
+  </script>
+</dom-module>
