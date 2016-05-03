@@ -5,24 +5,24 @@
 <dom-module id="project-pull-request-list-item">
   <template>
     <style>
-    .ci-status {
-      display: block;
-      height: 24px;
-      margin: 20px 12px 20px 0px;
-    }
-    .ci-status-failed {
-      color: var(--primary-action-red);
-    }
-    .ci-status-failed .passed {
-      display: none;
-    }
+      .ci-status {
+        display: block;
+        height: 24px;
+        margin: 20px 12px 20px 0px;
+      }
+      .ci-status-failed {
+        color: var(--primary-action-red);
+      }
+      .ci-status-failed .passed {
+        display: none;
+      }
 
-    .ci-status-passed {
-      color: var(--primary-action-green);
-    }
-    .ci-status-passed > iron-icon.failed {
-      display: none;
-    }
+      .ci-status-passed {
+        color: var(--primary-action-green);
+      }
+      .ci-status-passed > iron-icon.failed {
+        display: none;
+      }
     </style>
 
     <column-list-item selected="[[selected]]">
@@ -40,7 +40,7 @@
         <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.reviewers.length]]</list-item-label>
       </div>
     </column-list-item>
-    
+
     <!-- Keep for future reference
       Reviewers:
       <template is="dom-repeat" items="[[pr.reviewers]]" as="reviewer">
