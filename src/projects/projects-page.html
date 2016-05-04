@@ -54,7 +54,7 @@
           <project-pull-requests tabindex="0" owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
           <project-overview-page owner="[[owner.owner]]" name="[[name.name]]"></project-overview-page>
         </template>
-        <template is="dom-if" if="[[!_has(owner.owner, name.name)]]" restamp="true">
+        <template is="dom-if" if="[[!_has(name.name)]]" restamp="true">
           Choose a project on the left.
         </template>
       </div>
@@ -314,8 +314,10 @@
           });
         }
       },
-      _has: function(owner, name) {
-        return owner && name;
+      _has: function() {
+        return Array.prototype.slice.call(arguments).reduce(function(prev, current) {
+          return prev && current;
+        });
       },
       _isActiveProject: function(name, project, activeProject) {
         return !!name && project === activeProject;
