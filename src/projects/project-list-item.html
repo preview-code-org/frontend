@@ -6,18 +6,14 @@
 <dom-module id="project-list-item">
   <template>
     <style>
-      .indicator-true {
+      .margin.indicator.true {
         background-color: var(--primary-action-red);
-        width: 6px;
-        height: 80px;
-        margin: auto 42px auto -12px;
-        -webkit-border-radius: 0;
-        border-radius: 0;
+
       }
     </style>
 
     <column-list-item selected="[[selected]]">
-      <div class$="margin indicator-[[project.indicator]]"></div>
+      <div class$="margin indicator [[project.notification]]"></div>
       <div class="main">
         <list-item-label type="title">[[project.name]]</list-item-label>
         <list-item-label type="subtitle">[[project.owner]]</list-item-label>

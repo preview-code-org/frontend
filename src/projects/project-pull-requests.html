@@ -14,7 +14,7 @@
       }
       paper-toolbar {
         --paper-toolbar-color: var(--primary-text-color);
-        --paper-toolbar-background: var(--secondary-background-color);
+        --paper-toolbar-background: 0;
       }
       paper-dropdown-menu {
         --paper-input-container-input-color: var(--primary-text-color);
@@ -82,6 +82,7 @@
             owner: 'Tim van der Lippe',
             status: 'Under review',
             timeopened: 12341234,
+            notification: false,
             reviewers: [
               {
                 name: 'Thomas Smith',
@@ -101,6 +102,7 @@
             owner: 'Eva Anker',
             status: 'Under review',
             timeopened: 12341236,
+            notification: true,
             reviewers: [
               {
                 name: 'Tim van der Lippe',
@@ -120,6 +122,7 @@
             owner: 'Thomas Smith',
             status: 'Waiting for contributor',
             timeopened: 12341235,
+            notification: false,
             reviewers: [
               {
                 name: 'Tim van der Lippe',
