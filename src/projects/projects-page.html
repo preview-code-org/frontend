@@ -11,6 +11,9 @@
         display: flex;
         flex: 1;
       }
+      [hidden] {
+        display: none !important;
+      }
       .container {
         display: flex;
         flex: 1;
@@ -23,7 +26,7 @@
         max-width: 325px;
         border-right: solid 4px var(--secondary-background-color);
       }
-      .project {
+      .project div {
         display: flex;
       }
       preview-list, project-overview-page, project-pull-requests {
@@ -55,13 +58,13 @@
       </preview-list>
 
       <div class="project" id="project">
-        <template is="dom-if" if="[[_has(name.name)]]">
+        <div hidden="[[!_has(name.name)]]">
           <project-pull-requests tabindex="0" owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
           <project-overview-page owner="[[owner.owner]]" name="[[name.name]]"></project-overview-page>
-        </template>
-        <template is="dom-if" if="[[!_has(name.name)]]">
+        </div>
+        <span hidden="[[_has(name.name)]]">
           Choose a project on the left.
-        </template>
+        </span>
       </div>
     </div>
   </template>
