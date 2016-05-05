@@ -1,24 +1,145 @@
+<link rel="import" href="../../bower_components/iron-lazy-pages/iron-lazy-pages.html">
+<link rel="import" href="../../bower_components/carbon-route/carbon-location.html">
+<link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="project-pull-requests.html">
+<link rel="import" href="project-activity.html">``
+
 <dom-module id="project-overview-page">
   <template>
     <style>
       :host {
         display: block;
+        background-color: var(--secondary-background-color);
+      }
+      project-pull-requests {
+        flex: 1;
+      }
+      project-pull-requests {
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      paper-dropdown-menu {
+        --paper-input-container-input-color: var(--primary-text-color);
+        --paper-input-container-underline-focus: {
+          background-color: var(--primary-action-red);
+        }
+
+        --paper-input-container-label: {
+          color: var(--primary-text-color);
+        }
+      }
+      .info-area  {
+        padding-top: 2em;
+        color: var(--primary-text-color);
+      }
+      .info-area .content {
+        margin: 0 auto 2em auto;
+        text-align: center;
+      }
+      header h1, header h2, header span {
+        display: inline;
+        font-size: 2em;
+        color: var(--primary-text-color);
+        text-align: center;
+      }
+      .description {
+        margin-top: 1em;
+        font-size: 1em;
+        color: var(--secondary-text-color);
+      }
+      paper-tabs {
+        display: block;
+        justify-content: center;
+        @apply(--layout-self-end);
+        --paper-tabs-selection-bar-color: var(--secondary-action-red);
+        color: var(--secondary-action-red);
+        font-size: 1em;
+        width: 300px;
+        margin: 0 auto;
+      }
+      paper-tab {
+        padding: 0;
+        --paper-tab-ink: var(--secondary-action-red);
+        max-width: 100px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        text-transform: uppercase;
+        color: var(--primary-text-color);
+        font-weight: 500;
+        padding: 0 20px;
+      }
+      paper-tab a {
+
+      }
+      iron-lazy-pages {
+        width: 75%;
+        background-color: var(--primary-background-color);
+        margin: 0 auto;
+        border-radius: 1em;
       }
     </style>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
+
+    <iron-media-query query="(max-width: 1250px)" query-matches="{{small}}"></iron-media-query>
+
+    <div class="info-area">
+      <div class="content">
+        <header>
+          <h1 hidden$="[[small]]">preview-code</h2>
+          <span>/</span>
+          <h2>frontend</h1>
+        </header>
+        <div class="description">
+            RITE-evaluation prototype for the PReview application.
+        </div>
+      </div>
+
+      <paper-tabs selected="{{page.page}}" class="bottom self-end" attr-for-selected="data-route">
+        <paper-tab data-route="activity">Activity</paper-tab>
+        <paper-tab data-route="pulls">Pull requests</paper-tab>
+      </paper-tabs>
+    </div>
+
+    <iron-lazy-pages selected="[[page.page]]"
+                attr-for-selected="data-route"
+                fallback-selection="404">
+      <template is="iron-lazy-page" data-route="activity"
+                path="projects/projects-page.html">
+        <project-activity>Hello activity</project-activity>
+      </template>
+
+      <template is="iron-lazy-page" data-route="pulls"
+                path="pull-requests-page.html">
+        <project-pull-requests tabindex="0" owner="[[project.owner]]" name="[[project.name]]"></project-pull-requests>
+      </template>
+
+      <template is="iron-lazy-page" data-route="404">
+        Oops you hit a 404!
+        <a href="/">Head back home</a>
+      </template>
+    </iron-lazy-pages>
+
+
   </template>
   <script>
     Polymer({
-      is: 'project-overview-page'
+      is: 'project-overview-page',
+      properties: {
+        project: Object,
+        route: Object
+      },
+
+      _shouldBeAtTop: function(small) {
+        return small ? 'bottom' : 'top';
+      },
+
+      _withOwnerOnSmall: function(small, name, owner) {
+        return name + (small ? ' by ' + owner : '');
+      }
     });
   </script>
 </dom-module>
