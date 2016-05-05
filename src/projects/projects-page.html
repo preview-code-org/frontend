@@ -47,7 +47,7 @@
     <div class="container">
       <preview-list>
         <template is="dom-repeat" items="[[projects]]" as="project">
-          <a href$="projects/[[project.owner]]/[[project.name]]" tabindex="-1">
+          <a href$="[[_resolvePath(project.owner, project.name)]]" tabindex="-1">
             <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
                                tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
           </a>
@@ -310,6 +310,9 @@
         this.activeProject = this.projects.filter(function(p) {
           return p.owner === owner && p.name === name;
         })[0];
+      },
+      _resolvePath: function(owner, name) {
+        return this.resolveUrl(owner + '/' + name);
       },
       maybeOpenProject: function(e) {
         if (e.keyCode === 13) {
