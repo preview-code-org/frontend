@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "devDependencies": {
+    "browser-sync": "^2.12.5",
+    "connect-history-api-fallback": "^1.2.0",
+    "gulp": "^3.9.1",
+    "gulp-load-plugins": "^1.2.2",
+    "proxy-middleware": "^0.15.0",
+    "url": "^0.11.0"
+  }
+}
