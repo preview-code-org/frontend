@@ -1,0 +1,35 @@
+<dom-module id="no-project-selected">
+  <template>
+    <style>
+    :host {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    div {
+      flex: none;
+      max-width: 50%;
+      padding: 1.5em;
+      font-size: 2em;
+      font-weight: 800;
+      border-radius: 1em;
+      color: var(--pr-status-color);
+    }
+    </style>
+
+    <div>
+      Select a repository on the left to start
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'no-project-selected',
+      properties: {
+        project: Object
+      }
+    });
+  </script>
+</dom-module>
