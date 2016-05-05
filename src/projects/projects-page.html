@@ -37,6 +37,9 @@
         overflow-y: scroll;
         overflow-x: hidden;
       }
+      a {
+        color: inherit;
+      }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner" data="{{owner}}" tail="{{ownerTail}}"></carbon-route>
     <carbon-route route="{{ownerTail}}" pattern="/:name" data="{{name}}"></carbon-route>
@@ -44,8 +47,10 @@
     <div class="container">
       <preview-list>
         <template is="dom-repeat" items="[[projects]]" as="project">
-          <project-list-item project="[[project]]" selected="[[_isActiveProject(name.name, project, activeProject)]]" on-tap="chooseProject"
-                             tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
+          <a href$="projects/[[project.owner]]/[[project.name]]" tabindex="-1">
+            <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
+                               tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
+          </a>
         </template>
       </preview-list>
 
@@ -54,7 +59,7 @@
           <project-pull-requests tabindex="0" owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
           <project-overview-page owner="[[owner.owner]]" name="[[name.name]]"></project-overview-page>
         </template>
-        <template is="dom-if" if="[[!_has(name.name)]]" restamp="true">
+        <template is="dom-if" if="[[!_has(name.name)]]">
           Choose a project on the left.
         </template>
       </div>
@@ -301,17 +306,16 @@
         }
       },
 
-      chooseProject: function(e) {
-        this.set('owner.owner', e.model.project.owner);
-        this.set('name.name', e.model.project.name);
-        this.activeProject = e.model.project;
+      chooseProject: function(owner, name) {
+        this.activeProject = this.projects.filter(function(p) {
+          return p.owner === owner && p.name === name;
+        })[0];
       },
       maybeOpenProject: function(e) {
         if (e.keyCode === 13) {
-          this.chooseProject(e);
-          this.async(function() {
-            this.querySelector('project-pull-requests').focus();
-          });
+          this.set('owner.owner', e.model.project.owner);
+          this.set('name.name', e.model.project.name);
+          this.$$('project-pull-requests').focus();
         }
       },
       _has: function() {
