@@ -8,15 +8,15 @@
       :host:last-child {
         margin-bottom: 0px;
       }
-      :host[type=title] {
+      :host([type="title"]) {
         font-weight: 800;
         color: var(--primary-text-color);
         font-size: 1em;
       }
-      :host[type=subtitle] {
+      :host([type=subtitle]) {
         font-weight: 400;
       }
-      :host[type=info] {
+      :host([type=info]) {
         color: var(--secondary-text-color);
         text-align: right;
         font-size: 0.9em;
@@ -24,7 +24,7 @@
       :host span {
         vertical-align: middle;
       }
-      :host[type=box] span {
+      :host([type=box]) span {
         color: var(--primary-background-color);
         padding: 3px 6px;
         border-radius: 6px;

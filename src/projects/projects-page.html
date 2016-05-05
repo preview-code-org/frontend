@@ -27,14 +27,14 @@
         max-width: 325px;
         border-right: solid 4px var(--secondary-background-color);
       }
-      .project div {
+      .project {
         display: flex;
       }
-      preview-list, project-overview-page, project-pull-requests {
+      preview-list, project-overview-page {
         overflow-y: auto;
         overflow-x: hidden;
       }
-      project-overview-page, project-pull-requests {
+      project-overview-page {
         flex: 1;
       }
       project-overview-page {
@@ -46,7 +46,7 @@
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner" data="{{owner}}" tail="{{ownerTail}}"></carbon-route>
-    <carbon-route route="{{ownerTail}}" pattern="/:name" data="{{name}}"></carbon-route>
+    <carbon-route route="{{ownerTail}}" pattern="/:name" data="{{name}}" tail="{{nameTail}}"></carbon-route>
 
     <div class="container">
       <preview-list>
@@ -59,13 +59,8 @@
       </preview-list>
 
       <div class="project" id="project">
-        <div hidden="[[!_has(name.name)]]">
-          <project-pull-requests tabindex="0" owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
-          <project-overview-page owner="[[owner.owner]]" name="[[name.name]]"></project-overview-page>
-        </div>
-        <span hidden="[[_has(name.name)]]">
-          <no-project-selected></no-project-selected>
-        </span>
+        <project-overview-page hidden="[[!_has(name.name)]]" project="[[activeProject]]" route="{{nameTail}}"></project-overview-page>
+        <no-project-selected hidden="[[_has(name.name)]]"></no-project-selected>
       </div>
     </div>
   </template>
@@ -309,6 +304,9 @@
           }
         }
       },
+      observers: [
+        'chooseProject(owner.owner, name.name)'
+      ],
 
       chooseProject: function(owner, name) {
         this.activeProject = this.projects.filter(function(p) {
@@ -316,7 +314,7 @@
         })[0];
       },
       _resolvePath: function(owner, name) {
-        return this.resolveUrl(owner + '/' + name);
+        return this.resolveUrl(owner + '/' + name + '/pulls');
       },
       maybeOpenProject: function(e) {
         if (e.keyCode === 13) {
