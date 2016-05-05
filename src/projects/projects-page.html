@@ -50,7 +50,7 @@
       </preview-list>
 
       <div class="project" id="project">
-        <template is="dom-if" if="[[_has(owner.owner, name.name)]]" restamp="true">
+        <template is="dom-if" if="[[_has(name.name)]]">
           <project-pull-requests tabindex="0" owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
           <project-overview-page owner="[[owner.owner]]" name="[[name.name]]"></project-overview-page>
         </template>
@@ -316,8 +316,8 @@
       },
       _has: function() {
         return Array.prototype.slice.call(arguments).reduce(function(prev, current) {
-          return prev && current;
-        });
+          return prev && !!current;
+        }, true);
       },
       _isActiveProject: function(name, project, activeProject) {
         return !!name && project === activeProject;
