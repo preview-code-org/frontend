@@ -5,13 +5,13 @@
 
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 
 <link rel="stylesheet" href="../bower_components/font-roboto/roboto.html">
 
@@ -72,7 +72,7 @@
 
     <paper-header-panel>
       <div class="paper-header">
-        <template is="dom-if" if="[[!_equals('',page.page)]]" restamp="true">
+        <template is="dom-if" if="[[!_equals('',page.page)]]">
           <paper-tabs selected="{{page.page}}" scrollable attr-for-selected="data-route">
             <paper-tab data-route="">
               <a href="/">Home</a>
