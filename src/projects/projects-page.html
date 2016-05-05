@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
 <link rel="import" href="project-pull-requests.html">
+<link rel="import" href="no-project-selected.html">
 <link rel="import" href="project-overview-page.html">
 <link rel="import" href="project-list-item.html">
 <link rel="import" href="../list-items/preview-list.html">
@@ -63,7 +64,7 @@
           <project-overview-page owner="[[owner.owner]]" name="[[name.name]]"></project-overview-page>
         </div>
         <span hidden="[[_has(name.name)]]">
-          Choose a project on the left.
+          <no-project-selected></no-project-selected>
         </span>
       </div>
     </div>
