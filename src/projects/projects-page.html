@@ -68,7 +68,7 @@
                   selected="[[_getCurrentView(name, pr)]]"
                   attr-for-selected="data-route">
           <no-project-selected data-route="no-selected"></no-project-selected>
-          <project-overview-page data-route="overview" project="[[activeProject]]" route="{{nameTail}}"></project-overview-page>
+          <project-overview-page data-route="overview" tabindex="0" project="[[activeProject]]" route="{{nameTail}}"></project-overview-page>
           <pull-request-page data-route="pr" prid="[[pr.pr]]" owner="[[owner.owner]]" name="[[name.name]]"></pull-request-page>
       </iron-pages>
     </div>
@@ -329,7 +329,8 @@
         if (e.keyCode === 13) {
           this.set('owner.owner', e.model.project.owner);
           this.set('name.name', e.model.project.name);
-          this.$$('project-pull-requests').focus();
+          this.set('nameTail.path', 'pulls');
+          this.$$('project-overview-page').focus();
         }
       },
       _has: function() {

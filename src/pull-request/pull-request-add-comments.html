@@ -21,7 +21,10 @@
     Polymer({
       is: 'pull-request-add-comments',
       properties: {
-        newtext: String,
+        newtext: {
+          type: String,
+          value: ''
+        },
         comments: Array
       },
       _addComment: function() {
