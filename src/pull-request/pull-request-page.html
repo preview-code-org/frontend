@@ -1,0 +1,220 @@
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+
+<link rel="import" href="pull-request-chunk.html">
+<link rel="import" href="pull-request-general-information.html">
+<link rel="import" href="pull-request-add-comments.html">
+
+<dom-module id="pull-request-page">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        width: 100%;
+      }
+      :host > div {
+        flex: 1;
+      }
+      .overview {
+        max-width: 500px;
+      }
+      .description {
+        display: block;
+      }
+      .actions {
+        margin-right: 15px;
+      }
+      [icon='add'] {
+        border-radius: 20px;
+        background-color: white;
+        color: var(--primary-color);
+      }
+      .diff {
+        display: flex;
+        flex-direction: column;
+      }
+      .diff-list {
+        overflow-y: auto;
+      }
+    </style>
+    <pull-request-general-information class="overview" pr="[[pr]]"></pull-request-general-information>
+    <div class="diff">
+      <paper-toolbar justify="around">
+        <div class="title">
+
+        </div>
+        <div class="actions">
+          <paper-icon-button class="add-chunk-button" icon="add" on-tap="_addChunk"></paper-icon-button>
+        </div>
+      </paper-toolbar>
+      <div class="diff-list">
+        <template is="dom-repeat" items="[[pr.chunks]]" as="chunk">
+          <pull-request-chunk class="draggable" chunk="[[chunk]]" title="[[index]]">
+            <div class="title">[[index]]</div>
+          </pull-request-chunk>
+        </template>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-page',
+      properties: {
+        owner: String,
+        name: String,
+        prid: Number,
+        pr: {
+          type: Object,
+          computed: '_getPR(prid)'
+        }
+      },
+      _addChunk: function() {
+        this.unshift('pr.chunks', {});
+      },
+      _getPR: function() {
+        return {
+          cistatus: 'failed',
+          title: 'My best PR',
+          id: 25,
+          owner: 'Tim van der Lippe',
+          status: 'Under review',
+          timeopened: 12341234,
+          description: 'This is my very best PR. It fixes everything!',
+          reviewers: [
+            {
+              name: 'Thomas Smith',
+              lgtm: 'true',
+              profile: 'https://avatars0.githubusercontent.com/u/5946422?v=3&s=72'
+            },
+            {
+              name: 'Eva Anker',
+              lgtm: 'false' ,
+              profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
+            }
+          ],
+          comments: [
+            {
+              poster: 'Tim van der Lippe',
+              timeopened: '2 hours',
+              text: 'Looks good! I have fixed some tab issues (both a and paper-button had tabindex) and fixed indentation.We might want to add a background as the white background currently is a bit too empty.'
+            },
+            {
+              poster: 'Eva Anker',
+              timeopened: '3 hours',
+              text: 'LGTM'
+            },
+            {
+              poster: 'Tim van der Lippe',
+              timeopened: '2 hours',
+              text: 'Looks good! I have fixed some tab issues (both a and paper-button had tabindex) and fixed indentation.We might want to add a background as the white background currently is a bit too empty.'
+            },
+            {
+              poster: 'Eva Anker',
+              timeopened: '5 hours',
+              text: 'LGTM'
+            }
+          ],
+          chunks: [
+            {
+              diff: [
+                'bla',
+                'bla2'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
+              ]
+            },
+            {
+              diff: [
+                'bla3',
+                'bla4'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
+              ]
+            },
+            {
+              diff: [
+                'bla5',
+                'bla6'
+              ]
+            },
+            {
+              diff: [
+                'bla7',
+                'bla8'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
+              ]
+            },
+            {
+              diff: [
+                'bla9',
+                'bla10'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
+              ]
+            },
+            {
+              diff: [
+                'bla11',
+                'bla12'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
+              ]
+            }
+          ]
+        };
+      }
+    });
+  </script>
+</dom-module>

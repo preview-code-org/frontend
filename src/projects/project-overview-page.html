@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/iron-lazy-pages/iron-lazy-pages.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/carbon-route/carbon-location.html">
 <link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
 <link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
@@ -71,7 +71,7 @@
         font-weight: 500;
         padding: 0 20px;
       }
-      iron-lazy-pages {
+      iron-pages {
         width: 75%;
         background-color: var(--primary-background-color);
         margin: 0 auto;
@@ -104,24 +104,18 @@
       </paper-tabs>
     </div>
 
-    <iron-lazy-pages selected="[[page.page]]"
+    <iron-pages selected="[[page.page]]"
                 attr-for-selected="data-route"
                 fallback-selection="404">
-      <template is="iron-lazy-page" data-route="activity"
-                path="projects/projects-page.html">
-        <project-activity>Hello activity</project-activity>
-      </template>
+      <project-activity data-route="activity">Hello activity</project-activity>
 
-      <template is="iron-lazy-page" data-route="pulls"
-                path="pull-requests-page.html">
-        <project-pull-requests tabindex="0" owner="[[project.owner]]" name="[[project.name]]"></project-pull-requests>
-      </template>
+      <project-pull-requests data-route="pulls" route="{{route}}" tabindex="0" owner="[[project.owner]]" name="[[project.name]]"></project-pull-requests>
 
-      <template is="iron-lazy-page" data-route="404">
+      <span data-route="404">
         Oops you hit a 404!
         <a href="/">Head back home</a>
-      </template>
-    </iron-lazy-pages>
+      </span>
+    </iron-pages>
 
 
   </template>

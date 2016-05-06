@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/Sortable/Sortable.html">
+
+<dom-module id="pull-request-chunk">
+  <template>
+    <style>
+      :host {
+        display: block;
+        flex: auto;
+        flex-basis: 250px;
+        flex-grow: 0;
+        flex-shrink: 0;
+        border: black 1px solid;
+        margin: 5px;
+        overflow: hidden;
+      }
+      .diff {
+        height: 50px;
+      }
+      .title {
+        height: 25px;
+        border-bottom: black 1px solid;
+      }
+      sortable-js {
+        width: 100%;
+        display: block;
+        height: 250px;
+      }
+    </style>
+    <content select=".title"></content>
+    <sortable-js group="chunk" draggable=".diff">
+      <template is="dom-repeat" items="[[chunk.diff]]">
+        <div class="diff">[[item]]</div>
+      </template>
+    </sortable-js>
+    <iron-icon icon="icons:arrow-downward" class="toggle-comments-icon" on-tap="_toggleComments"></iron-icon>
+    <div class="chunk-comment" hidden$="[[showComments]]">
+      <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
+        <pull-request-comment comment="[[comment]]"></pull-request-comment>
+      </template>
+      <pull-request-add-comments comments="{{chunk.comments}}"></pull-request-add-comments>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-chunk',
+      properties: {
+        chunk: Object,
+        title: String,
+        showComments: {
+          type: Boolean,
+          value: true
+        }
+      },
+      attached: function() {
+        var diffs = this.$$('sortable-js').getElementsByClassName('diff');
+        for (var i = 0, l = diffs.length; i < l; i++) {
+          Sortable.create(diffs[i], {
+            group: 'chunk'
+          });
+        }
+      },
+      _toggleComments: function() {
+        this.showComments = !this.showComments;
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,38 @@
+<link rel="import" href="../list-items/column-list-item.html">
+<link rel="import" href="../list-items/list-item-label.html">
+
+<dom-module id="pull-request-comment">
+  <template>
+    <style>
+      .top-container{
+        display: flex;
+        background-color: var(--secondary-background-color);
+      }
+      .poster {
+        flex:1;
+      }
+      .time {
+        text-align: left;
+      }
+    </style>
+      <div class="top-container">
+        <div class="poster">
+          <span><b>[[comment.poster]]</b></span>
+        </div>
+        <div class="time">
+          <span>[[comment.timeopened]] ago</span>
+        </div>
+      </div>
+        <div class="comment">
+          <span>[[comment.text]]</span>
+        </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-comment',
+      properties: {
+        comment: Object
+      }
+    });
+  </script>
+</dom-module>
