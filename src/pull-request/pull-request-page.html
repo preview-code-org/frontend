@@ -4,6 +4,7 @@
 
 <link rel="import" href="pull-request-chunk.html">
 <link rel="import" href="pull-request-general-information.html">
+<link rel="import" href="pull-request-add-comments.html">
 
 <dom-module id="pull-request-page">
   <template>
@@ -44,7 +45,7 @@
 
         </div>
         <div class="actions">
-          <paper-icon-button icon="add" on-tap="_addChunk"></paper-icon-button>
+          <paper-icon-button class="add-chunk-button" icon="add" on-tap="_addChunk"></paper-icon-button>
         </div>
       </paper-toolbar>
       <div class="diff-list">
@@ -119,12 +120,36 @@
               diff: [
                 'bla',
                 'bla2'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
               ]
             },
             {
               diff: [
                 'bla3',
                 'bla4'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
               ]
             },
             {
@@ -137,18 +162,54 @@
               diff: [
                 'bla7',
                 'bla8'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
               ]
             },
             {
               diff: [
                 'bla9',
                 'bla10'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
               ]
             },
             {
               diff: [
                 'bla11',
                 'bla12'
+              ],
+              comments: [
+                {
+                  poster: 'Tim van der Lippe',
+                  timeopened: 12341234,
+                  text: 'This chunk is wrong.'
+                },
+                {
+                  poster: 'Eva Anker',
+                  timeopened: 1345,
+                  text: 'I don\'t think this is a good idea'
+                }
               ]
             }
           ]

@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+
+<dom-module id="pull-request-add-comments">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      .comment-input{
+        width: 100%;
+      }
+      .button{
+        float: right;
+      }
+    </style>
+    <paper-textarea class="comment-input" value="{{newtext}}"></paper-textarea>
+    <paper-button raised class="button" on-tap="_addComment">New comment</paper-button>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-add-comments',
+      properties: {
+        newtext: String,
+        comments: Array
+      },
+      _addComment: function() {
+        var newComment = {};
+        if(this.newtext.replace(/\s/g, '') !== ""){
+          newComment.text = this.newtext;
+          newComment.poster = "Eva";
+          newComment.timeopened = "12 hours";
+          this.push('comments', newComment);
+          this.newtext = "";
+        }
+      }
+    });
+  </script>
+</dom-module>

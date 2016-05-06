@@ -9,9 +9,9 @@
         flex-basis: 250px;
         flex-grow: 0;
         flex-shrink: 0;
-        height: 250px;
         border: black 1px solid;
         margin: 5px;
+        overflow: hidden;
       }
       .diff {
         height: 50px;
@@ -22,8 +22,8 @@
       }
       sortable-js {
         width: 100%;
-        height: 100%;
         display: block;
+        height: 250px;
       }
     </style>
     <content select=".title"></content>
@@ -32,13 +32,24 @@
         <div class="diff">[[item]]</div>
       </template>
     </sortable-js>
+    <iron-icon icon="icons:arrow-downward" class="toggle-comments-icon" on-tap="_toggleComments"></iron-icon>
+    <div class="chunk-comment" hidden$="[[showComments]]">
+      <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
+        <pull-request-comment comment="[[comment]]"></pull-request-comment>
+      </template>
+      <pull-request-add-comments comments="{{chunk.comments}}"></pull-request-add-comments>
+    </div>
   </template>
   <script>
     Polymer({
       is: 'pull-request-chunk',
       properties: {
         chunk: Object,
-        title: String
+        title: String,
+        showComments: {
+          type: Boolean,
+          value: true
+        }
       },
       attached: function() {
         var diffs = this.$$('sortable-js').getElementsByClassName('diff');
@@ -47,6 +58,9 @@
             group: 'chunk'
           });
         }
+      },
+      _toggleComments: function() {
+        this.showComments = !this.showComments;
       }
     });
   </script>
