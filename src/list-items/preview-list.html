@@ -3,7 +3,7 @@
     <style>
       .last-item {
         width: 100%;
-        margin: 24px auto;
+        margin: 48px auto;
         width: 8px;
         height: 8px;
         background-color: var(--pr-status-color);
@@ -13,12 +13,18 @@
 
 
     <content></content>
-    <div class="last-item"></div>
+    <div class="last-item" hidden="[[hideEndIndicator]]"></div>
   </template>
 
   <script>
     Polymer({
-      is: 'preview-list'
+      is: 'preview-list',
+      properties: {
+        hideEndIndicator: {
+          type: Boolean,
+          value: false
+        }
+      }
     });
   </script>
 </dom-module>
