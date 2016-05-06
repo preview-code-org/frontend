@@ -32,15 +32,16 @@
       .project {
         display: flex;
       }
-      preview-list, project-overview-page {
-        overflow-y: auto;
-        overflow-x: hidden;
-      }
       project-overview-page {
         flex: 1;
       }
-      project-overview-page {
-        overflow-y: scroll;
+      project-pull-requests {
+        max-width: 600px;
+      }
+      project-overview-page,
+      project-pull-requests,
+      preview-list {
+        overflow-y: auto;
         overflow-x: hidden;
       }
       a {
