@@ -75,13 +75,13 @@
         <template is="dom-if" if="[[!_equals('',page.page)]]">
           <paper-tabs selected="{{page.page}}" scrollable attr-for-selected="data-route">
             <paper-tab data-route="">
-              <a href="/">Home</a>
+              <a href$="[[route.prefix]]/">Home</a>
             </paper-tab>
             <paper-tab data-route="projects">
-              <a href="/projects">My projects</a>
+              <a href$="[[route.prefix]]/projects">My projects</a>
             </paper-tab>
             <paper-tab data-route="pull-requests">
-              <a href="/pull-requests">My pull requests</a>
+              <a href$="[[route.prefix]]/pull-requests">My pull requests</a>
             </paper-tab>
           </paper-tabs>
         </template>

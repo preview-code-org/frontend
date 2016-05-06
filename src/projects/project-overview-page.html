@@ -63,13 +63,16 @@
       paper-tab {
         padding: 0;
         --paper-tab-ink: var(--secondary-action-red);
-        max-width: 100px;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+      paper-tab a {
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
-        text-transform: uppercase;
+        text-decoration: none;
         color: var(--primary-text-color);
-        font-weight: 500;
         padding: 0 20px;
+        height: 100%;
       }
       iron-lazy-pages {
         width: 75%;
@@ -99,8 +102,12 @@
       </div>
 
       <paper-tabs selected="{{page.page}}" class="bottom self-end" attr-for-selected="data-route">
-        <paper-tab data-route="activity">Activity</paper-tab>
-        <paper-tab data-route="pulls">Pull requests</paper-tab>
+        <paper-tab data-route="activity">
+          <a href$="[[route.prefix]]/activity">Activity</a>
+        </paper-tab>
+        <paper-tab data-route="pulls">
+          <a href$="[[route.prefix]]/pulls">Pull requests</a>
+        </paper-tab>
       </paper-tabs>
     </div>
 

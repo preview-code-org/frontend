@@ -51,7 +51,7 @@
     <div class="container">
       <preview-list>
         <template is="dom-repeat" items="[[projects]]" as="project">
-          <a href$="[[_resolvePath(project.owner, project.name)]]" tabindex="-1">
+          <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/pulls" tabindex="-1">
             <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
                                tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
           </a>
