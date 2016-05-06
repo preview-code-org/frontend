@@ -37,7 +37,7 @@
     </style>
     <preview-list hide-end-indicator>
       <template is="dom-repeat" items="[[_filter(pullrequests, status)]]" as="pr">
-        <a href$="[[route.prefix]]/pulls/[[pr.id]]">
+        <a href$="[[route.prefix]]/pulls/[[pr.id]]" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
                 show-status="[[_equals('All', status)]]" on-tap="choosePR"
                 on-keydown="maybeSelectPR"></project-pull-request-list-item>
@@ -110,6 +110,7 @@
           {
             cistatus: 'passed',
             title: 'My first PR',
+            id: 20,
             owner: 'Eva Anker',
             status: 'Under review',
             timeopened: 12341236,
@@ -130,6 +131,7 @@
           {
             cistatus: 'failed',
             title: 'Fix all the things',
+            id: 20,
             owner: 'Thomas Smith',
             status: 'Waiting for contributor',
             timeopened: 12341235,
@@ -150,6 +152,7 @@
           {
             cistatus: 'failed',
             title: 'Fix all the things',
+            id: 20,
             owner: 'Thomas Smith',
             status: 'Waiting for contributor',
             timeopened: 12341235,
@@ -170,6 +173,7 @@
           {
             cistatus: 'failed',
             title: 'Fix all the things',
+            id: 20,
             owner: 'Thomas Smith',
             status: 'Waiting for contributor',
             timeopened: 12341235,
@@ -190,6 +194,7 @@
           {
             cistatus: 'failed',
             title: 'Fix all the things',
+            id: 20,
             owner: 'Thomas Smith',
             status: 'Waiting for contributor',
             timeopened: 12341235,
@@ -210,6 +215,7 @@
           {
             cistatus: 'failed',
             title: 'Fix all the things',
+            id: 20,
             owner: 'Thomas Smith',
             status: 'Waiting for contributor',
             timeopened: 12341235,
@@ -230,6 +236,7 @@
           {
             cistatus: 'failed',
             title: 'Fix all the things',
+            id: 20,
             owner: 'Thomas Smith',
             status: 'Waiting for contributor',
             timeopened: 12341235,
@@ -289,7 +296,7 @@
         return name + (small ? ' by ' + owner : '');
       },
       choosePR: function(e) {
-        this.fire('pr-selected', e.model.pr.id);
+        this.set('route.path', '/pulls/' + e.model.pr.id);
       },
       maybeSelectPR: function(e) {
         if (e.keyCode === 13) {
