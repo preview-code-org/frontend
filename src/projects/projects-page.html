@@ -5,6 +5,7 @@
 <link rel="import" href="no-project-selected.html">
 <link rel="import" href="project-overview-page.html">
 <link rel="import" href="project-list-item.html">
+<link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="../list-items/preview-list.html">
 
 <dom-module id="projects-page">
@@ -48,10 +49,14 @@
         color: inherit;
       }
     </style>
-    <carbon-route route="{{route}}" pattern="/:owner" data="{{owner}}" tail="{{ownerTail}}"></carbon-route>
-    <carbon-route route="{{ownerTail}}" pattern="/:name" data="{{name}}" tail="{{nameTail}}"></carbon-route>
-
+    <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}"></carbon-route>
     <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{tail}}"></carbon-route>
+
+    <authenticated-ajax
+      id="ajaxPullRequest"
+      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls"
+      handle-as="json"
+      last-response="{{pullrequests}}"></authenticated-ajax>
 
     <div class="container">
       <preview-list hidden$="[[_shouldShowProjects(name, pr)]]">
@@ -62,14 +67,17 @@
           </a>
         </template>
       </preview-list>
-      <project-pull-requests hidden$="[[!_shouldShowProjects(name, pr)]]" route="{{nameTail}}" tabindex="0" owner="[[owner.owner]]" name="[[name.name]]"></project-pull-requests>
+      <project-pull-requests hidden$="[[!_shouldShowProjects(name, pr)]]" route="{{nameTail}}" tabindex="0"
+                             owner="[[projectTitle.owner]]" name="[[projectTitle.name]]" pullrequests="[[pullrequests]]"></project-pull-requests>
 
       <iron-pages class="project"
-                  selected="[[_getCurrentView(name, pr)]]"
+                  selected="[[_getCurrentView(projectTitle, pr)]]"
                   attr-for-selected="data-route">
           <no-project-selected data-route="no-selected"></no-project-selected>
-          <project-overview-page data-route="overview" tabindex="0" project="[[activeProject]]" route="{{nameTail}}"></project-overview-page>
-          <pull-request-page data-route="pr" prid="[[pr.pr]]" owner="[[owner.owner]]" name="[[name.name]]"></pull-request-page>
+          <project-overview-page data-route="overview" tabindex="0"
+              project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
+          <pull-request-page data-route="pr" prid="[[pr.pr]]"
+                             owner="[[projectTitle.owner]]" name="[[projectTitle.name]]"></pull-request-page>
       </iron-pages>
     </div>
   </template>
@@ -314,13 +322,21 @@
         }
       },
       observers: [
-        'chooseProject(owner.owner, name.name)'
+        'chooseProject(projectTitle.*)'
       ],
 
-      chooseProject: function(owner, name) {
+      chooseProject: function(projectTitle) {
+        var owner = projectTitle.value.owner;
+        var name = projectTitle.value.name;
+        if (!owner || !name) {
+          return;
+        }
+
         this.activeProject = this.projects.filter(function(p) {
           return p.owner === owner && p.name === name;
         })[0];
+
+        this.$.ajaxPullRequest.generateRequest();
       },
       _resolvePath: function(owner, name) {
         return this.resolveUrl(owner + '/' + name + '/pulls');

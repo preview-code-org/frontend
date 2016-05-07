@@ -1,0 +1,226 @@
+<dom-module id="authenticated-ajax">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <iron-ajax
+      id="ajax"
+      auto="[[auto]]"
+      url="[[refurl]]"
+      params="[[params]]"
+      method="[[method]]"
+      headers="[[headers]]"
+      body="[[body]]"
+      sync="[[sync]]"
+      handle-as="[[handleAs]]"
+      with-credentials="[[withCredentials]]"
+      timeout="[[timeout]]"
+      verbose="[[verbose]]"
+      last-request="{{last-request}}"
+      loading="{{iron-loading}}"
+      last-response="{{last-response}}"
+      last-error="{{last-error}}"
+      activeRequests="{{active-requests}}"
+      debounce-duration="[[debounceDuration]]"
+      json-prefix="[[jsonPrefix]]"
+      bubbles="[[bubbles]]"
+      on-request="onRequest"
+      on-response="onResponse"
+      on-error="onError"></iron-ajax>
+  </template>
+  <script>
+  var shared = {
+    accessToken: undefined
+  };
+
+  (function(){
+    function throwEvent(name) {
+      return function(e) {
+        this.fire(name, e.detail, {
+          bubbles: this.bubbles
+        });
+      }
+    }
+
+    Polymer({
+      is: 'authenticated-ajax',
+      properties: {
+        accessToken: {
+          type: Object,
+          value: function() {
+            return {
+              value: shared.accessToken
+            }
+          }
+        },
+        refurl: String,
+        params: {
+          type: Object,
+          computed: '_generateParams(accessToken.value)',
+          observer: '_maybeFire'
+        },
+        method: {
+          type: String,
+          value: 'GET'
+        },
+        headers: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        },
+        contentType: {
+          type: String,
+          value: null
+        },
+        body: {
+          type: Object,
+          value: null
+        },
+        sync: {
+          type: Boolean,
+          value: false
+        },
+        handleAs: {
+          type: String,
+          value: 'json'
+        },
+        withCredentials: {
+          type: Boolean,
+          value: false
+        },
+        timeout: {
+          type: Number,
+          value: 0
+        },
+        auto: {
+          type: Boolean,
+          value: false,
+          observer: '_maybeFire'
+        },
+        verbose: {
+          type: Boolean,
+          value: false
+        },
+        lastRequest: {
+          type: Object,
+          notify: true,
+          computed: '_is(last-request)'
+        },
+        loading: {
+          type: Boolean,
+          notify: true,
+          computed: '_is(iron-loading)'
+        },
+        lastResponse: {
+          type: Object,
+          notify: true,
+          computed: '_is(last-response)'
+        },
+        lastError: {
+          type: Object,
+          notify: true,
+          computed: '_is(last-error)'
+        },
+        activeRequests: {
+          type: Array,
+          notify: true,
+          computed: '_is(active-requests)',
+          value: function() {
+            return [];
+          }
+        },
+        debounceDuration: {
+          type: Number,
+          value: 0,
+          notify: true
+        },
+        jsonPrefix: {
+          type: String,
+          value: ''
+        },
+        bubbles: {
+          type: Boolean,
+          value: false
+        },
+        _headerCache: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        },
+        _responseCache: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        }
+      },
+
+      observers: [
+        '_storeETag(loading)',
+        '_updateIfNoneMatch(refurl)',
+        '_updateContentType(contentType)'
+      ],
+
+      _is: function(obj) {
+        return obj;
+      },
+      storeToken: function(token) {
+        shared.accessToken = token;
+        this.accessToken = {
+          value: token
+        };
+      },
+      _generateParams: function(accessToken) {
+        if (!accessToken) {
+          return undefined;
+        }
+        return {
+          "access_token": accessToken,
+          "per_page": 10
+        }
+      },
+      _storeETag(newloading) {
+        // When we finished loading, we can retrieve the correct header
+        if (!newloading) {
+          this._headerCache[this.refurl] = this.lastRequest.xhr.getResponseHeader('ETag');
+          // Cache responses to save the rate limit of the GitHub api
+          if (this.lastRequest.status === 304) {
+            this['last-response'] = this._responseCache[this.refurl];
+          } else {
+            this._responseCache[this.refurl] = this.lastResponse;
+          }
+        }
+      },
+      _updateIfNoneMatch: function(refurl) {
+        var etag = this._headerCache[refurl];
+        if (etag) {
+          this.headers = this.headers || {};
+          this.headers['If-None-Match'] = etag;
+        }
+      },
+      _updateContentType: function(contentType) {
+        if (!contentType) {
+          return;
+        }
+        this.headers = this.headers || {};
+        this.headers['content-type'] = contentType;
+      },
+      _maybeFire: function() {
+        if (this.auto && !this.loading) {
+          this.generateRequest();
+        }
+      },
+      generateRequest: function() {
+        return this.$.ajax.generateRequest();
+      },
+      onRequest: throwEvent('request'),
+      onResponse: throwEvent('response'),
+      onError: throwEvent('error')
+    });
+  })();
+  </script>
+</dom-module>

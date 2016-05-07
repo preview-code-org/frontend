@@ -116,7 +116,8 @@
                 fallback-selection="404">
       <project-activity data-route="activity">Hello activity</project-activity>
 
-      <project-pull-requests data-route="pulls" route="{{route}}" owner="[[project.owner]]" name="[[project.name]]"></project-pull-requests>
+      <project-pull-requests data-route="pulls" route="{{route}}"
+          owner="[[project.owner]]" name="[[project.name]]" pullrequests="[[pullrequests]]"></project-pull-requests>
 
       <span data-route="404">
         Oops you hit a 404!
@@ -131,7 +132,8 @@
       is: 'project-overview-page',
       properties: {
         project: Object,
-        route: Object
+        route: Object,
+        pullrequests: Array
       },
 
       _shouldBeAtTop: function(small) {
