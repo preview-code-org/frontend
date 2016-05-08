@@ -1,22 +1,103 @@
+<link rel="import" href="../bower_components/iron-icons/device-icons.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../list-items/list-item-label.html">
+<link rel="import" href="../list-items/column-list-item.html">
+
 <dom-module id="project-activity">
   <template>
     <style>
       div {
         padding: 0.75em;
       }
+      a {
+        text-decoration: none;
+        color: var(--secondary-text-color);
+      }
     </style>
-
     <div>
-      Hello World
     </div>
+    <a href="https://github.com/preview-code/rite-evaluation/issues/23">
+      <column-list-item selected="[[selected]]">
+        <div class="main">
+          <h2>Latest issue</h2>
+          <list-item-label type="title">[[issues.name]]</list-item-label>
+          <list-item-label type="subtitle">[[issues.lastEditer]]</list-item-label>
+        </div>
+        <div class="info">
+          <list-item-label type="info" title="Last activity" icon="device:access-time">[[issues.lastActivity]]</list-item-label>
+          <list-item-label type="info" title="Number of issues open">[[issues.amount]] issues open</list-item-label>
+        </div>
+      </column-list-item>
+    </a>
+    <a href="https://github.com/preview-code/rite-evaluation/pull/38">
+      <column-list-item selected="[[selected]]">
+        <div class="main">
+          <h2>Latest Pull request</h2>
+          <list-item-label type="title">[[pr.name]]</list-item-label>
+          <list-item-label type="subtitle">[[pr.lastEditer]]</list-item-label>
+        </div>
+        <div class="info">
+          <list-item-label type="info" title="Last activity" icon="device:access-time">[[pr.lastActivity]]</list-item-label>
+          <list-item-label type="info" title="Number of prs open">[[pr.amount]] open pull requests</list-item-label>
+        </div>
+      </column-list-item>
+    </a>
+    <column-list-item selected="[[selected]]">
+      <div class="main">
+        <h2>Statistics</h2>
+        <list-item-label type="title">There where</list-item-label>
+        <list-item-label type="subtitle">[[stats.commits]] commits</list-item-label>
+        <list-item-label type="subtitle">[[stats.prs]] pull requests</list-item-label>
+        <list-item-label type="subtitle">[[stats.issues]] issues</list-item-label>
+        <list-item-label type="subtitle">[[stats.forks]] forks</list-item-label>
+        <list-item-label type="title">in the last 24 hours</list-item-label>
+      </div>
+    </column-list-item>
   </template>
 
   <script>
     Polymer({
       is: 'project-activity',
-      properties: {
-        project: Object
-      }
-    });
+        properties: {
+          project: Object,
+          selected: {
+            type: String
+          },
+          issues:  {
+            type: Array,
+            value: function(){
+              return {
+                name: "Header tab bar selection indicator disappears ",
+                lastEditer: "Thomas",
+                lastActivity: "5 hours",
+                amount: 12
+              }
+            }
+          },
+          pr:  {
+            type: Array,
+            value: function(){
+              return {
+                name: "Made something and fixed something else",
+                lastEditer: "Eva",
+                lastActivity: "123 hours",
+                amount: 22
+              }
+            }
+          },
+          stats:  {
+            type: Array,
+            value: function(){
+              return {
+                commits: 130,
+                prs: 12,
+                issues: 3,
+                forks: 2
+              }
+            }
+          }
+        }
+      });
   </script>
 </dom-module>
