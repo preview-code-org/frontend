@@ -67,7 +67,7 @@
           </a>
         </template>
       </preview-list>
-      <project-pull-requests hidden$="[[!_shouldShowProjects(name, pr)]]" route="{{nameTail}}" tabindex="0"
+      <project-pull-requests hidden$="[[!_shouldShowProjects(projectTitle, pr)]]" route="{{nameTail}}" tabindex="0"
                              owner="[[projectTitle.owner]]" name="[[projectTitle.name]]" pullrequests="[[pullrequests]]"></project-pull-requests>
 
       <iron-pages class="project"

@@ -35,7 +35,7 @@
       id="ajaxIssue"
       refurl="[[pr._links.issue.href]]"
       handle-as="json"
-      on-response="_storeIssue"></authenticated-ajax>
+      last-response="{{issue}}"></authenticated-ajax>
 
     <column-list-item selected="[[selected]]">
       <div class$="margin indicator [[pr.notification]]">
@@ -76,20 +76,15 @@
         '_retrieveIssue(pr)'
       ],
       _getStatusName: function(statuses) {
+        if (!statuses) {
+          return '';
+        }
         return statuses.map(function(status) {
           return status.name;
         });
       },
       _retrieveIssue: function(pr) {
-        if (!pr.issue) {
-          this.$.ajaxIssue.generateRequest();
-        } else {
-          this.issue = pr.issue;
-        }
-      },
-      _storeIssue: function(e) {
-        this.issue = e.detail.response;
-        this.pr.issue = this.issue;
+        this.$.ajaxIssue.generateRequest();
       }
     });
   </script>

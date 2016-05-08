@@ -32,7 +32,9 @@
   </template>
   <script>
   var shared = {
-    accessToken: undefined
+    accessToken: undefined,
+    responseCache: {},
+    headerCache: {}
   };
 
   (function(){
@@ -144,18 +146,6 @@
         bubbles: {
           type: Boolean,
           value: false
-        },
-        _headerCache: {
-          type: Object,
-          value: function() {
-            return {};
-          }
-        },
-        _responseCache: {
-          type: Object,
-          value: function() {
-            return {};
-          }
         }
       },
 
@@ -186,28 +176,30 @@
       _storeETag(newloading) {
         // When we finished loading, we can retrieve the correct header
         if (!newloading) {
-          this._headerCache[this.refurl] = this.lastRequest.xhr.getResponseHeader('ETag');
+          shared.headerCache[this.refurl] = this.lastRequest.xhr.getResponseHeader('ETag');
           // Cache responses to save the rate limit of the GitHub api
           if (this.lastRequest.status === 304) {
-            this['last-response'] = this._responseCache[this.refurl];
+            this['last-response'] = shared.responseCache[this.refurl];
           } else {
-            this._responseCache[this.refurl] = this.lastResponse;
+            shared.responseCache[this.refurl] = this.lastResponse;
           }
         }
       },
+      _setHeader: function(name, value) {
+        this.headers = this.headers || {};
+        this.headers[name] = value;
+      },
       _updateIfNoneMatch: function(refurl) {
-        var etag = this._headerCache[refurl];
+        var etag = shared.headerCache[refurl];
         if (etag) {
-          this.headers = this.headers || {};
-          this.headers['If-None-Match'] = etag;
+          this._setHeader('If-None-Match', etag);
         }
       },
       _updateContentType: function(contentType) {
         if (!contentType) {
           return;
         }
-        this.headers = this.headers || {};
-        this.headers['content-type'] = contentType;
+        this._setHeader('content-type', contentType);
       },
       _maybeFire: function() {
         if (this.auto && !this.loading) {
