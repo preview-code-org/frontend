@@ -58,8 +58,9 @@
         <list-item-label type="box" title="Status" hidden$="[[!showStatus]]">[[_getLabelNames(issue.labels)]]</list-item-label>
       </div>
       <div class="info">
-        <list-item-label type="info" title="Time open" icon="device:access-time">[[pr.created_at]]</list-item-label>
-        <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.assignee.login]]</list-item-label>
+        <list-item-label type="info" title$="Last updated [[_updatedAtString]] ago" icon="device:access-time">[[_updatedAtString]]</list-item-label>
+        <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">2</list-item-label>
+        <!-- <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.assignee.login]]</list-item-label> -->
       </div>
     </column-list-item>
 
@@ -81,6 +82,10 @@
         _cistatus: {
           type: String,
           computed: '_getCIStatus(statuses)'
+        },
+        _updatedAtString: {
+          type: String,
+          computed: '_toDateString(pr.updated_at)'
         }
       },
       observers: [
@@ -109,6 +114,14 @@
       _fireAjax: function(pr) {
         this.$.ajaxIssue.generateRequest();
         this.$.ajaxStatuses.generateRequest();
+      },
+      _toDateString: function(text) {
+        var diff = new Date(new Date().getTime() - new Date(text).getTime());
+        var hours = Math.ceil(diff / 1000 / 3600);
+        if (hours < 24) {
+          return hours + 'h';
+        }
+        return Math.ceil(hours / 24) + 'd';
       }
     });
   </script>
