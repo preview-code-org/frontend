@@ -4,6 +4,10 @@
       :host {
         margin-bottom: 4px;
         height: 24px;
+        width: 100%;
+        white-space: nowrap;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
       }
       :host:last-child {
         margin-bottom: 0px;
@@ -23,7 +27,6 @@
       }
       :host span {
         vertical-align: middle;
-        text-overflow: clip;
       }
       :host([type=box]) span {
         color: var(--primary-background-color);

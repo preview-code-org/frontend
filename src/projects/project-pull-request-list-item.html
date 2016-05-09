@@ -15,13 +15,14 @@
       .icon-failed {
         fill: var(--primary-action-red);
       }
-      .icon-failed.success {
-        display: none;
-      }
       .icon-passed {
         fill: var(--primary-action-green);
       }
-      .icon-passed.error, .icon-passed.failure {
+      /* We hide by default, to prevent double icons if the data is still loading */
+      .icon-failed:not(.failure):not(.error) {
+        display: none;
+      }
+      .icon-passed:not(.success) {
         display: none;
       }
       .main iron-icon {
@@ -49,9 +50,9 @@
       </div>
       <div class="main">
         <list-item-label type="title">
-          [[pr.title]]
           <iron-icon title="CI passed" class$="icon-passed [[_cistatus]]" icon="icons:check-circle"></iron-icon>
           <iron-icon title="CI failed" class$="icon-failed [[_cistatus]]" icon="icons:cancel"></iron-icon>
+          <span title$="[[pr.title]]">[[pr.title]]</span>
         </list-item-label>
         <list-item-label type="subtitle">[[pr.user.login]]</list-item-label>
         <list-item-label type="box" title="Status" hidden$="[[!showStatus]]">[[_getLabelNames(issue.labels)]]</list-item-label>

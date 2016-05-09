@@ -44,6 +44,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         two: '{"anotherSuccess: true"}'
       };
 
+      function addEventListener(element, name, func) {
+        var inner = function(e) {
+          func(e);
+          element.removeEventListener(name, inner);
+        };
+        element.addEventListener(name, inner);
+      }
+
       setup(function() {
         ajax = fixture('basic');
         one = ajax[0];
@@ -59,24 +67,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           ]
         );
         server.respondImmediately = true;
+        one.storeToken(token);
       });
 
       test('token shared between instances', function() {
-        one.storeToken(token);
         assert.equal(one.params.access_token, token);
         assert.equal(two.params.access_token, token);
         var el = document.createElement('authenticated-ajax');
         assert.equal(el.params.access_token, token);
       });
 
-      suite('send requests', function() {
+      test('receives response', function(done) {
+        addEventListener(one, 'response', function() {
+          assert.deepEqual(one.lastResponse, {
+            success: true
+          });
+          done();
+        });
+        one.generateRequest();
+      });
+
+      suite('with ETag', function() {
+        var etag;
+
         setup(function() {
-          one.storeToken(token);
+          server.respondWith(
+            'GET',
+            /github.json.*/, function(xhr) {
+              etag = xhr.requestHeaders['if-none-match'];
+              xhr.respond(304, responseHeaders, response.two);
+            }
+          );
         });
 
-        test('receives response', function(done) {
-          one.addEventListener('response', function() {
-            assert.deepEqual(one.lastResponse, {
+        test('resends correct ETag on new request', function() {
+          one.generateRequest();
+          assert.equal(etag, responseHeaders.ETag);
+        });
+
+        test('corrects 304 to response from cache', function(done) {
+          addEventListener(one, 'response', function(e) {
+            var request = e.detail;
+            if (request.status !== 304) {
+              return;
+            }
+            assert.deepEqual(request.response, {
               success: true
             });
             done();
@@ -84,48 +119,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           one.generateRequest();
         });
 
-        suite('with ETag', function() {
-          var etag;
-
-          setup(function() {
-            one.generateRequest();
-            server.respondWith(
-              'GET',
-              /github.json.*/, function(xhr) {
-                etag = xhr.requestHeaders['if-none-match'];
-                xhr.respond(304, responseHeaders, response.two);
-              }
-            );
-          });
-
-          test('resends correct ETag on new request', function() {
-            one.generateRequest();
+        test('new element fetches from headercache', function(done) {
+          var el = document.createElement('authenticated-ajax');
+          el.refurl = 'github.json';
+          addEventListener(el, 'response', function(e) {
             assert.equal(etag, responseHeaders.ETag);
+            done();
           });
-
-          test('corrects 304 to response from cache', function(done) {
-            one.addEventListener('response', function(e) {
-              var request = e.detail;
-              if (request.status !== 304) {
-                return;
-              }
-              assert.deepEqual(request.response, {
-                success: true
-              });
-              done();
-            });
-            one.generateRequest();
-          });
-
-          test('new element fetches from headercache', function(done) {
-            var el = document.createElement('authenticated-ajax');
-            el.refurl = 'github.json';
-            el.addEventListener('response', function(e) {
-              assert.equal(etag, responseHeaders.ETag);
-              done();
-            });
-            el.generateRequest();
-          });
+          el.generateRequest();
         });
       });
     });

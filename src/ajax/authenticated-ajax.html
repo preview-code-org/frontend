@@ -3,11 +3,6 @@
 
 <dom-module id="authenticated-ajax">
   <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
     <iron-ajax
       id="ajax"
       auto="[[auto]]"
@@ -23,7 +18,6 @@
       verbose="[[verbose]]"
       last-request="{{last-request}}"
       loading="{{iron-loading}}"
-      last-response="{{last-response}}"
       last-error="{{last-error}}"
       activeRequests="{{active-requests}}"
       debounce-duration="[[debounceDuration]]"
@@ -113,7 +107,7 @@
         lastResponse: {
           type: Object,
           notify: true,
-          computed: '_is(last-response)'
+          readOnly: true
         },
         lastError: {
           type: Object,
@@ -207,7 +201,7 @@
       onResponse: function(e) {
         shared.headerCache[this.refurl] = e.detail.xhr.getResponseHeader('ETag');
         shared.responseCache[this.refurl] = e.detail.response;
-        this['last-response'] = shared.responseCache[this.refurl];
+        this._setLastResponse(shared.responseCache[this.refurl]);
         this.fire('response', e.detail, {
           bubbles: this.bubbles
         });
@@ -216,12 +210,12 @@
         shared.headerCache[this.refurl] = e.detail.request.xhr.getResponseHeader('ETag');
         // Cache responses to save the rate limit of the GitHub api
         if (e.detail.request.status === 304) {
-          this['last-response'] = shared.responseCache[this.refurl];
+          this._setLastResponse(shared.responseCache[this.refurl]);
           // Modify the original request to remove the error and make it a proper respond
           var request = e.detail.request;
           // Inject our last response
           request._setResponse(this.lastResponse);
-          this.fire('response', request, {
+          this.fire('response', Object.create(request), {
             bubbles: this.bubbles
           });
         } else {
