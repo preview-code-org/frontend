@@ -59,7 +59,7 @@
       last-response="{{pullrequests}}"></authenticated-ajax>
 
     <div class="container">
-      <preview-list hidden$="[[_shouldShowProjects(name, pr)]]">
+      <preview-list hidden$="[[_shouldShowProjects(projectTitle, pr)]]">
         <template is="dom-repeat" items="[[projects]]" as="project">
           <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/pulls" tabindex="-1">
             <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
