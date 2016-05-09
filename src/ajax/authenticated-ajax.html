@@ -1,3 +1,6 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
 <dom-module id="authenticated-ajax">
   <template>
     <style>
@@ -32,35 +35,26 @@
   </template>
   <script>
   var shared = {
+    instances: [],
     accessToken: undefined,
     responseCache: {},
     headerCache: {}
   };
 
   (function(){
-    function throwEvent(name) {
-      return function(e) {
-        this.fire(name, e.detail, {
-          bubbles: this.bubbles
-        });
-      }
-    }
-
     Polymer({
       is: 'authenticated-ajax',
       properties: {
-        accessToken: {
+        shared: {
           type: Object,
           value: function() {
-            return {
-              value: shared.accessToken
-            }
+            return Object.create(shared);
           }
         },
         refurl: String,
         params: {
           type: Object,
-          computed: '_generateParams(accessToken.value)',
+          computed: '_generateParams(shared)',
           observer: '_maybeFire'
         },
         method: {
@@ -150,39 +144,34 @@
       },
 
       observers: [
-        '_storeETag(loading)',
         '_updateIfNoneMatch(refurl)',
         '_updateContentType(contentType)'
       ],
+
+      attached: function() {
+        shared.instances.push(function(shared) {
+          this.shared = shared;
+        }.bind(this));
+      },
 
       _is: function(obj) {
         return obj;
       },
       storeToken: function(token) {
+        this.shared.accessToken = token;
         shared.accessToken = token;
-        this.accessToken = {
-          value: token
-        };
+        for (var i = 0, l = shared.instances.length; i < l; i++) {
+          shared.instances[i](shared);
+        }
       },
-      _generateParams: function(accessToken) {
+      _generateParams: function(shared) {
+        var accessToken = shared.accessToken;
         if (!accessToken) {
           return undefined;
         }
         return {
           "access_token": accessToken,
           "per_page": 10
-        }
-      },
-      _storeETag(newloading) {
-        // When we finished loading, we can retrieve the correct header
-        if (!newloading) {
-          shared.headerCache[this.refurl] = this.lastRequest.xhr.getResponseHeader('ETag');
-          // Cache responses to save the rate limit of the GitHub api
-          if (this.lastRequest.status === 304) {
-            this['last-response'] = shared.responseCache[this.refurl];
-          } else {
-            shared.responseCache[this.refurl] = this.lastResponse;
-          }
         }
       },
       _setHeader: function(name, value) {
@@ -207,11 +196,40 @@
         }
       },
       generateRequest: function() {
+        this._updateIfNoneMatch(this.refurl);
         return this.$.ajax.generateRequest();
       },
-      onRequest: throwEvent('request'),
-      onResponse: throwEvent('response'),
-      onError: throwEvent('error')
+      onRequest: function(e) {
+        this.fire('request', e.detail, {
+          bubbles: this.bubbles
+        });
+      },
+      onResponse: function(e) {
+        shared.headerCache[this.refurl] = e.detail.xhr.getResponseHeader('ETag');
+        shared.responseCache[this.refurl] = e.detail.response;
+        this['last-response'] = shared.responseCache[this.refurl];
+        this.fire('response', e.detail, {
+          bubbles: this.bubbles
+        });
+      },
+      onError: function(e) {
+        shared.headerCache[this.refurl] = e.detail.request.xhr.getResponseHeader('ETag');
+        // Cache responses to save the rate limit of the GitHub api
+        if (e.detail.request.status === 304) {
+          this['last-response'] = shared.responseCache[this.refurl];
+          // Modify the original request to remove the error and make it a proper respond
+          var request = e.detail.request;
+          // Inject our last response
+          request._setResponse(this.lastResponse);
+          this.fire('response', request, {
+            bubbles: this.bubbles
+          });
+        } else {
+          this.fire('error', e.detail, {
+            bubbles: this.bubbles
+          });
+        }
+      }
     });
   })();
   </script>
