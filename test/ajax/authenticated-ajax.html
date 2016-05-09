@@ -1,0 +1,136 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>my-greeting-basic</title>
+
+  <script src="../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/bower_components/web-component-tester/browser.js"></script>
+
+  <!-- Import the element to test -->
+  <link rel="import" href="../../src/ajax/authenticated-ajax.html">
+
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <authenticated-ajax id="one" refurl="github.json"></authenticated-ajax>
+      <authenticated-ajax id="two"></authenticated-ajax>
+    </template>
+  </test-fixture>
+
+  <script>
+
+    suite('<authenticated-ajax>', function() {
+      var ajax, one, two, server;
+      var token = 'token';
+      var responseHeaders = {
+        'Content-Type': 'application/json',
+        'ETag': 'susdiwp36ljsdl'
+      };
+      var response = {
+        one: '{"success":true}',
+        two: '{"anotherSuccess: true"}'
+      };
+
+      function addEventListener(element, name, func) {
+        var inner = function(e) {
+          func(e);
+          element.removeEventListener(name, inner);
+        };
+        element.addEventListener(name, inner);
+      }
+
+      setup(function() {
+        ajax = fixture('basic');
+        one = ajax[0];
+        two = ajax[1];
+
+        server = sinon.fakeServer.create();
+        server.respondWith(
+          'GET',
+          /github.json.*/, [
+            200,
+            responseHeaders,
+            response.one
+          ]
+        );
+        server.respondImmediately = true;
+        one.storeToken(token);
+      });
+
+      test('token shared between instances', function() {
+        assert.equal(one.params.access_token, token);
+        assert.equal(two.params.access_token, token);
+        var el = document.createElement('authenticated-ajax');
+        assert.equal(el.params.access_token, token);
+      });
+
+      test('receives response', function(done) {
+        addEventListener(one, 'response', function() {
+          assert.deepEqual(one.lastResponse, {
+            success: true
+          });
+          done();
+        });
+        one.generateRequest();
+      });
+
+      suite('with ETag', function() {
+        var etag;
+
+        setup(function() {
+          server.respondWith(
+            'GET',
+            /github.json.*/, function(xhr) {
+              etag = xhr.requestHeaders['if-none-match'];
+              xhr.respond(304, responseHeaders, response.two);
+            }
+          );
+        });
+
+        test('resends correct ETag on new request', function() {
+          one.generateRequest();
+          assert.equal(etag, responseHeaders.ETag);
+        });
+
+        test('corrects 304 to response from cache', function(done) {
+          addEventListener(one, 'response', function(e) {
+            var request = e.detail;
+            if (request.status !== 304) {
+              return;
+            }
+            assert.deepEqual(request.response, {
+              success: true
+            });
+            done();
+          });
+          one.generateRequest();
+        });
+
+        test('new element fetches from headercache', function(done) {
+          var el = document.createElement('authenticated-ajax');
+          el.refurl = 'github.json';
+          addEventListener(el, 'response', function(e) {
+            assert.equal(etag, responseHeaders.ETag);
+            done();
+          });
+          el.generateRequest();
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

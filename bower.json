@@ -25,5 +25,8 @@
   },
   "resolutions": {
     "carbon-route": "subroute-updating"
+  },
+  "devDependencies": {
+    "web-component-tester": "^4.2.2"
   }
 }

@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/iron-lazy-pages/iron-lazy-pages.html">
 <link rel="import" href="../bower_components/carbon-route/carbon-location.html">
 <link rel="import" href="../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
@@ -14,6 +15,7 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 
 <link rel="stylesheet" href="../bower_components/font-roboto/roboto.html">
+<link rel="import" href="../ajax/authenticated-ajax.html">
 
 <dom-module id="rite-app">
   <template>
@@ -70,6 +72,13 @@
     <carbon-location route="{{route}}"></carbon-location>
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
 
+    <iron-ajax
+      auto
+      url="token.json"
+      handle-as="json"
+      on-response="storeAccessToken"></iron-ajax>
+    <authenticated-ajax id="authenticatedAjax"></authenticated-ajax>
+
     <paper-header-panel>
       <div class="paper-header">
         <template is="dom-if" if="[[!_equals('',page.page)]]">
@@ -115,6 +124,9 @@
     is: 'rite-app',
     _equals: function(one, other) {
       return one === other;
+    },
+    storeAccessToken: function(e) {
+      this.$.authenticatedAjax.storeToken(e.detail.response);
     }
   });
   </script>

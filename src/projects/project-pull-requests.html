@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../pull-request/pull-request-page.html">
 <link rel="import" href="project-pull-request-list-item.html">
 <link rel="import" href="../list-items/preview-list.html">
@@ -35,9 +36,10 @@
         color: inherit;
       }
     </style>
+
     <preview-list hide-end-indicator>
       <template is="dom-repeat" items="[[_filter(pullrequests, status)]]" as="pr">
-        <a href$="[[route.prefix]]/pulls/[[pr.id]]" tabindex="-1">
+        <a href$="[[route.prefix]]/pulls/[[pr.number]]" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
                 show-status="[[_equals('All', status)]]" on-tap="choosePR"
                 on-keydown="maybeSelectPR"></project-pull-request-list-item>
@@ -54,228 +56,12 @@
         route: Object,
 
         pullrequests: {
-          type: Array,
-          computed: '_getPullRequests(owner, name)'
+          type: Array
         },
         status: {
           type: String,
           value: 'All'
         }
-      },
-
-      _getPullRequests: function(owner, name) {
-        return [
-          {
-            cistatus: 'failed',
-            title: 'My best PR',
-            id: 25,
-            owner: 'Tim van der Lippe',
-            status: 'Under review',
-            timeopened: 12341234,
-            notification: false,
-            reviewers: [
-              {
-                name: 'Thomas Smith',
-                lgtm: true,
-                profile: 'https://avatars0.githubusercontent.com/u/5946422?v=3&s=72'
-              },
-              {
-                name: 'Eva Anker',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'passed',
-            title: 'My first PR',
-            id: 20,
-            owner: 'Eva Anker',
-            status: 'Under review',
-            timeopened: 12341236,
-            notification: true,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Thomas Smith',
-                lgtm: true,
-                profile: 'https://avatars0.githubusercontent.com/u/5946422?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'passed',
-            title: 'My first PR',
-            id: 20,
-            owner: 'Eva Anker',
-            status: 'Under review',
-            timeopened: 12341236,
-            notification: true,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Thomas Smith',
-                lgtm: true,
-                profile: 'https://avatars0.githubusercontent.com/u/5946422?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'failed',
-            title: 'Fix all the things',
-            id: 20,
-            owner: 'Thomas Smith',
-            status: 'Waiting for contributor',
-            timeopened: 12341235,
-            notification: false,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: true,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Eva Anker',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'failed',
-            title: 'Fix all the things',
-            id: 20,
-            owner: 'Thomas Smith',
-            status: 'Waiting for contributor',
-            timeopened: 12341235,
-            notification: false,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: true,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Eva Anker',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'failed',
-            title: 'Fix all the things',
-            id: 20,
-            owner: 'Thomas Smith',
-            status: 'Waiting for contributor',
-            timeopened: 12341235,
-            notification: false,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: true,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Eva Anker',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'failed',
-            title: 'Fix all the things',
-            id: 20,
-            owner: 'Thomas Smith',
-            status: 'Waiting for contributor',
-            timeopened: 12341235,
-            notification: false,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: true,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Eva Anker',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'failed',
-            title: 'Fix all the things',
-            id: 20,
-            owner: 'Thomas Smith',
-            status: 'Waiting for contributor',
-            timeopened: 12341235,
-            notification: false,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: true,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Eva Anker',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'failed',
-            title: 'Fix all the things',
-            id: 20,
-            owner: 'Thomas Smith',
-            status: 'Waiting for contributor',
-            timeopened: 12341235,
-            notification: false,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: true,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Eva Anker',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
-              }
-            ]
-          },
-          {
-            cistatus: 'failed',
-            title: 'Fix all the things',
-            id: 15,
-            owner: 'Thomas Smith',
-            status: 'Waiting for contributor',
-            timeopened: 12341235,
-            notification: false,
-            reviewers: [
-              {
-                name: 'Tim van der Lippe',
-                lgtm: true,
-                profile: 'https://avatars1.githubusercontent.com/u/5948271?v=3&amp;s=72'
-              },
-              {
-                name: 'Eva Anker',
-                lgtm: false,
-                profile: 'https://avatars1.githubusercontent.com/u/5946438?v=3&s=72'
-              }
-            ]
-          }
-        ];
       },
 
       _filter: function(pullrequests, status) {
