@@ -58,7 +58,7 @@
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}"></carbon-route>
-    <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{tail}}"></carbon-route>
+    <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{prTail}}"></carbon-route>
 
     <authenticated-ajax
       id="ajaxPullRequest"
@@ -85,7 +85,7 @@
             <no-project-selected data-route="no-selected"></no-project-selected>
             <project-overview-page data-route="overview" tabindex="0"
                 project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
-            <pull-request-page data-route="pr" prid="[[pr.pr]]"
+            <pull-request-page data-route="pr" prid="[[pr.pr]]" route="{{prTail}}"
                                owner="[[projectTitle.owner]]" name="[[projectTitle.name]]"></pull-request-page>
         </iron-pages>
       </div>
