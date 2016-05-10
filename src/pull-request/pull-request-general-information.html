@@ -7,6 +7,8 @@
 <link rel="import" href="../util/to-date-string-behavior.html">
 <link rel="import" href="../util/marked-github-element.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="reviewers-list.html">
+
 
 <dom-module id="pull-request-general-information">
   <template>
@@ -22,20 +24,6 @@
       }
       .pr-topinfo {
         display:flex;
-      }
-      .review-true {
-        width:17px;
-        height:17px;
-        color:white;
-        background-color: var(--primary-action-green);
-        border-radius: 8px;
-      }
-      .review-false {
-        width:17px;
-        height:17px;
-        background-color: var(--primary-action-red);
-        color:white;
-        border-radius: 8px;
       }
       .pr-right-side {
         display:block;
@@ -59,22 +47,11 @@
     <div class="overview">
       <div class="pr-topinfo">
         <div class="pr-text">
-          <marked-github-element markdown="[[pr.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+          <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
         </div>
         <div class="pr-right-side">
-          <p>[[toDateString(pr.created_at)]] ago</p>
-          <div class="pr-repeat">
-            <template is="dom-repeat" items="[[_getReviewers(pr.assignee)]]" as="reviewer">
-              <div class="pr-info" style$="background-image: url([[reviewer.avatar_url]]); background-repeat: no-repeat; background-size: 50px 50px;">
-                <template is="dom-if" if="[[_equals(reviewer.lgtm,'true')]]" restamp="true">
-                  <iron-icon class="review-true", icon="icons:check-circle"></iron-icon>
-                </template>
-                <template is="dom-if" if="[[!_equals(reviewer.lgtm,'true')]]" restamp="true">
-                  <iron-icon class="review-false", icon="icons:cancel"></iron-icon>
-                </template>
-              </div>
-            </template>
-          </div>
+          <p>[[toDateString(pullRequest.created_at)]] ago</p>
+          <reviewers-list reviewers="[[_getReviewers(pr.assignee)]]"></reviewer-list>
         </div>
       </div>
       <h3>Comments:</h3>
@@ -89,7 +66,7 @@
       is: 'pull-request-general-information',
       behaviors: [ToDateStringBehavior],
       properties: {
-        pr: Object,
+        pullRequest: Object,
         owner: String,
         name: String
       },

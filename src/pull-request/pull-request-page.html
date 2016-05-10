@@ -113,8 +113,8 @@
     <iron-pages selected="[[page.page]]"
                 attr-for-selected="data-route"
                 fallback-selection="404">
-      <pull-request-general-information data-route="overview" class="overview" pr="[[pr]]"
-                owner="[[owner]]" name="[[name]]"></pull-request-general-information>
+      <pull-request-general-information data-route="overview" class="overview"
+        pull-request="[[pr]]" owner="[[owner]]" name="[[name]]"></pull-request-general-information>
       <pull-request-diff data-route="diff" pull-request="[[pr]]"></pull-request-diff>
       <span data-route="404">
         Oops you hit a 404!

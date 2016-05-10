@@ -1,0 +1,52 @@
+<dom-module id="reviewers-list">
+  <template>
+    <style>
+      :host {
+        display:flex;
+        overflow-y: auto;
+      }
+      .lgtm-true.false {
+        display: none;
+      }
+      .lgtm-false.true {
+        display: none;
+      }
+      .lgtm-true {
+        width:17px;
+        height:17px;
+        color:white;
+        background-color: var(--primary-action-green);
+        border-radius: 8px;
+      }
+      .lgtm-false {
+        width:17px;
+        height:17px;
+        background-color: var(--primary-action-red);
+        color:white;
+        border-radius: 8px;
+      }
+      .reviewer {
+        width: 52px;
+        height: 52px;
+        background-repeat: no-repeat;
+        background-size: 50px 50px;
+      }
+    </style>
+
+    <template is="dom-repeat" items="[[reviewers]]" as="reviewer">
+      <div class="reviewer" style$="background-image: url([[reviewer.avatar_url]]); ">
+        <iron-icon class$="lgtm-true [[reviewer.lgtm]]", icon="icons:check-circle"></iron-icon>
+        <iron-icon class$="lgtm-false [[reviewer.lgtm]]", icon="icons:cancel"></iron-icon>
+      </div>
+    </template>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'reviewers-list',
+      properties: {
+        reviewers: Array
+      }
+    });
+  </script>
+</dom-module>
