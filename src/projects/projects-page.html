@@ -14,6 +14,11 @@
       :host {
         display: flex;
         flex: 1;
+        -webkit-transition: all 500ms ease;
+        -moz-transition: all 500ms ease;
+        -ms-transition: all 500ms ease;
+        -o-transition: all 500ms ease;
+        transition: all 500ms ease;
       }
       [hidden] {
         display: none !important;
@@ -27,7 +32,7 @@
         flex: 1;
       }
       preview-list {
-        max-width: 325px;
+        flex: 0 0 325px;
         border-right: solid 4px var(--secondary-background-color);
       }
       .project {
@@ -36,17 +41,20 @@
       project-overview-page {
         flex: 1;
       }
-      project-pull-requests {
-        max-width: 600px;
-      }
       project-overview-page,
-      project-pull-requests,
       preview-list {
         overflow-y: auto;
         overflow-x: hidden;
       }
       a {
         color: inherit;
+      }
+      preview-list.false {
+        flex: 0 0;
+        -webkit-transition: flex 0.5s ease;
+        -moz-transition: flex 0.5s ease;
+        -o-transition: flex 0.5s ease;
+        transition: flex 0.5s ease;
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}"></carbon-route>
@@ -59,26 +67,28 @@
       last-response="{{pullrequests}}"></authenticated-ajax>
 
     <div class="container">
-      <preview-list hidden$="[[_shouldShowProjects(projectTitle, pr)]]">
+      <preview-list class$="[[shouldShowProjects]]">
         <template is="dom-repeat" items="[[projects]]" as="project">
-          <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/pulls" tabindex="-1">
+          <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
             <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
                                tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
           </a>
         </template>
       </preview-list>
-      <project-pull-requests hidden$="[[!_shouldShowProjects(projectTitle, pr)]]" route="{{nameTail}}" tabindex="0"
-                             owner="[[projectTitle.owner]]" name="[[projectTitle.name]]" pullrequests="[[pullrequests]]"></project-pull-requests>
+      <div class="container">
+        <project-pull-requests hidden$="[[!projectTitle.name]]" route="{{nameTail}}" tabindex="0"
+                               owner="[[projectTitle.owner]]" name="[[projectTitle.name]]" pullrequests="[[pullrequests]]"></project-pull-requests>
 
-      <iron-pages class="project"
-                  selected="[[_getCurrentView(projectTitle, pr)]]"
-                  attr-for-selected="data-route">
-          <no-project-selected data-route="no-selected"></no-project-selected>
-          <project-overview-page data-route="overview" tabindex="0"
-              project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
-          <pull-request-page data-route="pr" prid="[[pr.pr]]"
-                             owner="[[projectTitle.owner]]" name="[[projectTitle.name]]"></pull-request-page>
-      </iron-pages>
+        <iron-pages class="project"
+                    selected="[[_getCurrentView(projectTitle, pr)]]"
+                    attr-for-selected="data-route">
+            <no-project-selected data-route="no-selected"></no-project-selected>
+            <project-overview-page data-route="overview" tabindex="0"
+                project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
+            <pull-request-page data-route="pr" prid="[[pr.pr]]"
+                               owner="[[projectTitle.owner]]" name="[[projectTitle.name]]"></pull-request-page>
+        </iron-pages>
+      </div>
     </div>
   </template>
   <script>
@@ -88,6 +98,10 @@
         route: {
           type: Object,
           notify: true
+        },
+        shouldShowProjects: {
+          type: String,
+          computed: '_shouldShowProjects(projectTitle, pr)'
         },
         projects: {
           type: Array,
@@ -324,7 +338,6 @@
       observers: [
         'chooseProject(projectTitle.*)'
       ],
-
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
         var name = projectTitle.value.name;
@@ -366,7 +379,7 @@
         return 'pr';
       },
       _shouldShowProjects: function(name, pr) {
-        return this._getCurrentView(name, pr) === 'pr';
+        return this._getCurrentView(name, pr) !== 'pr' ? 'true' : 'false';
       }
     });
   </script>
