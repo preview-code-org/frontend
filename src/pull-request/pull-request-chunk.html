@@ -1,4 +1,11 @@
-<link rel="import" href="../../bower_components/Sortable/Sortable.html">
+<link rel="import" href="../bower_components/Sortable/Sortable.html">
+<!-- <link rel="import" href="../bower_components/prism-element/prism-highlighter.html"> -->
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="pull-request-diff-highlight.html">
+<link rel="import" href="pull-request-add-comments.html">
+<link rel="import" href="pull-request-comment.html">
+
 
 <dom-module id="pull-request-chunk">
   <template>
@@ -29,7 +36,11 @@
     <content select=".title"></content>
     <sortable-js group="chunk" draggable=".diff">
       <template is="dom-repeat" items="[[chunk.diff]]">
-        <div class="diff">[[item]]</div>
+        <div class="diff">
+          <pull-request-diff-highlight code="p { color: blue; }" lang="css"></pull-request-diff-highlight>
+        <!-- <prism-demo code="p { color: blue; }" lang="css"></prism-demo> -->
+          <!-- <pull-request-diff code="[[item]]" lang="diff"></pull-request-diff> -->
+        </div>
       </template>
     </sortable-js>
     <iron-icon icon="icons:arrow-downward" class="toggle-comments-icon" on-tap="_toggleComments"></iron-icon>
