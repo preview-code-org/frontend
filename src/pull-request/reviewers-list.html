@@ -3,40 +3,41 @@
     <style>
       :host {
         display:flex;
-        overflow-y: auto;
+        flex-wrap: wrap;
       }
       .lgtm-true.false {
         display: none;
       }
-      .lgtm-false.true {
-        display: none;
+      iron-icon {
+        -webkit-box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+        box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+        padding: 2px;
+        width:16px;
+        height:16px;
+        background-color: var(--primary-background-color);
+        border-radius: 9px;
+        margin-left: -9px;
+        margin-top: -9px;
       }
       .lgtm-true {
-        width:17px;
-        height:17px;
-        color:white;
-        background-color: var(--primary-action-green);
-        border-radius: 8px;
-      }
-      .lgtm-false {
-        width:17px;
-        height:17px;
-        background-color: var(--primary-action-red);
-        color:white;
-        border-radius: 8px;
+        fill: var(--primary-action-green);
       }
       .reviewer {
+        -webkit-box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
+        border-radius: 9px;
         width: 52px;
         height: 52px;
         background-repeat: no-repeat;
-        background-size: 50px 50px;
+        background-size: 100%;
+        margin: 8px 8px;
       }
     </style>
 
+
     <template is="dom-repeat" items="[[reviewers]]" as="reviewer">
-      <div class="reviewer" style$="background-image: url([[reviewer.avatar_url]]); ">
-        <iron-icon class$="lgtm-true [[reviewer.lgtm]]", icon="icons:check-circle"></iron-icon>
-        <iron-icon class$="lgtm-false [[reviewer.lgtm]]", icon="icons:cancel"></iron-icon>
+      <div class="reviewer" style$="order: [[_lgtmToOrder(reviewer.lgtm)]]; background-image: url([[reviewer.profile]]); ">
+        <iron-icon class$="lgtm-true [[reviewer.lgtm]]", icon="icons:thumb-up"></iron-icon>
       </div>
     </template>
 
@@ -46,6 +47,12 @@
       is: 'reviewers-list',
       properties: {
         reviewers: Array
+      },
+      _lgtmToOrder(lgtm) {
+        if (lgtm) {
+          return 0;
+        }
+        return 1;
       }
     });
   </script>
