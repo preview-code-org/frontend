@@ -65,9 +65,9 @@
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls"
       handle-as="json"
       last-response="{{pullrequests}}"></authenticated-ajax>
-
     <div class="container">
       <preview-list class$="[[shouldShowProjects]]">
+        <search-box></search-box>
         <template is="dom-repeat" items="[[projects]]" as="project">
           <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
             <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"

@@ -1,0 +1,32 @@
+<link rel="import" href="../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="search-box">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      .search-box {
+        text-align: center;
+        margin-left: auto ;
+        margin-right: auto ;
+      }
+    </style>
+    <div class="search-box" >
+      <iron-icon icon="search"></iron-icon>
+      <input type="search" placeholder="search" bind-value="{{input}}" on-tap="search"></input>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'search-box',
+      properties: {
+        input: {
+          type: String,
+          value: ""
+        }
+      }
+    });
+  </script>
+</dom-module>
