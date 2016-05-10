@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="pull-request-chunk.html">
+
+<dom-module id="pull-request-diff">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+      }
+      .overview {
+        max-width: 500px;
+      }
+      .description {
+        display: block;
+      }
+      .actions {
+        margin-right: 15px;
+      }
+      [icon='add'] {
+        border-radius: 20px;
+        background-color: white;
+        color: var(--primary-color);
+      }
+      .diff-list {
+        overflow-y: auto;
+      }
+    </style>
+
+    <paper-toolbar justify="around">
+      <div class="title">
+      </div>
+      <div class="actions">
+        <paper-icon-button class="add-chunk-button" icon="add" on-tap="_addChunk"></paper-icon-button>
+      </div>
+    </paper-toolbar>
+
+    <div class="diff-list">
+      <template is="dom-repeat" items="[[pullRequest.chunks]]" as="chunk">
+        <pull-request-chunk class="draggable" chunk="[[chunk]]" title="[[index]]">
+          <div class="title">[[index]]</div>
+        </pull-request-chunk>
+      </template>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-diff',
+      properties: {
+        pullRequest: Object
+      },
+      _addChunk: function() {
+        this.unshift('pullRequest.chunks', {});
+      }
+    });
+  </script>
+</dom-module>

@@ -43,9 +43,9 @@
 
     <preview-list hide-end-indicator>
       <template is="dom-repeat" items="[[_filter(pullrequests, status)]]" as="pr">
-        <a href$="[[route.prefix]]/pulls/[[pr.number]]" tabindex="-1">
+        <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
-                show-status="[[_equals('All', status)]]" on-tap="choosePR"
+                show-status="[[_equals('All', status)]]"
                 on-keydown="maybeSelectPR"></project-pull-request-list-item>
         </a>
       </template>
@@ -85,12 +85,9 @@
       _withOwnerOnSmall: function(small, name, owner) {
         return name + (small ? ' by ' + owner : '');
       },
-      choosePR: function(e) {
-        this.set('route.path', '/pulls/' + e.model.pr.id);
-      },
       maybeSelectPR: function(e) {
         if (e.keyCode === 13) {
-          this.choosePR(e);
+          this.set('route.path', '/pulls/' + e.model.pr.number + '/overview');
         }
       },
       _has: function() {
