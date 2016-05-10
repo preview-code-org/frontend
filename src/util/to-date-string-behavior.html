@@ -1,0 +1,12 @@
+<script>
+ToDateStringBehavior = {
+  toDateString: function(text) {
+    var diff = new Date(new Date().getTime() - new Date(text).getTime());
+    var hours = Math.ceil(diff / 1000 / 3600);
+    if (hours < 24) {
+      return hours + 'h';
+    }
+    return Math.ceil(hours / 24) + 'd';
+  }
+};
+</script>
