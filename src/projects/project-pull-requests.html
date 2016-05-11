@@ -52,18 +52,18 @@
       }
 
     </style>
-    <h2>[[name]]</h2>
-    <div class=dropdown>
-      <paper-dropdown-menu label="Pull request status" value="{{status}}">
-        <paper-menu class="dropdown-content">
-          <paper-item>All</paper-item>
-          <paper-item>Under review</paper-item>
-          <paper-item>Waiting for contributor</paper-item>
-        </paper-menu>
-      </paper-dropdown-menu>
-    </div>
-    <search-box value="{{search}}"></search-box>
     <preview-list hide-end-indicator>
+      <h2>[[name]]</h2>
+      <div class=dropdown>
+        <paper-dropdown-menu label="Pull request status" value="{{status}}">
+          <paper-menu class="dropdown-content">
+            <paper-item>All</paper-item>
+            <paper-item>Under review</paper-item>
+            <paper-item>Waiting for contributor</paper-item>
+          </paper-menu>
+        </paper-dropdown-menu>
+      </div>
+      <search-box value="{{search}}"></search-box>
       <template is="dom-repeat" items="[[_filter(pullrequests, status, search)]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
@@ -95,7 +95,6 @@
       },
 
       _filter: function(pullrequests, status, search) {
-        console.log("test");
         if (status === 'All') {
           return this._search(pullrequests,search,'pr');
         }
