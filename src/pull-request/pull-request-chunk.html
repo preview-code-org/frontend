@@ -37,9 +37,7 @@
     <sortable-js group="chunk" draggable=".diff">
       <template is="dom-repeat" items="[[chunk.diff]]">
         <div class="diff">
-          <pull-request-diff-highlight code="p { color: blue; }" lang="css"></pull-request-diff-highlight>
-        <!-- <prism-demo code="p { color: blue; }" lang="css"></prism-demo> -->
-          <!-- <pull-request-diff code="[[item]]" lang="diff"></pull-request-diff> -->
+          <pull-request-diff-highlight code="[[item]]"></pull-request-diff-highlight>
         </div>
       </template>
     </sortable-js>

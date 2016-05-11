@@ -10,9 +10,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/prism-element/prism-highlighter.html">
+<link rel="import" href="../bower_components/prism-element/prism-style-import.html">
 
 <dom-module id='pull-request-diff-highlight'>
   <template>
+    <style is="custom-style" include="prism-styles"></style>
     <style>
       pre {
         padding: 0;
@@ -44,10 +46,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._render();
       },
       _render: function() {
-        this.$.output.innerHTML = this.highlight(this.code, this.lang);
+        if (!this.isAttached) {
+          return;
+        }
+        this.async(function() {
+          Polymer.dom(this.$.output).innerHTML = this.highlight(this.code, this.lang);
+        });
       },
       highlight: function(code, lang) {
-        return this.fire('syntax-highlight', {code: code, lang: lang}).detail.code;
+        var code = code.replace('\n', '<br />');
+        var event = this.fire('syntax-highlight', {code: code, lang: 'diff'});
+        return event.detail.code || code;
       }
     });
   </script>
