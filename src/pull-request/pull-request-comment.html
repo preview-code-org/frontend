@@ -17,6 +17,9 @@
       .time {
         text-align: left;
       }
+      .markdown-html img {
+        max-width: 100%;
+      }
     </style>
       <div class="top-container">
         <div class="poster">
@@ -28,7 +31,9 @@
         </div>
       </div>
         <div class="comment">
-          <marked-element markdown="[[comment.body]]" callback="[[parseMarkdown(owner, name)]]"></marked-element>
+          <marked-element markdown="[[comment.body]]" callback="[[parseMarkdown(owner, name)]]">
+            <div class="markdown-html"></div>
+          </marked-element>
         </div>
   </template>
   <script>
