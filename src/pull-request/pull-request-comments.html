@@ -1,0 +1,26 @@
+<dom-module id="pull-request-comments">
+  <template>
+    <style>
+    h3 {
+      margin: 0;
+      padding: 1em 2em;
+    }
+    </style>
+
+    <h3>Comments:</h3>
+    <preview-list hide-end-indicator>
+      <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
+      <template is="dom-repeat" items="[[comments]]">
+        <pull-request-comment comment="[[item]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
+      </template>
+    </preview-list>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-comments',
+      properties: {
+        comments: Array
+      }
+    });
+  </script>
+</dom-module>
