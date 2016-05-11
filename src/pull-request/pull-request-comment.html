@@ -1,8 +1,7 @@
-<link rel="import" href="../bower_components/marked-element/marked-element.html">
 <link rel="import" href="../list-items/column-list-item.html">
 <link rel="import" href="../list-items/list-item-label.html">
 <link rel="import" href="../util/to-date-string-behavior.html">
-<link rel="import" href="../util/marked-github-behavior.html">
+<link rel="import" href="../util/marked-github-element.html">
 
 <dom-module id="pull-request-comment">
   <template>
@@ -17,9 +16,6 @@
       .time {
         text-align: left;
       }
-      .markdown-html img {
-        max-width: 100%;
-      }
     </style>
       <div class="top-container">
         <div class="poster">
@@ -31,15 +27,13 @@
         </div>
       </div>
         <div class="comment">
-          <marked-element markdown="[[comment.body]]" callback="[[parseMarkdown(owner, name)]]">
-            <div class="markdown-html"></div>
-          </marked-element>
+          <marked-github-element markdown="[[comment.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
         </div>
   </template>
   <script>
     Polymer({
       is: 'pull-request-comment',
-      behaviors: [ToDateStringBehavior, MarkedGithubBehavior],
+      behaviors: [ToDateStringBehavior],
       properties: {
         comment: Object,
         owner: String,
