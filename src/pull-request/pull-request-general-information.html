@@ -37,7 +37,7 @@
     </style>
     <authenticated-ajax
       id="ajaxComments"
-      refurl="[[pr._links.comments.href]]"
+      refurl="[[pullRequest._links.comments.href]]"
       handle-as="json"
       last-response="{{comments}}"></authenticated-ajax>
 
@@ -48,7 +48,7 @@
         </div>
         <div class="pr-right-side">
           <p>[[toDateString(pullRequest.created_at)]] ago</p>
-          <reviewers-list reviewers="[[_getReviewers(pr.assignee)]]"></reviewer-list>
+          <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
         </div>
       </div>
       <h3>Comments:</h3>
@@ -63,12 +63,13 @@
       is: 'pull-request-general-information',
       behaviors: [ToDateStringBehavior],
       properties: {
+        comments: Array,
         pullRequest: Object,
         owner: String,
         name: String
       },
       observers: [
-        '_fireAjax(pr)'
+        '_fireAjax(pullRequest)'
       ],
       _fireAjax: function() {
         this.$.ajaxComments.generateRequest();

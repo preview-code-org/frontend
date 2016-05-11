@@ -34,9 +34,8 @@
       }
     </style>
 
-
-    <template is="dom-repeat" items="[[reviewers]]" as="reviewer">
-      <div class="reviewer" style$="order: [[_lgtmToOrder(reviewer.lgtm)]]; background-image: url([[reviewer.profile]]); ">
+    <template is="dom-repeat" items="[[sortedReviewers]]" as="reviewer">
+      <div class="reviewer" style$="background-image: url([[reviewer.avatar_url]]); ">
         <iron-icon class$="lgtm-true [[reviewer.lgtm]]", icon="icons:thumb-up"></iron-icon>
       </div>
     </template>
@@ -46,13 +45,16 @@
     Polymer({
       is: 'reviewers-list',
       properties: {
-        reviewers: Array
-      },
-      _lgtmToOrder(lgtm) {
-        if (lgtm) {
-          return 0;
+        reviewers: Array,
+        sortedReviewers: {
+          type: Array,
+          computed: '_sortReviewers(reviewers)'
         }
-        return 1;
+      },
+      _sortReviewers(rs) {
+        return rs.sort(function(r1, r2) {
+          return r2.lgtm - r1.lgtm;
+        });
       }
     });
   </script>
