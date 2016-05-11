@@ -15,16 +15,16 @@
     </style>
     <div class="search-box" >
       <iron-icon icon="search"></iron-icon>
-      <input type="search" placeholder="search" bind-value="{{input}}" on-tap="search"></input>
+      <input placeholder="search" type="search" value="{{value::input}}"></input>
     </div>
   </template>
   <script>
     Polymer({
       is: 'search-box',
       properties: {
-        input: {
+        value: {
           type: String,
-          value: ""
+          notify: true
         }
       }
     });
