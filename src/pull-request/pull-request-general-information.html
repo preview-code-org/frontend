@@ -6,6 +6,7 @@
 <link rel="import" href="pull-request-comment.html">
 <link rel="import" href="pull-request-add-comments.html">
 <link rel="import" href="../util/to-date-string-behavior.html">
+<link rel="import" href="../ajax/authenticated-ajax.html">
 
 <dom-module id="pull-request-general-information">
   <template>
@@ -48,6 +49,12 @@
         overflow-y: auto;
       }
     </style>
+    <authenticated-ajax
+      id="ajaxComments"
+      refurl="[[pr._links.comments.href]]"
+      handle-as="json"
+      last-response="{{comments}}"></authenticated-ajax>
+
     <div class="overview">
       <div class="pr-topinfo">
         <div class="pr-text">
@@ -70,10 +77,10 @@
         </div>
       </div>
       <h3>Comments:</h3>
-        <template is="dom-repeat" items="[[pr.comments]]">
+        <template is="dom-repeat" items="[[comments]]">
           <pull-request-comment comment="[[item]]"></pull-request-comment>
         </template>
-        <pull-request-add-comments comments="{{pr.comments}}"></pull-request-add-comments>
+        <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
     </div>
   </template>
   <script>
@@ -84,6 +91,12 @@
         pr: Object,
         owner: String,
         name: String
+      },
+      observers: [
+        '_fireAjax(pr)'
+      ],
+      _fireAjax: function() {
+        this.$.ajaxComments.generateRequest();
       },
       _equals: function(one, other) {
         return one === other;
