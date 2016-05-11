@@ -5,6 +5,7 @@
 <link rel="import" href="../list-items/list-item-label.html">
 <link rel="import" href="../list-items/tags-list.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="../util/to-date-string-behavior.html">
 
 <dom-module id="project-pull-request-list-item">
   <template>
@@ -75,6 +76,7 @@
   <script>
     Polymer({
       is: 'project-pull-request-list-item',
+      behaviors: [ToDateStringBehavior],
       properties: {
         pr: Object,
         issue: Object,
@@ -85,7 +87,7 @@
         },
         _updatedAtString: {
           type: String,
-          computed: '_toDateString(pr.updated_at)'
+          computed: 'toDateString(pr.updated_at)'
         }
       },
       observers: [
@@ -108,20 +110,12 @@
             return next;
           }
           return prev;
-        });
+        }, '');
         return latestci.state;
       },
-      _fireAjax: function(pr) {
+      _fireAjax: function() {
         this.$.ajaxIssue.generateRequest();
         this.$.ajaxStatuses.generateRequest();
-      },
-      _toDateString: function(text) {
-        var diff = new Date(new Date().getTime() - new Date(text).getTime());
-        var hours = Math.ceil(diff / 1000 / 3600);
-        if (hours < 24) {
-          return hours + 'h';
-        }
-        return Math.ceil(hours / 24) + 'd';
       }
     });
   </script>
