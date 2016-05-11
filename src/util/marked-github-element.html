@@ -46,7 +46,7 @@
               if (match.charAt(0) === '&') {
                 return match;
               }
-              return toLink(owner + '/' + name + '/issues/' + digits, digits);
+              return toLink(owner + '/' + name + '/issues/' + digits, '#' + digits);
             }
           },
           // Substitute user name references @TimvdLippe
