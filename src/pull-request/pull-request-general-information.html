@@ -108,7 +108,7 @@
         if (!assignee) {
           return [];
         }
-        assignee.lgtm = 'true';
+        assignee.lgtm = Math.random() > 0.5 ? 'true' : 'false';
         return [assignee];
       },
       _equals: function(one, other) {
