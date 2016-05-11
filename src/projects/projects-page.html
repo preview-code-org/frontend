@@ -7,6 +7,9 @@
 <link rel="import" href="project-list-item.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="../list-items/preview-list.html">
+<link rel="import" href="search-behavior.html">
+<link rel="import" href="search-box.html">
+
 
 <dom-module id="projects-page">
   <template>
@@ -56,6 +59,9 @@
         -o-transition: flex 0.5s ease;
         transition: flex 0.5s ease;
       }
+      search-box {
+        margin-top:19.920px;
+      }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}"></carbon-route>
     <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{prTail}}"></carbon-route>
@@ -65,10 +71,10 @@
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls"
       handle-as="json"
       last-response="{{pullrequests}}"></authenticated-ajax>
-
     <div class="container">
       <preview-list class$="[[shouldShowProjects]]">
-        <template is="dom-repeat" items="[[projects]]" as="project">
+        <search-box value={{search}}></search-box>
+        <template is="dom-repeat" items="[[_search(projects,search,'project')]]" as="project">
           <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
             <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
                                tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
@@ -94,7 +100,12 @@
   <script>
     Polymer({
       is: 'projects-page',
+      behaviors: [searchBehavior],
       properties: {
+        search: {
+          type: String,
+          value: ''
+        },
         route: {
           type: Object,
           notify: true

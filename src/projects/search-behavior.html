@@ -1,0 +1,25 @@
+<script>
+searchBehavior = {
+  _search: function(pullrequests, search, type) {
+    search = search.toLowerCase();
+    if (search === '') {
+      return pullrequests
+    }
+    else {
+      return pullrequests.filter(function(e) {
+        if(type === "project"){
+          if((e.name).toLowerCase().indexOf(search) > -1 || (e.owner).toLowerCase().indexOf(search) > -1){
+            return true;
+          }
+        }
+        else if(type === "pr"){
+          if((e.title).toLowerCase().indexOf(search) > -1 || (e.user.login).toLowerCase().indexOf(search) > -1){
+            return true;
+          }
+        }
+        return false;
+      });
+    }
+  }
+};
+</script>

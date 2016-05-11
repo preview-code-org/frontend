@@ -1,21 +1,20 @@
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
 <link rel="import" href="../pull-request/pull-request-page.html">
 <link rel="import" href="project-pull-request-list-item.html">
 <link rel="import" href="../list-items/preview-list.html">
+<link rel="import" href="search-box.html">
+<link rel="import" href="search-behavior.html">
 
 <dom-module id="project-pull-requests">
   <template>
     <style>
       :host {
-        display: inherit;;
-      }
-      paper-toolbar {
-        --paper-toolbar-color: var(--primary-text-color);
-        --paper-toolbar-background: 0;
+        display: inherit;
       }
       paper-dropdown-menu {
         --paper-input-container-input-color: var(--primary-text-color);
@@ -39,10 +38,33 @@
       a {
         color: inherit;
       }
-    </style>
+      h2 {
+        text-align: center;
+      }
+      .dropdown  {
+        text-align: center;
+        margin-left: auto ;
+        margin-right: auto ;
+      }
 
+      input{
+        width: 27%;
+      }
+
+    </style>
     <preview-list hide-end-indicator>
-      <template is="dom-repeat" items="[[_filter(pullrequests, status)]]" as="pr">
+      <h2>[[name]]</h2>
+      <div class=dropdown>
+        <paper-dropdown-menu label="Pull request status" value="{{status}}">
+          <paper-menu class="dropdown-content">
+            <paper-item>All</paper-item>
+            <paper-item>Under review</paper-item>
+            <paper-item>Waiting for contributor</paper-item>
+          </paper-menu>
+        </paper-dropdown-menu>
+      </div>
+      <search-box value="{{search}}"></search-box>
+      <template is="dom-repeat" items="[[_filter(pullrequests, status, search)]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
                 show-status="[[_equals('All', status)]]"
@@ -54,11 +76,15 @@
   <script>
     Polymer({
       is: 'project-pull-requests',
+      behaviors: [searchBehavior],
       properties: {
         owner: String,
         name: String,
         route: Object,
-
+        search: {
+          type: String,
+          value: '',
+        },
         pullrequests: {
           type: Array
         },
@@ -68,13 +94,13 @@
         }
       },
 
-      _filter: function(pullrequests, status) {
+      _filter: function(pullrequests, status, search) {
         if (status === 'All') {
-          return pullrequests
+          return this._search(pullrequests,search,'pr');
         }
-        return pullrequests.filter(function(e) {
+        return this._search(pullrequests.filter(function(e) {
           return e.status === status;
-        });
+        }),search,'pr');
       },
       _equals: function(one, other) {
         return one === other;
