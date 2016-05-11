@@ -2,6 +2,7 @@
 <link rel="import" href="../list-items/column-list-item.html">
 <link rel="import" href="../list-items/list-item-label.html">
 <link rel="import" href="../util/to-date-string-behavior.html">
+<link rel="import" href="../util/marked-github-behavior.html">
 
 <dom-module id="pull-request-comment">
   <template>
@@ -26,15 +27,17 @@
         </div>
       </div>
         <div class="comment">
-          <marked-element markdown="[[comment.body]]"></marked-element>
+          <marked-element markdown="[[comment.body]]" callback="[[parseMarkdown(owner, name)]]"></marked-element>
         </div>
   </template>
   <script>
     Polymer({
       is: 'pull-request-comment',
-      behaviors: [ToDateStringBehavior],
+      behaviors: [ToDateStringBehavior, MarkedGithubBehavior],
       properties: {
-        comment: Object
+        comment: Object,
+        owner: String,
+        name: String
       }
     });
   </script>

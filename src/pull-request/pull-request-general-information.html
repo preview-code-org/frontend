@@ -6,6 +6,7 @@
 <link rel="import" href="pull-request-comment.html">
 <link rel="import" href="pull-request-add-comments.html">
 <link rel="import" href="../util/to-date-string-behavior.html">
+<link rel="import" href="../util/marked-github-behavior.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 
 <dom-module id="pull-request-general-information">
@@ -58,7 +59,7 @@
     <div class="overview">
       <div class="pr-topinfo">
         <div class="pr-text">
-          <marked-element markdown="[[pr.body]]" callback="[[callback(owner,name)]]"></marked-element>
+          <marked-element markdown="[[pr.body]]" callback="[[parseMarkdown(owner, name)]]"></marked-element>
         </div>
         <div class="pr-right-side">
           <p>[[toDateString(pr.created_at)]] ago</p>
@@ -78,7 +79,7 @@
       </div>
       <h3>Comments:</h3>
         <template is="dom-repeat" items="[[comments]]">
-          <pull-request-comment comment="[[item]]"></pull-request-comment>
+          <pull-request-comment comment="[[item]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
         </template>
         <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
     </div>
@@ -86,7 +87,7 @@
   <script>
     Polymer({
       is: 'pull-request-general-information',
-      behaviors: [ToDateStringBehavior],
+      behaviors: [ToDateStringBehavior, MarkedGithubBehavior],
       properties: {
         pr: Object,
         owner: String,
@@ -100,17 +101,6 @@
       },
       _equals: function(one, other) {
         return one === other;
-      },
-      callback: function(owner, name) {
-        return function(err, text) {
-          return text.replace(/&?#(\d+)/g, function(match, digits) {
-            // Character was escaped, we should modify these numbers
-            if (match.charAt(0) === '&') {
-              return match;
-            }
-            return '<a href="https://www.github.com/' + owner + '/' + name + '/issues/' + digits + '" target="_blank">#' + digits + '</a>';
-          });
-        };
       }
     });
   </script>
