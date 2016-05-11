@@ -64,12 +64,12 @@
         <div class="pr-right-side">
           <p>[[toDateString(pr.created_at)]] ago</p>
           <div class="pr-repeat">
-            <template is="dom-repeat" items="[[pr.reviewers]]" as="reviewers">
-              <div class="pr-info" style$="background-image: url([[reviewers.profile]]); background-repeat: no-repeat; background-size: 50px 50px;">
-                <template is="dom-if" if="[[_equals(reviewers.lgtm,'true')]]" restamp="true">
+            <template is="dom-repeat" items="[[_getReviewers(pr.assignee)]]" as="reviewer">
+              <div class="pr-info" style$="background-image: url([[reviewer.avatar_url]]); background-repeat: no-repeat; background-size: 50px 50px;">
+                <template is="dom-if" if="[[_equals(reviewer.lgtm,'true')]]" restamp="true">
                   <iron-icon class="review-true", icon="icons:check-circle"></iron-icon>
                 </template>
-                <template is="dom-if" if="[[!_equals(reviewers.lgtm,'true')]]" restamp="true">
+                <template is="dom-if" if="[[!_equals(reviewer.lgtm,'true')]]" restamp="true">
                   <iron-icon class="review-false", icon="icons:cancel"></iron-icon>
                 </template>
               </div>
@@ -98,6 +98,10 @@
       ],
       _fireAjax: function() {
         this.$.ajaxComments.generateRequest();
+      },
+      _getReviewers: function(assignee) {
+        assignee.lgtm = 'true';
+        return [assignee];
       },
       _equals: function(one, other) {
         return one === other;
