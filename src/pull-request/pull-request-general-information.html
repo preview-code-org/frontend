@@ -7,6 +7,8 @@
 <link rel="import" href="../util/to-date-string-behavior.html">
 <link rel="import" href="../util/marked-github-element.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="reviewers-list.html">
+
 
 <dom-module id="pull-request-general-information">
   <template>
@@ -23,58 +25,30 @@
       .pr-topinfo {
         display:flex;
       }
-      .review-true {
-        width:17px;
-        height:17px;
-        color:white;
-        background-color: var(--primary-action-green);
-        border-radius: 8px;
-      }
-      .review-false {
-        width:17px;
-        height:17px;
-        background-color: var(--primary-action-red);
-        color:white;
-        border-radius: 8px;
-      }
       .pr-right-side {
         display:block;
       }
-      .pr-info{
-        width: 52px;
-        height: 52px;
+      .markdown-html img {
+        max-width: 100%;
       }
-      .pr-repeat{
-        display:flex;
-        overflow-y: auto;
+      reviewers-list {
+        max-width: 300px;
       }
-
     </style>
     <authenticated-ajax
       id="ajaxComments"
-      refurl="[[pr._links.comments.href]]"
+      refurl="[[pullRequest._links.comments.href]]"
       handle-as="json"
       last-response="{{comments}}"></authenticated-ajax>
 
     <div class="overview">
       <div class="pr-topinfo">
         <div class="pr-text">
-          <marked-github-element markdown="[[pr.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+          <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
         </div>
         <div class="pr-right-side">
-          <p>[[toDateString(pr.created_at)]] ago</p>
-          <div class="pr-repeat">
-            <template is="dom-repeat" items="[[_getReviewers(pr.assignee)]]" as="reviewer">
-              <div class="pr-info" style$="background-image: url([[reviewer.avatar_url]]); background-repeat: no-repeat; background-size: 50px 50px;">
-                <template is="dom-if" if="[[_equals(reviewer.lgtm,'true')]]" restamp="true">
-                  <iron-icon class="review-true", icon="icons:check-circle"></iron-icon>
-                </template>
-                <template is="dom-if" if="[[!_equals(reviewer.lgtm,'true')]]" restamp="true">
-                  <iron-icon class="review-false", icon="icons:cancel"></iron-icon>
-                </template>
-              </div>
-            </template>
-          </div>
+          <p>[[toDateString(pullRequest.created_at)]] ago</p>
+          <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
         </div>
       </div>
       <h3>Comments:</h3>
@@ -89,12 +63,13 @@
       is: 'pull-request-general-information',
       behaviors: [ToDateStringBehavior],
       properties: {
-        pr: Object,
+        comments: Array,
+        pullRequest: Object,
         owner: String,
         name: String
       },
       observers: [
-        '_fireAjax(pr)'
+        '_fireAjax(pullRequest)'
       ],
       _fireAjax: function() {
         this.$.ajaxComments.generateRequest();

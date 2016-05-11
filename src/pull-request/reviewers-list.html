@@ -1,0 +1,59 @@
+<dom-module id="reviewers-list">
+  <template>
+    <style>
+      :host {
+        display:flex;
+        flex-wrap: wrap;
+      }
+      .lgtm-true.false {
+        display: none;
+      }
+      iron-icon {
+        padding: 4px;
+        width:16px;
+        height:16px;
+        background-color: var(--primary-action-green);
+        border-radius: 13px;
+        margin-left: -13px;
+        margin-top: -13px;
+      }
+      .lgtm-true {
+        fill: var(--primary-background-color);
+      }
+      .reviewer {
+        -webkit-box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
+        border-radius: 9px;
+        width: 52px;
+        height: 52px;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        margin: 8px 8px;
+      }
+    </style>
+
+    <template is="dom-repeat" items="[[sortedReviewers]]" as="reviewer">
+      <div class="reviewer" style$="background-image: url([[reviewer.avatar_url]]); ">
+        <iron-icon class$="lgtm-true [[reviewer.lgtm]]", icon="icons:thumb-up"></iron-icon>
+      </div>
+    </template>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'reviewers-list',
+      properties: {
+        reviewers: Array,
+        sortedReviewers: {
+          type: Array,
+          computed: '_sortReviewers(reviewers)'
+        }
+      },
+      _sortReviewers(rs) {
+        return rs.sort(function(r1, r2) {
+          return r2.lgtm - r1.lgtm;
+        });
+      }
+    });
+  </script>
+</dom-module>
