@@ -83,6 +83,7 @@
         this.splice('chunks', e.model.index, 1);
       },
       _parseDiffToChunks: function(diff) {
+        this.chunks = [];
         // Diff chunks are separated by "diff --git" code blocks.
         // We therefore match up to the point that we encounter a new
         // "diff --git" by using a positive lookahead (?=).
