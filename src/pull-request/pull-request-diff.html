@@ -47,8 +47,8 @@
 
     <div class="diff-list">
       <template is="dom-repeat" items="[[chunks]]" as="chunk">
-        <pull-request-chunk class="draggable" chunk="[[chunk]]" title$="[[index]]" on-empty="_removeChunk">
-          <div class="title">[[index]]</div>
+        <pull-request-chunk class="draggable" chunk="[[chunk]]" title$="[[chunk.file]]" on-empty="_removeChunk">
+          <div class="title">[[item]]</div>
         </pull-request-chunk>
       </template>
     </div>
@@ -82,8 +82,8 @@
       _removeChunk: function(e) {
         this.splice('chunks', e.model.index, 1);
       },
-      _parseDiffToChunks: function(diff) {
-        this.chunks = [];
+      _parseDiffToChunks: (function() {
+        var ANYTHING = '(?:.|\n)+?';
         // Diff chunks are separated by "diff --git" code blocks.
         // We therefore match up to the point that we encounter a new
         // "diff --git" by using a positive lookahead (?=).
@@ -91,21 +91,46 @@
         // "." does not match multi-lines, so we have to also match on "\n"
         // Lastly the last "diff --git" block does not have a subsequent
         // block, so we have to match on "$".
-        var files = diff.match(/(diff --git(?:.|\n)+?(?:(?=diff --git)|$))/g);
-        for (var i = 0, l = files.length; i < l; i++) {
-          var file = {
-            diff: []
+        //
+        // [0] = full match
+        // [1] = from file name in format "--- a/FILE_NAME"
+        // [2] = to file name in format "+++ a/FILE_NAME"
+        // [3] = full changes as chunks
+        var DIFF_DELIMETER = 'diff --git';
+        var DIFF_HEADER = DIFF_DELIMETER + ANYTHING;
+        var DIFF_FILES = '\\-\\-\\- a\\/(.+)\n' +
+                         '\\+\\+\\+ b\\/(.+)\n'
+        var DIFF_EXPRESSION = '(?:' + DIFF_HEADER + DIFF_FILES + '(' + ANYTHING + ')(?:(?=' + DIFF_DELIMETER + ')|$))'
+        var DIFF_REGEX = new RegExp(DIFF_EXPRESSION, 'g')
+
+        // Changes in files are separated by "@@  line numbers @@"
+        // The same strategy as above is used, by using a positive lookahead
+        // for the same pattern.
+        //
+        // [0] = full match
+        // [1] = CHUNK_DELIMETER
+        // [2] = all changes matched by ANTYHING
+        var CHUNK_DELIMETER = '@@.+@@';
+        var CHUNK_EXPRESSION = '(' + CHUNK_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=' + CHUNK_DELIMETER + ')|$)';
+        var CHUNK_REGEX = new RegExp(CHUNK_EXPRESSION, 'g');
+
+        return function(diff) {
+          this.chunks = [];
+          var file, chunk;
+          while ((file = DIFF_REGEX.exec(diff)) !== null) {
+            var fileChunk = {
+              diff: []
+            }
+            while ((chunk = CHUNK_REGEX.exec(file[3])) !== null) {
+              fileChunk.diff.push({
+                file: 'from ' + file[1] + ' to ' + file[2] + ' ' + chunk[1],
+                changes: chunk[2]
+              });
+            }
+            this.unshift('chunks', fileChunk);
           }
-          // Changes in files are separated by "@@  line numbers @@"
-          // The same strategy as above is used, by using a positive lookahead
-          // for the same pattern.
-          var diffs = files[i].match(/(?:@@.+@@)((?:.|\n)+?)(?:(?=@@|$))/g);
-          for (var j = 0, diffsL = diffs.length; j < diffsL; j++) {
-            file.diff.push(diffs[j]);
-          }
-          this.unshift('chunks', file);
         }
-      }
+      })()
     });
   </script>
 </dom-module>

@@ -35,7 +35,7 @@
     <sortable-js group="chunk" draggable=".diff" on-remove="_diffRemoved">
       <template is="dom-repeat" items="[[chunk.diff]]">
         <div class="diff">
-          <pull-request-diff-highlight code="[[item]]"></pull-request-diff-highlight>
+          <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
         </div>
       </template>
     </sortable-js>

@@ -25,7 +25,7 @@
         background-color: #f1c0c0;
       }
     </style>
-
+    <span>[[file]]</span>
     <pre>
       <code id="output"></code>
     </pre>
@@ -39,7 +39,8 @@
         code: {
           type: String,
           observer: '_render'
-        }
+        },
+        file: String
       },
       attached: function() {
         this._render();
