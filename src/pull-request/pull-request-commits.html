@@ -1,0 +1,75 @@
+<link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="pull-request-commits-description.html">
+
+<dom-module id="pull-request-commits">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+      .icon{
+        display:flex;
+        width: 64px;
+        height: 64px;
+      }
+      .message{
+        display: flex;
+        white-space:pre-wrap;
+      }
+      .top-container {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 2px;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+      }
+      h4 {
+        white-space: none;
+      }
+      .message{
+        font-weight: bold;
+      }
+      .description{
+        white-space: pre;
+      }
+    </style>
+    <authenticated-ajax
+      id="ajaxComments"
+      refurl="[[pullRequest._links.commits.href]]"
+      handle-as="json"
+      per-page="50"
+      last-response="{{commits}}"></authenticated-ajax>
+      <template is="dom-repeat" items="{{commits}}" index-as="index">
+        <div class="top-container">
+          <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
+          <div class="container">
+            <span class="message">[[_split(item.commit.message)]]</span>
+            <pull-request-commits-description text="{{item.commit.message}}"></pull-request-commits-description>
+            <div>[[item.author.login]] committed [[toDateString(item.commit.committer.date)]] ago</div>
+          </div>
+        </div>
+      </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-commits',
+      behaviors: [ToDateStringBehavior],
+      properties: {
+        pullRequest: Object,
+        commits: Array
+      },
+      observers: [
+        '_fireAjax(pullRequest)'
+      ],
+      _fireAjax: function() {
+        this.$.ajaxComments.generateRequest();
+      },
+      _split: function(text) {
+        return text.split('\n\n')[0];
+      }
+    });
+  </script>
+</dom-module>
