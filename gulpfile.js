@@ -39,6 +39,6 @@ gulp.task('serve', function () {
 
   gulp.watch(['src/**/*.html'], reload);
   gulp.watch(['src/styles/**/*.css'], [reload]);
-  gulp.watch(['src/**/*.js'], ['jshint', reload]);
+  gulp.watch(['src/**/*.js'], [reload]);
   gulp.watch(['app/images/**/*'], reload);
 });
