@@ -8,6 +8,7 @@
 <link rel="import" href="../util/marked-github-element.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="reviewers-list.html">
+<link rel="import" href="pull-request-comments.html">
 
 
 <dom-module id="pull-request-general-information">
@@ -19,20 +20,18 @@
       .pr-text {
         flex:1;
       }
-      .pr-time {
-        text-align: right;
-      }
       .pr-topinfo {
         display:flex;
+        padding: 24px;
       }
       .pr-right-side {
         display:block;
       }
-      .markdown-html img {
-        max-width: 100%;
-      }
       reviewers-list {
         max-width: 300px;
+      }
+      pull-request-comments {
+        display: block;
       }
     </style>
     <authenticated-ajax
@@ -41,22 +40,16 @@
       handle-as="json"
       last-response="{{comments}}"></authenticated-ajax>
 
-    <div class="overview">
-      <div class="pr-topinfo">
-        <div class="pr-text">
-          <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
-        </div>
-        <div class="pr-right-side">
-          <p>[[toDateString(pullRequest.created_at)]] ago</p>
-          <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
-        </div>
+    <div class="pr-topinfo">
+      <div class="pr-text">
+        <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
       </div>
-      <h3>Comments:</h3>
-        <template is="dom-repeat" items="[[comments]]">
-          <pull-request-comment comment="[[item]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
-        </template>
-        <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
+      <div class="pr-right-side">
+        <p>[[toDateString(pullRequest.created_at)]] ago</p>
+        <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
+      </div>
     </div>
+    <pull-request-comments comments={{comments}} owner="[[owner]]" name="[[name]]"></pull-request-comments>
   </template>
   <script>
     Polymer({
