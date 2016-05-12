@@ -7,6 +7,7 @@
 <link rel="import" href="../util/to-date-string-behavior.html">
 <link rel="import" href="../util/marked-github-element.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="../list-items/tags-list.html">
 <link rel="import" href="reviewers-list.html">
 <link rel="import" href="pull-request-comments.html">
 
@@ -17,21 +18,70 @@
       :host {
         display: block;
       }
-      .pr-text {
-        flex:1;
-      }
-      .pr-topinfo {
-        display:flex;
-        padding: 24px;
-      }
-      .pr-right-side {
-        display:block;
-      }
-      reviewers-list {
-        max-width: 300px;
-      }
       pull-request-comments {
         display: block;
+      }
+      header {
+        padding: 1em;
+        background-color: var(--tertiary-background-color);
+      }
+      .sub-header {
+        height: 68px;
+        padding: 0.5em 1.5em;
+        border-bottom: solid 1px var(--secondary-background-color);
+      }
+      header > * {
+        vertical-align: middle;
+      }
+      list-item-label {
+        margin: 0;
+        font-size: 0.9em;
+        line-height: 1.4em;
+      }
+      .state {
+        font-weight: 600;
+        text-transform: capitalize;
+        margin-right: 1em;
+      }
+      .state.open {
+        --tag-color: {
+          background-color: var(--primary-action-green);
+        };
+      }
+      .branch {
+        font-family: 'Roboto Mono';
+        font-size: 0.8em;
+        font-weight: 300;
+        --tag-color: {
+          background-color: var(--anchor-color);
+        };
+      }
+      .base {
+        margin-right: 1em;
+      }
+      .time-open {
+        margin-right: 1em;
+      }
+      a.author {
+        font-weight: 600;
+        text-decoration: none;
+        color: var(--primary-text-color);
+      }
+      a.author:hover {
+        text-decoration: underline;;
+      }
+      .line-stats {
+        height: 68px;
+        width: 68px;
+        background-color: red;
+        float: right;
+      }
+      marked-github-element {
+        padding: 0 2em;
+        margin: 1em 0;
+      }
+      .sidebar {
+        width: 300px;
       }
     </style>
     <authenticated-ajax
@@ -40,14 +90,33 @@
       handle-as="json"
       last-response="{{comments}}"></authenticated-ajax>
 
-    <div class="pr-topinfo">
-      <div class="pr-text">
-        <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    <authenticated-ajax
+      id="ajaxIssue"
+      refurl="[[pullRequest._links.issue.href]]"
+      handle-as="json"
+      last-response="{{issue}}"></authenticated-ajax>
+
+    <header>
+      <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
+      <span><a class="author" href$=[[pullRequest.user.html_url]]>[[pullRequest.user.login]]</a>  wants to merge</span>
+      <list-item-label class="branch head" type="box">[[pullRequest.head.label]]</list-item-label>
+      <span>into</span>
+      <list-item-label class="branch base" type="box">[[pullRequest.base.label]]</list-item-label>
+      <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
+    </header>
+    <div class="sub-header">
+      <div class="line-stats">
+        Hier.
       </div>
-      <div class="pr-right-side">
-        <p>[[toDateString(pullRequest.created_at)]] ago</p>
-        <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
-      </div>
+      <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
+    </div>
+    <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    <div class="sidebar">
+      <tags-list>
+        <template is="dom-repeat" items="[[_getLabelNames(issue.labels)]]">
+          <li>[[item]]</li>
+        </template>
+      </tags-list>
     </div>
     <pull-request-comments comments={{comments}} owner="[[owner]]" name="[[name]]"></pull-request-comments>
   </template>
@@ -57,15 +126,18 @@
       behaviors: [ToDateStringBehavior],
       properties: {
         comments: Array,
+        issue: Object,
         pullRequest: Object,
         owner: String,
         name: String
       },
       observers: [
-        '_fireAjax(pullRequest)'
+        '_fireAjax(pullRequest)',
+        'updateStyles(pullRequest.state)'
       ],
       _fireAjax: function() {
         this.$.ajaxComments.generateRequest();
+        this.$.ajaxIssue.generateRequest();
       },
       _getReviewers: function(assignee) {
         if (!assignee) {
@@ -73,6 +145,15 @@
         }
         assignee.lgtm = Math.random() > 0.5 ? 'true' : 'false';
         return [assignee];
+      },
+      _getLabelNames: function(labels) {
+        if (!labels) {
+          return '';
+        }
+        console.log(labels);
+        return labels.map(function(label) {
+          return label.name;
+        });
       },
       _equals: function(one, other) {
         return one === other;
