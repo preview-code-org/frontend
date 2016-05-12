@@ -1,12 +1,23 @@
-<link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
-<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/prism-element/prism-highlighter.html">
+<link rel="import" href="../bower_components/prism-element/prism-style-import.html">
 <link rel="import" href="pull-request-diff.html">
 <link rel="import" href="pull-request-chunk.html">
 <link rel="import" href="pull-request-general-information.html">
+
+<script src="../bower_components/prism/components/prism-diff.min.js"></script>
+<script>
+// Match all lines that are not insertions or deletions
+Prism.languages.diff.other = /.+/m;
+// Additions and deletions can also be an empty line
+Prism.languages.diff.inserted = /^[+>].*$/m
+Prism.languages.diff.deleted = /^[-<].*$/m
+</script>
 
 <dom-module id="pull-request-page">
   <template>
@@ -88,6 +99,8 @@
         padding: 24px;
       }
     </style>
+
+    <prism-highlighter></prism-highlighter>
 
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
 

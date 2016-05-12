@@ -1,0 +1,64 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id='pull-request-diff-highlight'>
+  <template>
+    <style is="custom-style" include="prism-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      pre {
+        padding: 0;
+        margin: 0;
+        line-height: 10px;
+      }
+      pre span {
+        line-height: 16px;
+        width: 100%;
+        display: inline-block;
+      }
+      .token.inserted {
+        background-color: #c1e9c1;
+        color: inherit;
+      }
+      .deleted {
+        background-color: #f1c0c0;
+      }
+    </style>
+    <span>[[file]]</span>
+    <pre>
+      <code id="output"></code>
+    </pre>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'pull-request-diff-highlight',
+
+      properties: {
+        code: {
+          type: String,
+          observer: '_render'
+        },
+        file: String
+      },
+      attached: function() {
+        this._render();
+      },
+      _render: function() {
+        if (!this.isAttached) {
+          return;
+        }
+        this.async(function() {
+          Polymer.dom(this.$.output).innerHTML = this.highlight(this.code);
+        });
+      },
+      highlight: function(code) {
+        var event = this.fire('syntax-highlight', {code: code, lang: 'diff'});
+        return event.detail.code || code;
+      }
+    });
+  </script>
+
+
+</dom-module>

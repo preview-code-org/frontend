@@ -1,4 +1,9 @@
-<link rel="import" href="../../bower_components/Sortable/Sortable.html">
+<link rel="import" href="../bower_components/Sortable/Sortable.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="pull-request-diff-highlight.html">
+<link rel="import" href="pull-request-add-comments.html">
+<link rel="import" href="pull-request-comment.html">
 
 <dom-module id="pull-request-chunk">
   <template>
@@ -14,22 +19,23 @@
         overflow: hidden;
       }
       .diff {
-        height: 50px;
+        border-bottom: black 1px solid;
       }
       .title {
         height: 25px;
-        border-bottom: black 1px solid;
       }
       sortable-js {
         width: 100%;
         display: block;
-        height: 250px;
+        min-height: 25px;
       }
     </style>
     <content select=".title"></content>
-    <sortable-js group="chunk" draggable=".diff">
+    <sortable-js group="chunk" draggable=".diff" on-remove="_diffRemoved">
       <template is="dom-repeat" items="[[chunk.diff]]">
-        <div class="diff">[[item]]</div>
+        <div class="diff">
+          <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
+        </div>
       </template>
     </sortable-js>
     <iron-icon icon="icons:arrow-downward" class="toggle-comments-icon" on-tap="_toggleComments"></iron-icon>
@@ -57,6 +63,11 @@
           Sortable.create(diffs[i], {
             group: 'chunk'
           });
+        }
+      },
+      _diffRemoved: function() {
+        if (!this.chunk.diff.length) {
+          this.fire('empty');
         }
       },
       _toggleComments: function() {
