@@ -56,10 +56,7 @@
           background-color: var(--anchor-color);
         };
       }
-      .base {
-        margin-right: 1em;
-      }
-      .time-open {
+      .base, .time-open {
         margin-right: 1em;
       }
       a.author {
@@ -77,11 +74,20 @@
         float: right;
       }
       marked-github-element {
+        display: flex;
         padding: 0 2em;
         margin: 1em 0;
       }
       .sidebar {
-        width: 300px;
+        float: right;
+        margin: 1em 0;
+        padding: 0 2em;
+        border-left: solid 1px var(--secondary-background-color);
+      }
+      tags-list {
+        --tag-flex-direction: {
+          flex-direction: column;
+        }
       }
     </style>
     <authenticated-ajax
@@ -107,14 +113,14 @@
     <div class="sub-header">
       <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
     </div>
-    <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
     <div class="sidebar">
       <tags-list>
-        <template is="dom-repeat" items="[[_getLabelNames(issue.labels)]]">
-          <li>[[item]]</li>
+        <template is="dom-repeat" items="[[issue.labels]]">
+          <li>[[item.name]]</li>
         </template>
       </tags-list>
     </div>
+    <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
     <pull-request-comments comments={{comments}} owner="[[owner]]" name="[[name]]"></pull-request-comments>
   </template>
   <script>
@@ -130,6 +136,9 @@
       },
       observers: [
         '_fireAjax(pullRequest)',
+        // Because the PR state css class is set dynamically,
+        // and this class uses a mixin which is also evaluated dynamically,
+        // we need to manually trigger updating the styles.
         'updateStyles(pullRequest.state)'
       ],
       _fireAjax: function() {
@@ -142,15 +151,6 @@
         }
         assignee.lgtm = Math.random() > 0.5 ? 'true' : 'false';
         return [assignee];
-      },
-      _getLabelNames: function(labels) {
-        if (!labels) {
-          return '';
-        }
-        console.log(labels);
-        return labels.map(function(label) {
-          return label.name;
-        });
       },
       _equals: function(one, other) {
         return one === other;
