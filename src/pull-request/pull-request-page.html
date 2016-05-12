@@ -14,7 +14,8 @@
 <script>
 // Match all lines that are not insertions or deletions
 Prism.languages.diff.other = /.+/m;
-// Deletions can also be an empty line
+// Additions and deletions can also be an empty line
+Prism.languages.diff.inserted = /^[+>].*$/m
 Prism.languages.diff.deleted = /^[-<].*$/m
 </script>
 

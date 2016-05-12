@@ -100,7 +100,7 @@
         var DIFF_HEADER = DIFF_DELIMETER + ANYTHING;
         var DIFF_FILES = '\\-\\-\\- a\\/(.+)\n' +
                          '\\+\\+\\+ b\\/(.+)\n'
-        var DIFF_EXPRESSION = '(?:' + DIFF_HEADER + DIFF_FILES + '(' + ANYTHING + ')(?:(?=' + DIFF_DELIMETER + ')|$))'
+        var DIFF_EXPRESSION = '(?:' + DIFF_HEADER + DIFF_FILES + '(' + ANYTHING + ')(?:(?=\n' + DIFF_DELIMETER + ')|$))'
         var DIFF_REGEX = new RegExp(DIFF_EXPRESSION, 'g')
 
         // Changes in files are separated by "@@  line numbers @@"
@@ -111,7 +111,7 @@
         // [1] = CHUNK_DELIMETER
         // [2] = all changes matched by ANTYHING
         var CHUNK_DELIMETER = '@@.+@@';
-        var CHUNK_EXPRESSION = '(' + CHUNK_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=' + CHUNK_DELIMETER + ')|$)';
+        var CHUNK_EXPRESSION = '(' + CHUNK_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=\n' + CHUNK_DELIMETER + ')|$)';
         var CHUNK_REGEX = new RegExp(CHUNK_EXPRESSION, 'g');
 
         return function(diff) {
