@@ -105,9 +105,6 @@
       <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
     </header>
     <div class="sub-header">
-      <div class="line-stats">
-        Hier.
-      </div>
       <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
     </div>
     <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
