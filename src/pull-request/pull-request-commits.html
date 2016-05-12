@@ -1,5 +1,5 @@
 <link rel="import" href="../ajax/authenticated-ajax.html">
-<link rel="import" href="pull-request-commits-description.html">
+<link rel="import" href="../util/toggle-content.html">
 
 <dom-module id="pull-request-commits">
   <template>
@@ -7,6 +7,9 @@
       :host {
         display: flex;
         flex-direction: column;
+      }
+      [hidden] {
+        display: none !important;
       }
       .icon{
         display:flex;
@@ -32,8 +35,8 @@
       .message{
         font-weight: bold;
       }
-      .description{
-        white-space: pre;
+      pull-request-commits-description {
+        white-space:pre-line;
       }
     </style>
     <authenticated-ajax
@@ -46,8 +49,10 @@
         <div class="top-container">
           <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
           <div class="container">
-            <span class="message">[[_split(item.commit.message)]]</span>
-            <pull-request-commits-description text="{{item.commit.message}}"></pull-request-commits-description>
+            <span class="message">[[_getFirst(item.commit.message)]]</span>
+            <toggle-content hidden$="{{_empty(item.commit.message)}}">
+              [[_getLast(item.commit.message)]]
+            </toggle-content>
             <div>[[item.author.login]] committed [[toDateString(item.commit.committer.date)]] ago</div>
           </div>
         </div>
@@ -67,8 +72,14 @@
       _fireAjax: function() {
         this.$.ajaxComments.generateRequest();
       },
-      _split: function(text) {
+      _getFirst: function(text) {
         return text.split('\n\n')[0];
+      },
+      _getLast: function(text) {
+        return text.substring(text.indexOf('\n\n')+1);
+      },
+      _empty: function(text) {
+        return text.split('\n\n')[1] === undefined;
       }
     });
   </script>

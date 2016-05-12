@@ -1,0 +1,40 @@
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="toggle-content">
+  <template>
+    <style>
+      :host {
+        display: flex;
+      }
+      iron-icon {
+        width: 24px;
+        height: 24px;
+      }
+      .toggle-comments-icon {
+        transform: none;
+        transition: transform 0.2s linear 0s;
+      }
+      .toggle-comments-icon.false {
+        transform: rotate(0.5turn);
+      }
+    </style>
+    <iron-icon icon="icons:arrow-downward" class$="toggle-comments-icon [[showContent]]" on-tap="_toggleContent"></iron-icon>
+    <span hidden$="[[showContent]]">
+      <content></content>
+    </span>
+  </template>
+  <script>
+    Polymer({
+      is: 'toggle-content',
+      properties: {
+        showContent: {
+          type: Boolean,
+          value: true
+        }
+      },
+      _toggleContent: function() {
+        this.showContent = !this.showContent;
+      }
+    });
+  </script>
+</dom-module>
