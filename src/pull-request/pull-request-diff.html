@@ -1,14 +1,14 @@
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="pull-request-chunk.html">
+<link rel="import" href="../ajax/authenticated-ajax.html">
 
 <dom-module id="pull-request-diff">
   <template>
     <style>
       :host {
         display: flex;
-        width: 100%;
         flex-direction: column;
       }
       .overview {
@@ -30,6 +30,13 @@
       }
     </style>
 
+    <authenticated-ajax
+      id="ajaxDiff"
+      refurl="[[pullRequest._links.self.href]]"
+      handle-as="text"
+      headers='{"Accept": "application/vnd.github.VERSION.diff"}'
+      last-response="{{diff}}"></authenticated-ajax>
+
     <paper-toolbar justify="around">
       <div class="title">
       </div>
@@ -39,8 +46,8 @@
     </paper-toolbar>
 
     <div class="diff-list">
-      <template is="dom-repeat" items="[[pullRequest.chunks]]" as="chunk">
-        <pull-request-chunk class="draggable" chunk="[[chunk]]" title="[[index]]">
+      <template is="dom-repeat" items="[[chunks]]" as="chunk">
+        <pull-request-chunk class="draggable" chunk="[[chunk]]" title$="[[index]]" on-empty="_removeChunk">
           <div class="title">[[index]]</div>
         </pull-request-chunk>
       </template>
@@ -51,10 +58,52 @@
     Polymer({
       is: 'pull-request-diff',
       properties: {
-        pullRequest: Object
+        pullRequest: Object,
+        diff: {
+          type: String,
+          observer: '_parseDiffToChunks'
+        },
+        chunks: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        }
+      },
+      observers: [
+        '_fireAjax(pullRequest)'
+      ],
+      _fireAjax: function() {
+        this.$.ajaxDiff.generateRequest();
       },
       _addChunk: function() {
-        this.unshift('pullRequest.chunks', {});
+        this.unshift('chunks', {diff: []});
+      },
+      _removeChunk: function(e) {
+        this.splice('chunks', e.model.index, 1);
+      },
+      _parseDiffToChunks: function(diff) {
+        // Diff chunks are separated by "diff --git" code blocks.
+        // We therefore match up to the point that we encounter a new
+        // "diff --git" by using a positive lookahead (?=).
+        //
+        // "." does not match multi-lines, so we have to also match on "\n"
+        // Lastly the last "diff --git" block does not have a subsequent
+        // block, so we have to match on "$".
+        var files = diff.match(/(diff --git(?:.|\n)+?(?:(?=diff --git)|$))/g);
+        for (var i = 0, l = files.length; i < l; i++) {
+          var file = {
+            diff: []
+          }
+          // Changes in files are separated by "@@  line numbers @@"
+          // The same strategy as above is used, by using a positive lookahead
+          // for the same pattern.
+          var diffs = files[i].match(/(?:@@.+@@)((?:.|\n)+?)(?:(?=@@|$))/g);
+          for (var j = 0, diffsL = diffs.length; j < diffsL; j++) {
+            file.diff.push(diffs[j]);
+          }
+          this.unshift('chunks', file);
+        }
       }
     });
   </script>

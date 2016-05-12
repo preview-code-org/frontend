@@ -1,5 +1,4 @@
 <link rel="import" href="../bower_components/Sortable/Sortable.html">
-<!-- <link rel="import" href="../bower_components/prism-element/prism-highlighter.html"> -->
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 
 <link rel="import" href="pull-request-diff-highlight.html">
@@ -21,20 +20,19 @@
         overflow: hidden;
       }
       .diff {
-        height: 50px;
+        border-bottom: black 1px solid;
       }
       .title {
         height: 25px;
-        border-bottom: black 1px solid;
       }
       sortable-js {
         width: 100%;
         display: block;
-        height: 250px;
+        min-height: 25px;
       }
     </style>
     <content select=".title"></content>
-    <sortable-js group="chunk" draggable=".diff">
+    <sortable-js group="chunk" draggable=".diff" on-remove="_diffRemoved">
       <template is="dom-repeat" items="[[chunk.diff]]">
         <div class="diff">
           <pull-request-diff-highlight code="[[item]]"></pull-request-diff-highlight>
@@ -66,6 +64,11 @@
           Sortable.create(diffs[i], {
             group: 'chunk'
           });
+        }
+      },
+      _diffRemoved: function() {
+        if (!this.chunk.diff.length) {
+          this.fire('empty');
         }
       },
       _toggleComments: function() {
