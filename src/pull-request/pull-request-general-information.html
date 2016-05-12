@@ -49,7 +49,7 @@
         <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
       </div>
     </div>
-    <pull-request-comments comments={{comments}}></pull-request-comments>
+    <pull-request-comments comments={{comments}} owner="[[owner]]" name="[[name]]"></pull-request-comments>
   </template>
   <script>
     Polymer({

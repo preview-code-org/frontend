@@ -34,27 +34,15 @@
       marked-github-element {
         margin-left: 1em;
       }
-      :host::hover .options {
-        margin: -1em -1em -1em 0;
-      }
-      .options {
-        z-index: 1;
-        flex: 0;
-        display: block;
-        position: relative;
-        height: 100%;
-        width: 24px;
-        background-color: var(--secondary-action-red);
-      }
     </style>
     <header>
-      <img src$="[[comment.user.avatar_url]]" width="64px" height="64px" alt$="[[comment.user.login]]"/>
+      <img src$="[[avatarUrl]]" width="64px" height="64px" alt$="[[author]]"/>
       <div class="title">
-        <div class="owner">[[comment.user.login]]</div>
-        <div class="time">[[toDateString(comment.created_at)]] ago</div>
+        <div class="owner">[[author]]</div>
+        <div class="time">[[toDateString(date)]] ago</div>
       </div>
     </header>
-    <marked-github-element markdown="[[comment.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    <marked-github-element markdown="[[text]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
 
   </template>
   <script>
@@ -62,7 +50,10 @@
       is: 'pull-request-comment',
       behaviors: [ToDateStringBehavior],
       properties: {
-        comment: Object,
+        text: String,
+        author: String,
+        avatarUrl: String,
+        date: String,
         owner: String,
         name: String
       }

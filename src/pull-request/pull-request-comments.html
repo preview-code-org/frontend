@@ -11,7 +11,9 @@
     <preview-list hide-end-indicator>
       <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
       <template is="dom-repeat" items="[[comments]]">
-        <pull-request-comment comment="[[item]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
+        <pull-request-comment text="[[item.body]]"
+          author="[[item.user.login]]" avatar-url="[[item.user.avatar_url]]"
+          date="[[item.created_at]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
       </template>
     </preview-list>
   </template>
@@ -19,7 +21,9 @@
     Polymer({
       is: 'pull-request-comments',
       properties: {
-        comments: Array
+        comments: Array,
+        owner: String,
+        name: String
       }
     });
   </script>
