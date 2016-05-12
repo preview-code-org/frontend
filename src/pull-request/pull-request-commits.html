@@ -1,5 +1,6 @@
 <link rel="import" href="../ajax/authenticated-ajax.html">
-<link rel="import" href="../util/toggle-content.html">
+<link rel="import" href="../util/hide-content.html">
+<link rel="import" href="../util/marked-github-element.html">
 
 <dom-module id="pull-request-commits">
   <template>
@@ -11,32 +12,33 @@
       [hidden] {
         display: none !important;
       }
-      .icon{
-        display:flex;
+      .icon {
+        display: flex;
         width: 64px;
         height: 64px;
+        margin-right: 5px;
       }
-      .message{
-        display: flex;
-        white-space:pre-wrap;
+      .message {
+        font-weight: bold;
+        --commits: {
+          display: inline;
+        };
       }
       .top-container {
         display: flex;
         flex-direction: row;
         margin-bottom: 2px;
+        padding: 1em;
       }
-      .container {
-        display: flex;
-        flex-direction: column;
+      .commit-text {
+        --hide-content: {
+          display: inline;
+        };
       }
-      h4 {
-        white-space: none;
-      }
-      .message{
-        font-weight: bold;
-      }
-      pull-request-commits-description {
-        white-space:pre-line;
+      .commited {
+        margin-left: 1em;
+        margin-top: 1em;
+        margin-bottom: -1em;
       }
     </style>
     <authenticated-ajax
@@ -46,15 +48,16 @@
       per-page="50"
       last-response="{{commits}}"></authenticated-ajax>
       <template is="dom-repeat" items="{{commits}}" index-as="index">
+      <div class="commited"> [[item.author.login]] commited [[toDateString(item.commit.committer.date)]] ago: </div>
         <div class="top-container">
-          <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
-          <div class="container">
-            <span class="message">[[_getFirst(item.commit.message)]]</span>
-            <toggle-content hidden$="{{_empty(item.commit.message)}}">
-              [[_getLast(item.commit.message)]]
-            </toggle-content>
-            <div>[[item.author.login]] committed [[toDateString(item.commit.committer.date)]] ago</div>
+          <div class="right-column">
+            <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
           </div>
+        <div class="container">
+          <marked-github-element class="message" markdown="{{_getFirst(item.commit.message)}}" name="{{name}}" owner="{{owner}}"></marked-github-element>
+          <hide-content class="commit-text" hidden$="{{_empty(item.commit.message)}}">
+            <marked-github-element class="description" markdown="{{_getLast(item.commit.message)}}" name="{{name}}" owner="{{owner}}"></marked-github-element>
+          </hide-content>
         </div>
       </template>
   </template>
@@ -64,10 +67,12 @@
       behaviors: [ToDateStringBehavior],
       properties: {
         pullRequest: Object,
-        commits: Array
+        commits: Array,
+        owner: String,
+        name, String
       },
       observers: [
-        '_fireAjax(pullRequest)'
+        '_fireAjax(pullRequest)',
       ],
       _fireAjax: function() {
         this.$.ajaxComments.generateRequest();

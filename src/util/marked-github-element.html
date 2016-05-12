@@ -5,6 +5,7 @@
     <style>
       :host {
         display: block;
+        @apply(--commits);
         line-height: 1.4em;
       }
       img {
@@ -23,6 +24,9 @@
       }
       a:hover {
         text-decoration: underline;
+      }
+      .markdown-html, p {
+        @apply(--commits);
       }
     </style>
     <marked-element markdown="[[markdown]]" callback="[[parseMarkdown(owner, name)]]">
