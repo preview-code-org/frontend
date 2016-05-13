@@ -7,12 +7,9 @@
     }
     </style>
 
-    <h3>Comments:</h3>
     <preview-list hide-end-indicator>
-      <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
       <template is="dom-repeat" items="[[comments]]">
-        <pull-request-comment text="[[item.body]]"
-          author="[[item.user.login]]" avatar-url="[[item.user.avatar_url]]"
+        <pull-request-comment text="[[item.body]]" author="[[item.user]]"
           date="[[item.created_at]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
       </template>
     </preview-list>

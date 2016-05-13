@@ -6,17 +6,20 @@
 <link rel="import" href="pull-request-add-comments.html">
 <link rel="import" href="../util/to-date-string-behavior.html">
 <link rel="import" href="../util/marked-github-element.html">
+<link rel="import" href="../util/a-user.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="../list-items/tags-list.html">
 <link rel="import" href="reviewers-list.html">
 <link rel="import" href="pull-request-comments.html">
 
-
 <dom-module id="pull-request-general-information">
   <template>
     <style>
-      :host {
-        display: block;
+      .description {
+        overflow: hidden;
+        background-color: var(--primary-background-color);
+        border-radius: 1em;
+        margin-bottom: 1em;
       }
       pull-request-comments {
         display: block;
@@ -59,14 +62,6 @@
       .base, .time-open {
         margin-right: 1em;
       }
-      a.author {
-        font-weight: 600;
-        text-decoration: none;
-        color: var(--primary-text-color);
-      }
-      a.author:hover {
-        text-decoration: underline;;
-      }
       .line-stats {
         height: 68px;
         width: 68px;
@@ -102,25 +97,28 @@
       handle-as="json"
       last-response="{{issue}}"></authenticated-ajax>
 
-    <header>
-      <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
-      <span><a class="author" href$=[[pullRequest.user.html_url]]>[[pullRequest.user.login]]</a>  wants to merge</span>
-      <list-item-label class="branch head" type="box">[[pullRequest.head.label]]</list-item-label>
-      <span>into</span>
-      <list-item-label class="branch base" type="box">[[pullRequest.base.label]]</list-item-label>
-      <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
-    </header>
-    <div class="sub-header">
-      <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
+    <div class="description">
+      <header>
+        <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
+        <span><a-user user=[[pullRequest.user]]></a-user> wants to merge</span>
+        <list-item-label class="branch head" type="box">[[pullRequest.head.label]]</list-item-label>
+        <span>into</span>
+        <list-item-label class="branch base" type="box">[[pullRequest.base.label]]</list-item-label>
+        <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
+      </header>
+      <div class="sub-header">
+        <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
+      </div>
+      <div class="sidebar">
+        <tags-list>
+          <template is="dom-repeat" items="[[issue.labels]]">
+            <li>[[item.name]]</li>
+          </template>
+        </tags-list>
+      </div>
+      <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+      <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
     </div>
-    <div class="sidebar">
-      <tags-list>
-        <template is="dom-repeat" items="[[issue.labels]]">
-          <li>[[item.name]]</li>
-        </template>
-      </tags-list>
-    </div>
-    <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
     <pull-request-comments comments={{comments}} owner="[[owner]]" name="[[name]]"></pull-request-comments>
   </template>
   <script>

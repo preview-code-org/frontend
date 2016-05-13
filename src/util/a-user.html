@@ -1,0 +1,25 @@
+<dom-module id="a-user">
+  <template>
+    <style>
+      a.user {
+        font-weight: 600;
+        text-decoration: none;
+        color: var(--primary-text-color);
+      }
+      a.user:hover {
+        text-decoration: underline;
+      }
+    </style>
+
+    <a class="user" href$=[[user.html_url]]>[[user.login]]</a>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'a-user',
+      properties: {
+        user: Object
+      }
+    });
+  </script>
+</dom-module>
