@@ -8,7 +8,7 @@
     </style>
 
     <preview-list hide-end-indicator>
-      <template is="dom-repeat" items="[[comments]]">
+      <template is="dom-repeat" items="[[orderedComments]]">
         <pull-request-comment text="[[item.body]]" author="[[item.user]]"
           date="[[item.created_at]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
       </template>
@@ -19,8 +19,15 @@
       is: 'pull-request-comments',
       properties: {
         comments: Array,
+        orderedComments: {
+          type: Array,
+          computed: '_reverse(comments)'
+        },
         owner: String,
         name: String
+      },
+      _reverse: function(array) {
+        return array.reverse();
       }
     });
   </script>
