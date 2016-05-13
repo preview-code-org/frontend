@@ -10,22 +10,17 @@
       :host {
         display: flex;
         flex-direction: column;
-        border-radius: 1em;
-        background-color: var(--primary-background-color);
-      }
-      .overview {
-        max-width: 500px;
-      }
-      .description {
-        display: block;
       }
       .actions {
         margin-right: 15px;
       }
+      paper-toolbar {
+        border-radius: 1em;
+        --paper-toolbar-background: var(--primary-background-color);
+      }
       [icon='add'] {
         border-radius: 20px;
-        background-color: white;
-        color: var(--primary-color);
+        background-color: var(--primary-action-green);
       }
       .diff-list {
         overflow-y: auto;
@@ -57,8 +52,7 @@
 
     <div class="diff-list">
       <template is="dom-repeat" items="[[chunks]]" as="chunk">
-        <pull-request-chunk class="draggable" chunk="[[chunk]]" title$="[[chunk.file]]" on-empty="_removeChunk">
-          <div class="title">[[item]]</div>
+        <pull-request-chunk class="draggable" chunk="[[chunk]]" on-empty="_removeChunk">
         </pull-request-chunk>
       </template>
     </div>
