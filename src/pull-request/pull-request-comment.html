@@ -2,28 +2,30 @@
 <link rel="import" href="../list-items/list-item-label.html">
 <link rel="import" href="../util/to-date-string-behavior.html">
 <link rel="import" href="../util/marked-github-element.html">
+<link rel="import" href="../util/a-user.html">
 
 <dom-module id="pull-request-comment">
   <template>
     <style>
       :host {
-        overflow: hidden;
         display: flex;
-        padding: 1em;
         border-bottom: solid 1px var(--secondary-background-color);
+        padding: 1em 0;
       }
-      .title > div {
+      .title > * {
         line-height: 2em;
       }
       .time {
         color: var(--secondary-text-color);
-        font-size: 0.8em;
+        margin-left: 1em;
       }
+
       img {
+        flex-shrink: 0;
         -webkit-box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
         box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
         border-radius: 9px;
-        margin: 1em 0;
+        margin: 1em 2em 0 2em;
       }
       header {
         display: flex;
@@ -31,18 +33,20 @@
         align-items: center;
         min-width: 128px;
       }
-      marked-github-element {
-        margin-left: 1em;
+      .content {
+        border-radius: 1em;
+        background-color: var(--primary-background-color);
+        padding: 1em 2em;
       }
     </style>
-    <header>
-      <img src$="[[avatarUrl]]" width="64px" height="64px" alt$="[[author]]"/>
+    <img src$="[[author.avatar_url]]" width="64px" height="64px" alt$="[[author]]"/>
+    <div class="content">
       <div class="title">
-        <div class="owner">[[author]]</div>
-        <div class="time">[[toDateString(date)]] ago</div>
+        <a-user user="[[author]]"></a-user>
+        <list-item-label class="time" type="info" icon="device:access-time">[[toDateString(date)]] ago</list-item-label>
       </div>
-    </header>
-    <marked-github-element markdown="[[text]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+      <marked-github-element markdown="[[text]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    </div>
 
   </template>
   <script>
@@ -51,8 +55,7 @@
       behaviors: [ToDateStringBehavior],
       properties: {
         text: String,
-        author: String,
-        avatarUrl: String,
+        author: Object,
         date: String,
         owner: String,
         name: String
