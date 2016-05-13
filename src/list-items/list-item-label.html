@@ -29,10 +29,12 @@
         vertical-align: middle;
       }
       :host([type=box]) span {
-        color: var(--primary-background-color);
+        display: inline-block;
         padding: 3px 6px;
         border-radius: 6px;
-        background: var(--pr-status-color);
+        color: var(--primary-background-color);
+        background-color: var(--pr-status-color);
+        @apply(--tag-color);
       }
     </style>
 

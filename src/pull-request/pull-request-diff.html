@@ -28,6 +28,12 @@
       .diff-list {
         overflow-y: auto;
       }
+      .additions {
+        color: var(--addition-color);
+      }
+      .deletions {
+        color: var(--deletion-color);
+      }
     </style>
 
     <authenticated-ajax
@@ -39,6 +45,8 @@
 
     <paper-toolbar justify="around">
       <div class="title">
+        <span class="additions">+ [[additions]]</span>
+        <span class="deletions">- [[deletions]]</span>
       </div>
       <div class="actions">
         <paper-icon-button class="add-chunk-button" icon="add" on-tap="_addChunk"></paper-icon-button>
@@ -59,6 +67,14 @@
       is: 'pull-request-diff',
       properties: {
         pullRequest: Object,
+        additions: {
+          type: Number,
+          value: 0
+        },
+        deletions: {
+          type: Number,
+          value: 0
+        },
         diff: {
           type: String,
           observer: '_parseDiffToChunks'
@@ -116,12 +132,22 @@
 
         return function(diff) {
           this.chunks = [];
+          this.deletions = 0;
+          this.additions = 0;
           var file, chunk;
           while ((file = DIFF_REGEX.exec(diff)) !== null) {
             var fileChunk = {
               diff: []
             }
             while ((chunk = CHUNK_REGEX.exec(file[3])) !== null) {
+              var deletions = chunk[2].match(/\n\-/g);
+              if (deletions) {
+                this.deletions += deletions.length;
+              }
+              var additions = chunk[2].match(/\n\+/g);
+              if (additions) {
+                this.additions += additions.length;
+              }
               fileChunk.diff.push({
                 file: 'from ' + file[1] + ' to ' + file[2] + ' ' + chunk[1],
                 changes: chunk[2]
