@@ -6,11 +6,20 @@
     <style>
       :host {
         display: block;
+        margin: 1em 0;
+        border-radius: 8px;
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+      }
+      header {
+        background-color: var(--secondary-background-color);
+        padding: 0.5em;
       }
       pre {
         padding: 0;
         margin: 0;
         line-height: 10px;
+        padding: 1em;
       }
       pre span {
         line-height: 16px;
@@ -25,7 +34,10 @@
         background-color: var(--deletion-color);
       }
     </style>
-    <span>[[file]]</span>
+
+    <header>
+      [[fromFile]]
+    </header>
     <pre>
       <code id="output"></code>
     </pre>
@@ -40,7 +52,17 @@
           type: String,
           observer: '_render'
         },
-        file: String
+        file: {
+          type: String,
+          observer: '_setFromAndTo'
+        },
+        fromFile: String,
+        toFile: String
+      },
+      _setFromAndTo: function(f) {
+        var split = f.split(' ');
+        this.fromFile = split[1];
+        this.toFile = split[3];
       },
       attached: function() {
         this._render();

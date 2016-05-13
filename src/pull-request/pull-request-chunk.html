@@ -4,22 +4,26 @@
 <link rel="import" href="pull-request-diff-highlight.html">
 <link rel="import" href="pull-request-add-comments.html">
 <link rel="import" href="pull-request-comment.html">
+<link rel="import" href="../util/marked-github-element.html">
 
 <dom-module id="pull-request-chunk">
   <template>
     <style>
       :host {
-        display: block;
-        flex: auto;
-        flex-basis: 250px;
-        flex-grow: 0;
-        flex-shrink: 0;
-        border: black 1px solid;
-        margin: 5px;
         overflow: hidden;
+        display: block;
+        margin: 2em 0;
+        padding: 1em 2em;
+        border-radius: 1em;
+        background-color: var(--primary-background-color);
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
       }
-      .diff {
-        border-bottom: black 1px solid;
+      :host([collapsed]) {
+        height: 3em;
       }
       .title {
         height: 25px;
@@ -27,15 +31,38 @@
       sortable-js {
         width: 100%;
         display: block;
-        min-height: 25px;
+        min-height: 2em;
+      }
+      h2 {
+        margin-bottom: 1em;
+        margin-top: 0.5em;
+      }
+      header iron-icon {
+        fill: var(--pr-status-color);
+        float: right;
+        opacity: 0;
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+      }
+      header iron-icon:hover {
+        fill: var(--primary-action-red);
+      }
+      :host(:hover) header iron-icon {
+        opacity: 1;
       }
     </style>
-    <content select=".title"></content>
-    <sortable-js group="chunk" draggable=".diff" on-remove="_diffRemoved">
+    <header>
+      <iron-icon icon="icons:remove-circle-outline" on-tap="_toggleCollapse"></iron-icon>
+      <h2>[[title]]</h2>
+      <marked-github-element markdown="[[description]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    </header>
+    <sortable-js group="chunk" draggable="pull-request-diff-highlight" on-remove="_diffRemoved">
       <template is="dom-repeat" items="[[chunk.diff]]">
-        <div class="diff">
-          <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
-        </div>
+        <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
       </template>
     </sortable-js>
     <iron-icon icon="icons:arrow-downward" class="toggle-comments-icon" on-tap="_toggleComments"></iron-icon>
@@ -51,10 +78,21 @@
       is: 'pull-request-chunk',
       properties: {
         chunk: Object,
-        title: String,
+        title: {
+          type: String,
+          value: 'Untitled chunk'
+        },
+        description: {
+          type: String,
+          value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed turpis lectus, consequat nec feugiat ac, accumsan non dui. Fusce varius pretium sem ut vulputate. Ut sagittis tortor et elit faucibus cursus. Suspendisse imperdiet eros ac purus placerat ullamcorper. Nunc blandit interdum ante, sit amet malesuada enim vestibulum in. Morbi efficitur eget augue eget convallis. Vestibulum tempus, lorem non rhoncus ultricies, libero nisi tincidunt neque, in eleifend mi arcu vel felis. Vivamus ut rutrum nisl, at varius augue. Ut ligula massa, semper sit amet elit eu, molestie auctor risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris justo justo, varius vel pretium et, placerat id diam.'
+        },
         showComments: {
           type: Boolean,
           value: true
+        },
+        collapsed: {
+          type: Boolean,
+          reflectToAttribute: true
         }
       },
       attached: function() {
@@ -72,6 +110,9 @@
       },
       _toggleComments: function() {
         this.showComments = !this.showComments;
+      },
+      _toggleCollapse: function() {
+        this.collapsed = !this.collapsed;
       }
     });
   </script>
