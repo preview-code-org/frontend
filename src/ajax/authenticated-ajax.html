@@ -51,6 +51,10 @@
           computed: '_generateParams(shared)',
           observer: '_maybeFire'
         },
+        perPage: {
+          type: Number,
+          value: 10
+        },
         method: {
           type: String,
           value: 'GET'
@@ -165,7 +169,7 @@
         }
         return {
           "access_token": accessToken,
-          "per_page": 10
+          "per_page": this.perPage
         }
       },
       _setHeader: function(name, value) {

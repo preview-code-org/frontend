@@ -9,6 +9,7 @@
 <link rel="import" href="pull-request-diff.html">
 <link rel="import" href="pull-request-chunk.html">
 <link rel="import" href="pull-request-general-information.html">
+<link rel="import" href="pull-request-commits.html">
 
 <script src="../bower_components/prism/components/prism-diff.min.js"></script>
 <script>
@@ -118,6 +119,9 @@ Prism.languages.diff.deleted = /^[-<].*$/m
         <paper-tab data-route="diff">
           <a href$="[[route.prefix]]/diff">Changes</a>
         </paper-tab>
+        <paper-tab data-route="commits">
+          <a href$="[[route.prefix]]/commits">Commits</a>
+        </paper-tab>
       </paper-tabs>
     </div>
 
@@ -127,6 +131,8 @@ Prism.languages.diff.deleted = /^[-<].*$/m
       <pull-request-general-information data-route="overview" class="overview"
         pull-request="[[pr]]" owner="[[owner]]" name="[[name]]"></pull-request-general-information>
       <pull-request-diff data-route="diff" pull-request="[[pr]]"></pull-request-diff>
+      <pull-request-commits data-route="commits" pull-request="[[pr]]" owner="[[owner]]" name="[[name]]"></pull-request-commits>
+
       <span data-route="404">
         Oops you hit a 404!
         <a href="/">Head back home</a>
