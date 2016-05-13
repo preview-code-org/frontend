@@ -95,7 +95,23 @@ Prism.languages.diff.deleted = /^[-<].*$/m
         margin-bottom: 2em;
         overflow: hidden;
       }
+      iron-pages > * {
+        display: flex;
+        flex-direction: column;
+        border-radius: 1em;
+        background-color: var(--primary-background-color);
+      }
+      pull-request-diff {
+        padding: 24px;
+      }
     </style>
+
+    <authenticated-ajax
+      id="ajaxDiff"
+      refurl="[[pr._links.self.href]]"
+      handle-as="text"
+      headers='{"Accept": "application/vnd.github.VERSION.diff"}'
+      last-response="{{diff}}"></authenticated-ajax>
 
     <prism-highlighter></prism-highlighter>
 
@@ -127,7 +143,7 @@ Prism.languages.diff.deleted = /^[-<].*$/m
                 fallback-selection="404">
       <pull-request-general-information data-route="overview" class="overview"
         pull-request="[[pr]]" owner="[[owner]]" name="[[name]]"></pull-request-general-information>
-      <pull-request-diff data-route="diff" pull-request="[[pr]]"></pull-request-diff>
+      <pull-request-diff data-route="diff" diff="[[diff]]"></pull-request-diff>
       <pull-request-commits data-route="commits" pull-request="[[pr]]" owner="[[owner]]" name="[[name]]"></pull-request-commits>
 
       <span data-route="404">
@@ -144,14 +160,19 @@ Prism.languages.diff.deleted = /^[-<].*$/m
         owner: String,
         name: String,
         prid: String,
+        diff: String,
         pullrequests: Array,
         pr: {
           type: Object,
-          computed: '_getPR(pullrequests, prid)'
+          computed: '_getPR(pullrequests, prid)',
+          observer: '_fetchDiff'
         }
       },
       _addChunk: function() {
         this.unshift('pr.chunks', {});
+      },
+      _fetchDiff: function() {
+        this.$.ajaxDiff.generateRequest();
       },
       _getPR: function(pullrequests, prid) {
         var number = parseInt(prid);

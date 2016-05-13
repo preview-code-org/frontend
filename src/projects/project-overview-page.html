@@ -5,7 +5,8 @@
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="project-pull-requests.html">
-<link rel="import" href="project-activity.html">``
+<link rel="import" href="project-activity.html">
+<link rel="import" href="project-create-pull-request.html">
 
 <dom-module id="project-overview-page">
   <template>
@@ -106,7 +107,7 @@
           <a href$="[[route.prefix]]/activity">Activity</a>
         </paper-tab>
         <paper-tab data-route="pulls">
-          <a href$="[[route.prefix]]/pulls">Pull requests</a>
+          <a href$="[[route.prefix]]/createpull">Create pull request</a>
         </paper-tab>
       </paper-tabs>
     </div>
@@ -116,8 +117,8 @@
                 fallback-selection="404">
       <project-activity data-route="activity"></project-activity>
 
-      <project-pull-requests data-route="pulls" route="{{route}}"
-          owner="[[project.owner]]" name="[[project.name]]" pullrequests="[[pullrequests]]"></project-pull-requests>
+      <project-create-pull-request data-route="createpull"
+          owner="[[project.owner]]" name="[[project.name]]"></project-create-pull-request>
 
       <span data-route="404">
         Oops you hit a 404!

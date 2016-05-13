@@ -8,8 +8,15 @@
   <template>
     <style>
       :host {
-        display: flex;
-        flex-direction: column;
+        display: block;
+        /* 30px is 2 times a possible scrollbar */
+        max-width: calc(100vw - var(--pull-request-list-width) - var(--project-list-width) - 30px);
+      }
+      .overview {
+        max-width: 500px;
+      }
+      .description {
+        display: block;
       }
       .actions {
         margin-right: 15px;

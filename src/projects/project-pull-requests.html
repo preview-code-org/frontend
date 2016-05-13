@@ -37,7 +37,7 @@
         width: 100%;
       }
       preview-list {
-        width: 500px;
+        max-width: var(--pull-request-list-width);
         overflow-y: auto;
       }
       a {
@@ -76,6 +76,7 @@
           </paper-menu>
         </paper-dropdown-menu>
       </div>
+      <a href$="[[route.prefix]]/createpull"></a>
       <search-box value="{{search}}"></search-box>
       <template is="dom-repeat" items="[[_filter(pullrequests, status, search)]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
