@@ -10,7 +10,6 @@
 <link rel="import" href="search-behavior.html">
 <link rel="import" href="search-box.html">
 
-
 <dom-module id="projects-page">
   <template>
     <style>
@@ -59,6 +58,12 @@
         -o-transition: flex 0.5s ease;
         transition: flex 0.5s ease;
       }
+      preview-list.true {
+        -webkit-transition: flex 0.5s ease;
+        -moz-transition: flex 0.5s ease;
+        -o-transition: flex 0.5s ease;
+        transition: flex 0.5s ease;
+      }
       search-box {
         margin-top:19.920px;
       }
@@ -73,7 +78,7 @@
       last-response="{{pullrequests}}"></authenticated-ajax>
     <div class="container">
       <preview-list class$="[[shouldShowProjects]]">
-        <search-box value={{search}}></search-box>
+        <search-box value="{{search}}"></search-box>
         <template is="dom-repeat" items="[[_search(projects,search,'project')]]" as="project">
           <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
             <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
@@ -83,7 +88,9 @@
       </preview-list>
       <div class="container">
         <project-pull-requests hidden$="[[!projectTitle.name]]" route="{{nameTail}}" tabindex="0"
-                               owner="[[projectTitle.owner]]" name="[[projectTitle.name]]" pullrequests="[[pullrequests]]"></project-pull-requests>
+                               owner="[[projectTitle.owner]]" name="[[projectTitle.name]]" pullrequests="[[pullrequests]]"
+                               project-button-clicked="{{projectButtonClicked}}"
+                               hide-project-button="[[pr.pr]]"></project-pull-requests>
 
         <iron-pages class="project"
                     selected="[[_getCurrentView(projectTitle, pr)]]"
@@ -110,9 +117,13 @@
           type: Object,
           notify: true
         },
+        projectButtonClicked: {
+          type: Boolean,
+          value: false,
+        },
         shouldShowProjects: {
           type: String,
-          computed: '_shouldShowProjects(projectTitle, pr)'
+          computed: '_shouldShowProjects(projectTitle, pr, projectButtonClicked)'
         },
         projects: {
           type: Array,
@@ -197,8 +208,8 @@
         }
         return 'pr';
       },
-      _shouldShowProjects: function(name, pr) {
-        return this._getCurrentView(name, pr) !== 'pr' ? 'true' : 'false';
+      _shouldShowProjects: function(name, pr, clicked) {
+        return (this._getCurrentView(name, pr) !== 'pr' || clicked) ? 'true' : 'false';
       }
     });
   </script>
