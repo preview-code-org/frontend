@@ -5,10 +5,14 @@
         font-family: 'Roboto Mono';
         font-size: 0.8em;
         font-weight: 300;
-        --tag-color: var(--anchor-color);
       }
       :host(:hover) {
         cursor: pointer;
+      }
+      list-item-label {
+        --tag-color: var(--anchor-color);
+      }
+      :host(:hover) list-item-label {
         --tag-color: red;
       }
     </style>
@@ -26,6 +30,16 @@
           value: false,
           reflectToAttribute: true
         }
+      },
+      attached: function() {
+        // On hover we must dynamically update our variables
+        // See https://www.polymer-project.org/1.0/docs/devguide/styling.html#dynamism-limitations
+        this.addEventListener('mouseover', function() {
+          this.updateStyles();
+        });
+        this.addEventListener('mouseout', function() {
+          this.updateStyles();
+        });
       }
     });
   </script>
