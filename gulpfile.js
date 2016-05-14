@@ -22,10 +22,10 @@ var serve = function(baseDir) {
         }
       }
     },
-    // Run as an https by uncommenting 'https: true'
-    // Note: this uses an unsigned certificate which on first access
-    //       will present a certificate warning in the browser.
-    // https: true,
+    https: {
+      key: 'certificate/server.key',
+      cert: 'certificate/server.crt'
+    },
     server: {
       baseDir: baseDir,
       middleware: [historyApiFallback(), proxy(proxyOptions)]
