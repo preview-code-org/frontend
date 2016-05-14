@@ -47,29 +47,23 @@
       preview-list {
         overflow-y: auto;
         overflow-x: hidden;
+        -webkit-transition: flex 0.5s ease;
+        -moz-transition: flex 0.5s ease;
+        -o-transition: flex 0.5s ease;
+        transition: flex 0.5s ease;
       }
       a {
         color: inherit;
       }
       preview-list.false {
         flex: 0 0;
-        -webkit-transition: flex 0.5s ease;
-        -moz-transition: flex 0.5s ease;
-        -o-transition: flex 0.5s ease;
-        transition: flex 0.5s ease;
-      }
-      preview-list.true {
-        -webkit-transition: flex 0.5s ease;
-        -moz-transition: flex 0.5s ease;
-        -o-transition: flex 0.5s ease;
-        transition: flex 0.5s ease;
       }
       search-box {
         margin-top:19.920px;
       }
     </style>
-    <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}"></carbon-route>
-    <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{prTail}}"></carbon-route>
+    <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
+    <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{prTail}}" active="{{pullRequestSelected}}"></carbon-route>
 
     <authenticated-ajax
       id="ajaxPullRequest"
@@ -87,13 +81,13 @@
         </template>
       </preview-list>
       <div class="container">
-        <project-pull-requests hidden$="[[!projectTitle.name]]" route="{{nameTail}}" tabindex="0"
+        <project-pull-requests hidden$="[[!projectSelected]]" route="{{nameTail}}" tabindex="0"
                                owner="[[projectTitle.owner]]" name="[[projectTitle.name]]" pullrequests="[[pullrequests]]"
                                project-button-clicked="{{projectButtonClicked}}"
-                               hide-project-button="[[pr.pr]]"></project-pull-requests>
+                               hide-project-button="[[pullRequestSelected]]"></project-pull-requests>
 
         <iron-pages class="project"
-                    selected="[[_getCurrentView(projectTitle, pr)]]"
+                    selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
                     attr-for-selected="data-route">
             <no-project-selected data-route="no-selected"></no-project-selected>
             <project-overview-page data-route="overview" tabindex="0"
@@ -123,7 +117,7 @@
         },
         shouldShowProjects: {
           type: String,
-          computed: '_shouldShowProjects(projectTitle, pr, projectButtonClicked)'
+          computed: '_shouldShowProjects(projectSelected, pullRequestSelected, projectButtonClicked)'
         },
         projects: {
           type: Array,
@@ -200,16 +194,16 @@
       _isActiveProject: function(name, project, activeProject) {
         return !!name && project === activeProject;
       },
-      _getCurrentView: function(name, pr) {
-        if (!name.name) {
+      _getCurrentView: function(projectSelected, pullRequestSelected) {
+        if (!projectSelected) {
           return 'no-selected';
-        } else if (!pr.pr) {
+        } else if (!pullRequestSelected) {
           return 'overview';
         }
         return 'pr';
       },
-      _shouldShowProjects: function(name, pr, clicked) {
-        return (this._getCurrentView(name, pr) !== 'pr' || clicked) ? 'true' : 'false';
+      _shouldShowProjects: function(projectSelected, pullRequestSelected, clicked) {
+        return (!pullRequestSelected || clicked) ? 'true' : 'false';
       }
     });
   </script>
