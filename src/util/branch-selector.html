@@ -18,6 +18,9 @@
       :host(:focus) > branch-tag {
         --tag-color: var(--anchor-hover-color);
       }
+      [hidden] {
+        display: none !important;
+      }
       branch-tag:hover {
         cursor: pointer;
       }
@@ -74,15 +77,17 @@
       }
     </style>
 
-    <branch-tag branch="[[selected]]" on-tap="_toggleSelectionMenu"></branch-tag>
+    <branch-tag branch="[[selected]]"></branch-tag>
     <div class="popup-menu" hidden="[[hideSelectionMenu]]">
       <header>
         <h1>Select a branch</h1>
-        <paper-input class=".search" tabindex=0 label="Filter by name" value="{{filter}}"></paper-input>
+        <paper-input class=".search" tabindex="0" label="Filter by name" value="{{filter}}"></paper-input>
       </header>
       <iron-selector attr-for-selected="branch" selected="{{selected}}">
-        <template is="dom-repeat" items="[[_filter(branches, filter)]]" as="branch">
-          <div class="branch" branch="[[branch]]">[[branch]]</div>
+        <template is="dom-repeat" items="[[branches]]" as="branch">
+          <div class="branch" branch="[[branch]]" tabindex="0"
+               hidden$="[[_filter(branch, filter)]]"
+               on-tap="_toggleSelectionMenu" on-keydown="_selectBranch">[[branch]]</div>
         </template>
       </iron-selector>
     </div>
@@ -101,32 +106,33 @@
       },
       attached: function() {
         this.addEventListener('focus', function() {
+          this.hideSelectionMenu = false;
           this.updateStyles();
         })
         this.addEventListener('blur', function() {
-          console.log("blur");
           this.hideSelectionMenu = true;
           this.updateStyles();
         });
-        this.addEventListener('iron-select', function() {
-          this.blur();
-        })
       },
-      _filter: function(branches, filter) {
+      _filter: function(branch, filter) {
         if (filter === '') {
-          return branches;
-        } else {
-          return branches.filter(function(b) {
-            return this.filter === '' || b.search(filter) >= 0;
-          });
+          return false;
         }
+        return branch.search(filter) < 0;
       },
       _toggleSelectionMenu: function() {
         this.hideSelectionMenu = !this.hideSelectionMenu;
         if (this.hideSelectionMenu) {
           this.blur();
+          this.fire('selected');
         } else {
           this.$$('paper-input').focus();
+        }
+      },
+      _selectBranch: function(e) {
+        if (e.keyCode === 13) {
+          this.selected = e.model.branch;
+          this._toggleSelectionMenu();
         }
       }
     });

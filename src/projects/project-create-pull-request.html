@@ -84,11 +84,14 @@
       ></authenticated-ajax>
 
     <div class="selectBranches">
-      Merge into <branch-selector tabindex=0 branches="[[branchNames]]" selected="{{baseBranch}}"></branch-selector>from <branch-selector tabindex=0 branches="[[branchNames]]" selected="<select branch>"</select>"></branch-selector>
+      Merge into
+      <branch-selector tabindex="0" branches="[[branchNames]]" selected="{{baseBranch}}" on-selected="_selectHeadBranch"></branch-selector>
+      from
+      <branch-selector id="headBranch" tabindex="0" branches="[[branchNames]]" selected="{{headBranch}}" on-selected="_selectTitleInput"></branch-selector>
     </div>
 
     <div class="description">
-      <paper-input class="title" label="Enter a title" value="{{title}}"></paper-input>
+      <paper-input id="title" class="title" label="Enter a title" value="{{title}}"></paper-input>
       <markdown-input label="Enter a description for your pull request. Markdown is supported." owner="[[owner]]" name="[[name]]"></markdown-input>
     </div>
 <!--
@@ -119,7 +122,10 @@
           type: String,
           value: 'master'
         },
-        headBranch: String,
+        headBranch: {
+          type: String,
+          value: '<select branch>'
+        },
         branchNames: {
           type: Array,
           computed: '_branchNames(branches)'
@@ -133,13 +139,21 @@
         this.$.ajaxBranches.generateRequest();
         this.$.ajaxCollaborators.generateRequest();
       },
-      _fetchDiff: function() {
-        this.$.ajaxDiff.generateRequest();
+      _fetchDiff: function(baseBranch, headBranch) {
+        if (headBranch && headBranch !== '<select branch>') {
+          this.$.ajaxDiff.generateRequest();
+        }
       },
       _branchNames: function(branches) {
         return branches.map(function(b) {
           return b.name;
         });
+      },
+      _selectHeadBranch: function() {
+        this.$.headBranch.focus();
+      },
+      _selectTitleInput: function() {
+        this.$.title.focus();
       }
     });
   </script>
