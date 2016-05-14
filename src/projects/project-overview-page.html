@@ -79,7 +79,7 @@
         width: 75%;
         background-color: var(--primary-background-color);
         margin: 0 auto;
-        border-radius: 1em;
+        /*border-radius: 1em;*/
       }
       project-pull-requests {
         margin-bottom: 2em;
@@ -116,7 +116,6 @@
                 attr-for-selected="data-route"
                 fallback-selection="404">
       <project-activity data-route="activity"></project-activity>
-
       <project-create-pull-request data-route="createpull"
           owner="[[project.owner]]" name="[[project.name]]"></project-create-pull-request>
 

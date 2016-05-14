@@ -1,3 +1,5 @@
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../list-items/list-item-label.html">
 <dom-module id="branch-tag">
   <template>
     <style>
@@ -5,41 +7,18 @@
         font-family: 'Roboto Mono';
         font-size: 0.8em;
         font-weight: 300;
-      }
-      :host(:hover) {
-        cursor: pointer;
-      }
-      list-item-label {
         --tag-color: var(--anchor-color);
       }
-      :host(:hover) list-item-label {
-        --tag-color: red;
-      }
     </style>
-
     <list-item-label type="box">
-      <content></content>
+      [[branch]]
     </list-item-label>
   </template>
   <script>
     Polymer({
       is: 'branch-tag',
       properties: {
-        selectable: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        }
-      },
-      attached: function() {
-        // On hover we must dynamically update our variables
-        // See https://www.polymer-project.org/1.0/docs/devguide/styling.html#dynamism-limitations
-        this.addEventListener('mouseover', function() {
-          this.updateStyles();
-        });
-        this.addEventListener('mouseout', function() {
-          this.updateStyles();
-        });
+        branch: String
       }
     });
   </script>

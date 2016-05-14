@@ -93,9 +93,9 @@
       <header>
         <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
         <span><a-user user=[[pullRequest.user]]></a-user> wants to merge</span>
-        <branch-tag>[[pullRequest.head.label]]</branch-tag>
+        <branch-tag branch="[[pullRequest.head.label]]"></branch-tag>
         <span>into</span>
-        <branch-tag class="head">[[pullRequest.base.label]]</branch-tag>
+        <branch-tag class="head" branch="[[pullRequest.base.label]]"></branch-tag>
         <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
       </header>
       <div class="sub-header">

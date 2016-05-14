@@ -6,7 +6,8 @@
 <link rel="import" href="../bower_components/prism-element/prism-highlighter.html">
 <link rel="import" href="../bower_components/prism-element/prism-style-import.html">
 <link rel="import" href="../util/marked-github-element.html">
-<link rel="import" href="../util/branch-tag.html">
+<link rel="import" href="../util/branch-selector.html">
+<link rel="import" href="../util/markdown-input.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="../pull-request/pull-request-diff.html">
 
@@ -15,10 +16,47 @@
     <style>
       :host {
         display: block;
-        padding: 1em;
       }
-      .selectBranches {
-        padding: 1em;
+      .selectBranches,
+      .description {
+        padding: 2em 2em;
+        border-bottom: solid 1px var(--secondary-background-color);
+      }
+      .description {
+      }
+
+      .selectBranches::before {
+        content: "1";
+      }
+      .description::before {
+        content: "2";
+      }
+      .selectBranches::before,
+      .description::before {
+        font-weight: 800;
+        font-size: 3em;
+        color: var(--primary-background-color);
+        position: absolute;
+        margin-left: -1.5em;
+        margin-top: -0.25em;
+      }
+
+      .title {
+        --paper-input-container: {
+          padding: 0 0 1em 0;
+        };
+        --paper-input-container-input: {
+          font-size: 2em;
+        };
+        --paper-input-container-label: {
+          font-size: 2em;
+          color: var(--secondary-text-color);
+        };
+        --paper-input-container-label-floating: {
+          font-size: 1em;
+        }
+        --paper-input-container-color: var(--secondary-background-color);
+        --paper-input-container-focus-color: var(--anchor-color);
       }
     </style>
     <authenticated-ajax
@@ -46,31 +84,15 @@
       ></authenticated-ajax>
 
     <div class="selectBranches">
-      Merge into <branch-tag selectable>{{baseBranch}}</branch-tag> from
-      <!-- <branch-tag selectable>{{headBranch}}</branch-tag> -->
+      Merge into <branch-selector tabindex=0 branches="[[branchNames]]" selected="{{baseBranch}}"></branch-selector>from <branch-selector tabindex=0 branches="[[branchNames]]" selected="<select branch>"</select>"></branch-selector>
+    </div>
+
+    <div class="description">
+      <paper-input class="title" label="Enter a title" value="{{title}}"></paper-input>
+      <markdown-input label="Enter a description for your pull request. Markdown is supported." owner="[[owner]]" name="[[name]]"></markdown-input>
     </div>
 <!--
-    <header>
-      <span>Merge into</span>
 
-      <paper-dropdown-menu label="base: [[baseBranch]]" value="{{baseBranch}}" no-label-float>
-        <paper-menu class="dropdown-content">
-          <template is="dom-repeat" items="[[branches]]">
-            <paper-item>[[item.name]]</paper-item>
-          </template>
-        </paper-menu>
-      </paper-dropdown-menu>
-
-      <span>from</span>
-
-      <paper-dropdown-menu label="head: [[headBranch]]" value="{{headBranch}}" no-label-float>
-        <paper-menu class="dropdown-content">
-          <template is="dom-repeat" items="[[branches]]">
-            <paper-item>[[item.name]]</paper-item>
-          </template>
-        </paper-menu>
-      </paper-dropdown-menu>
-    </header>
     <div>
       Select multiple reviewers:
 
@@ -81,16 +103,8 @@
       </paper-menu>
 
       <paper-button>Create pull request</paper-button>
-    </div>
-    <div>
-      Title:
-      <paper-input value="{{title}}"></paper-input>
-      <marked-github-element markdown="[[title]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    </div>\
 
-      Description:
-      <paper-textarea value="{{description}}"></paper-textarea>
-      <marked-github-element markdown="[[description]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
-    </div>
 
     <prism-highlighter></prism-highlighter>
     <pull-request-diff data-route="diff" diff="[[diff]]"></pull-request-diff> -->
@@ -105,7 +119,11 @@
           type: String,
           value: 'master'
         },
-        headBranch: String
+        headBranch: String,
+        branchNames: {
+          type: Array,
+          computed: '_branchNames(branches)'
+        }
       },
       observers: [
         '_fetchBranchesAndCollaborators(owner, name)',
@@ -117,6 +135,11 @@
       },
       _fetchDiff: function() {
         this.$.ajaxDiff.generateRequest();
+      },
+      _branchNames: function(branches) {
+        return branches.map(function(b) {
+          return b.name;
+        });
       }
     });
   </script>

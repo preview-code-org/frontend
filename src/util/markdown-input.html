@@ -1,0 +1,53 @@
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<dom-module id="markdown-input">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      paper-textarea {
+        --paper-input-container: {
+          padding: 0 0 1em 0;
+        };
+        --paper-input-container-label: {
+          color: var(--secondary-text-color);
+        };
+        --paper-input-container-color: var(--secondary-background-color);
+        --paper-input-container-focus-color: var(--anchor-color);
+      }
+      paper-toggle-button {
+        margin-top: 1em;
+        --paper-toggle-button-checked-bar-color:  var(--primary-action-green);
+        --paper-toggle-button-checked-button-color:  var(--primary-action-green);
+        --paper-toggle-button-checked-ink-color: var(--primary-action-green);
+      }
+      marked-github-element {
+        margin-top: 16px;
+        min-height: 40px;
+      }
+    </style>
+
+    <paper-textarea hidden="[[showPreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
+    <marked-github-element hidden="[[!showPreview]]" markdown="[[markdown]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    <paper-toggle-button active="{{showPreview}}">Toggle Preview</paper-toggle-button>
+  </template>
+  <script>
+    Polymer({
+      is: 'markdown-input',
+      properties: {
+        owner: String,
+        name: String,
+        markdown: String,
+        label: String,
+        showPreview: {
+          type: Boolean,
+          value: false
+        }
+      }
+    });
+  </script>
+</dom-module>
