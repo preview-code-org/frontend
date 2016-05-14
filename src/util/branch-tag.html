@@ -1,0 +1,32 @@
+<dom-module id="branch-tag">
+  <template>
+    <style>
+      :host {
+        font-family: 'Roboto Mono';
+        font-size: 0.8em;
+        font-weight: 300;
+        --tag-color: var(--anchor-color);
+      }
+      :host(:hover) {
+        cursor: pointer;
+        --tag-color: red;
+      }
+    </style>
+
+    <list-item-label type="box">
+      <content></content>
+    </list-item-label>
+  </template>
+  <script>
+    Polymer({
+      is: 'branch-tag',
+      properties: {
+        selectable: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        }
+      }
+    });
+  </script>
+</dom-module>

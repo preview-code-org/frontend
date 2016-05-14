@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/prism-element/prism-highlighter.html">
 <link rel="import" href="../bower_components/prism-element/prism-style-import.html">
 <link rel="import" href="../util/marked-github-element.html">
+<link rel="import" href="../util/branch-tag.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="../pull-request/pull-request-diff.html">
 
@@ -14,24 +15,10 @@
     <style>
       :host {
         display: block;
+        padding: 1em;
       }
-      span {
-        margin: 0 10px;
-      }
-      .reviewers-list {
-        display: inline-block;
-        height: 100px;
-        width: 200px;
-        overflow-y: auto;
-      }
-      .reviewers-list paper-item {
-        height: 25px;
-        min-height: 25px;
-        --paper-item-selected: {
-          opacity: 0.5;
-          background-color: #555;
-          color: white;
-        };
+      .selectBranches {
+        padding: 1em;
       }
     </style>
     <authenticated-ajax
@@ -58,6 +45,11 @@
       last-response="{{diff}}"
       ></authenticated-ajax>
 
+    <div class="selectBranches">
+      Merge into <branch-tag selectable>{{baseBranch}}</branch-tag> from
+      <!-- <branch-tag selectable>{{headBranch}}</branch-tag> -->
+    </div>
+<!--
     <header>
       <span>Merge into</span>
 
@@ -101,7 +93,7 @@
     </div>
 
     <prism-highlighter></prism-highlighter>
-    <pull-request-diff data-route="diff" diff="[[diff]]"></pull-request-diff>
+    <pull-request-diff data-route="diff" diff="[[diff]]"></pull-request-diff> -->
   </template>
   <script>
     Polymer({
