@@ -1,0 +1,71 @@
+<link rel="import" href="../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
+
+<dom-module id="project-create-pull-request-description">
+  <template>
+    <style>
+      :host {
+        display: none;
+        padding: 2em 2em;
+        border-bottom: solid 1px var(--secondary-background-color);
+        background-color: var(--primary-background-color);
+      }
+      .title {
+        --paper-input-container: {
+          padding: 0 0 1em 0;
+        };
+        --paper-input-container-input: {
+          font-size: 2em;
+        };
+        --paper-input-container-label: {
+          font-size: 2em;
+          color: var(--secondary-text-color);
+        };
+        --paper-input-container-label-floating: {
+          font-size: 1em;
+        }
+        --paper-input-container-color: var(--secondary-background-color);
+        --paper-input-container-focus-color: var(--anchor-color);
+      }
+    </style>
+
+    <paper-input class="title" label="Enter a title" value="{{title}}"></paper-input>
+    <markdown-input
+      label="Enter a description for your pull request. Markdown is supported."
+      owner="[[owner]]"
+      name="[[name]]"
+      markdown="{{description}}"></markdown-input>
+  </template>
+  <script>
+    Polymer({
+      is: 'project-create-pull-request-description',
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+      properties: {
+        shown: {
+          type: Boolean,
+          value: false
+        },
+        title: String,
+        description: String,
+        animationConfig: {
+         type: Object,
+         value: function() {
+           return {
+             'entry': [{
+               name: 'fade-in-animation',
+               node: this
+             }]
+           }
+         }
+       }
+     },
+    show: function() {
+      this.shown = true;
+      this.style.display = 'block';
+      this.playAnimation('entry');
+    }
+    });
+  </script>
+</dom-module>

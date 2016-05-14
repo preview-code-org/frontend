@@ -10,6 +10,7 @@
 <link rel="import" href="../util/markdown-input.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="../pull-request/pull-request-diff.html">
+<link rel="import" href="project-create-pull-request-description.html">
 
 <dom-module id="project-create-pull-request">
   <template>
@@ -17,46 +18,10 @@
       :host {
         display: block;
       }
-      .selectBranches,
-      .description {
+      .selectBranches {
+        background-color: var(--primary-background-color);
         padding: 2em 2em;
         border-bottom: solid 1px var(--secondary-background-color);
-      }
-      .description {
-      }
-
-      .selectBranches::before {
-        content: "1";
-      }
-      .description::before {
-        content: "2";
-      }
-      .selectBranches::before,
-      .description::before {
-        font-weight: 800;
-        font-size: 3em;
-        color: var(--primary-background-color);
-        position: absolute;
-        margin-left: -1.5em;
-        margin-top: -0.25em;
-      }
-
-      .title {
-        --paper-input-container: {
-          padding: 0 0 1em 0;
-        };
-        --paper-input-container-input: {
-          font-size: 2em;
-        };
-        --paper-input-container-label: {
-          font-size: 2em;
-          color: var(--secondary-text-color);
-        };
-        --paper-input-container-label-floating: {
-          font-size: 1em;
-        }
-        --paper-input-container-color: var(--secondary-background-color);
-        --paper-input-container-focus-color: var(--anchor-color);
       }
     </style>
     <authenticated-ajax
@@ -85,32 +50,17 @@
 
     <div class="selectBranches">
       Merge into
-      <branch-selector tabindex="0" branches="[[branchNames]]" selected="{{baseBranch}}" on-selected="_selectHeadBranch"></branch-selector>
-      from
+      <branch-selector tabindex="0" branches="[[branchNames]]" selected="{{baseBranch}}" on-selected="_selectHeadBranch"></branch-selector>from
       <branch-selector id="headBranch" tabindex="0" branches="[[branchNames]]" selected="{{headBranch}}" on-selected="_selectTitleInput"></branch-selector>
     </div>
 
-    <div class="description">
-      <paper-input id="title" class="title" label="Enter a title" value="{{title}}"></paper-input>
-      <markdown-input label="Enter a description for your pull request. Markdown is supported." owner="[[owner]]" name="[[name]]"></markdown-input>
-    </div>
-<!--
-
-    <div>
-      Select multiple reviewers:
-
-      <paper-menu class="reviewers-list" multi selected="{{reviewers}}">
-        <template is="dom-repeat" items="[[contributors]]">
-          <paper-item>[[item.login]]</paper-item>
-        </template>
-      </paper-menu>
-
-      <paper-button>Create pull request</paper-button>
-    </div>\
-
-
-    <prism-highlighter></prism-highlighter>
-    <pull-request-diff data-route="diff" diff="[[diff]]"></pull-request-diff> -->
+    <project-create-pull-request-description
+      id="description"
+      owner="[[owner]]"
+      name="[[name]]"
+      title="[[title]]"
+      description="[[description]]"></project-create-pull-request-description>
+    <project-create-pull-diff id="diffView" diff=[[diff]]></project-create-pull-diff>
   </template>
   <script>
     Polymer({
@@ -118,6 +68,8 @@
       properties: {
         owner: String,
         name: String,
+        title: String,
+        description: String,
         baseBranch: {
           type: String,
           value: 'master'
@@ -133,7 +85,8 @@
       },
       observers: [
         '_fetchBranchesAndCollaborators(owner, name)',
-        '_fetchDiff(baseBranch, headBranch)'
+        '_fetchDiff(baseBranch, headBranch)',
+        '_showDiff(diff)'
       ],
       _fetchBranchesAndCollaborators: function() {
         this.$.ajaxBranches.generateRequest();
@@ -152,8 +105,11 @@
       _selectHeadBranch: function() {
         this.$.headBranch.focus();
       },
-      _selectTitleInput: function() {
-        this.$.title.focus();
+      _selectTitleInput: function(a) {
+        this.$.description.show();
+      },
+      _showDiff: function(diff) {
+        this.$.diffView.show();
       }
     });
   </script>

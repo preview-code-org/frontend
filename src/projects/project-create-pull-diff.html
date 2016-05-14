@@ -1,0 +1,40 @@
+<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
+<dom-module id="project-create-pull-diff">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+
+    <pull-request-diff data-route="diff" diff="[[diff]]"></pull-request-diff>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'project-create-pull-diff',
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+      properties: {
+        diff: String,
+        animationConfig: {
+         type: Object,
+         value: function() {
+           return {
+             'entry': [{
+               name: 'fade-in-animation',
+               node: this
+             }]
+           }
+         }
+       }
+     },
+     show: function() {
+       this.shown = true;
+       this.style.display = 'block';
+       this.playAnimation('entry');
+     }
+    });
+  </script>
+</dom-module>

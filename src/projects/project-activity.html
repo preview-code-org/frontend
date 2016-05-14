@@ -7,6 +7,10 @@
 <dom-module id="project-activity">
   <template>
     <style>
+      :host {
+        display: block;
+        background-color: var(--primary-background-color);
+      }
       div {
         padding: 0.75em;
       }
@@ -15,11 +19,9 @@
         color: var(--secondary-text-color);
       }
       .info{
-      margin-top: 22px; 
+        margin-top: 22px;
       }
     </style>
-    <div>
-    </div>
     <a href="https://github.com/preview-code/rite-evaluation/issues/23">
       <column-list-item selected="[[selected]]">
         <div class="main">

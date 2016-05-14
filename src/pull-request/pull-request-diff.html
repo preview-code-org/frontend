@@ -22,7 +22,6 @@
         margin-right: 15px;
       }
       paper-toolbar {
-        border-radius: 1em;
         --paper-toolbar-background: var(--primary-background-color);
       }
       [icon='add'] {
@@ -46,6 +45,8 @@
       handle-as="text"
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"></authenticated-ajax>
+
+    <prism-highlighter></prism-highlighter>
 
     <paper-toolbar justify="around">
       <div class="title">
