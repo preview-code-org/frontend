@@ -1,34 +1,38 @@
 <link rel="import" href="../bower_components/Sortable/Sortable.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="pull-request-diff-highlight.html">
 <link rel="import" href="pull-request-add-comments.html">
 <link rel="import" href="pull-request-comment.html">
-<link rel="import" href="../util/marked-github-element.html">
+<link rel="import" href="../util/markdown-input.html">
 
 <dom-module id="pull-request-chunk">
   <template>
     <style>
+      [hidden] {
+        display: none !important;
+      }
       :host {
         overflow: hidden;
         display: block;
         margin: 2em 0;
         padding: 1em 2em;
-        border-radius: 1em;
         background-color: var(--primary-background-color);
         -webkit-transition: all 0.3s ease;
         -moz-transition: all 0.3s ease;
         -ms-transition: all 0.3s ease;
         -o-transition: all 0.3s ease;
         transition: all 0.3s ease;
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
       }
       :host([collapsed]) {
         height: 3em;
       }
-      .title {
+      h2.title {
         height: 25px;
       }
-      sortable-js {
+      .diffs {
         width: 100%;
         display: block;
         min-height: 2em;
@@ -54,18 +58,57 @@
       :host(:hover) header iron-icon {
         opacity: 1;
       }
+      paper-input.title {
+        --paper-input-container: {
+          padding: 0 0 1em 0;
+        };
+        --paper-input-container-input: {
+          font-size: 1.5em;
+        };
+        --paper-input-container-label: {
+          font-size: 1.5em;
+          color: var(--secondary-text-color);
+        };
+        --paper-input-container-label-floating: {
+          font-size: 1em;
+        }
+        --paper-input-container-color: var(--secondary-background-color);
+        --paper-input-container-focus-color: var(--anchor-color);
+      }
     </style>
     <header>
       <iron-icon icon="icons:remove-circle-outline" on-tap="_toggleCollapse"></iron-icon>
-      <h2>[[title]]</h2>
-      <marked-github-element markdown="[[description]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+      <paper-input hidden$="[[!editable]]" class="title" label="Enter a title" value="{{title}}"></paper-input>
+      <h2 hidden$="[[editable]]">[[title]]</h2>
+      <markdown-input
+        disabled="[[!editable]]"
+        label="Enter a description for these changes"
+        markdown="{{description}}"
+        owner="[[owner]]"
+        name="[[name]]"
+        ></markdown-input>
     </header>
-    <sortable-js group="chunk" draggable="pull-request-diff-highlight" on-remove="_diffRemoved">
-      <template is="dom-repeat" items="[[chunk.diff]]">
-        <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
-      </template>
-    </sortable-js>
-    <iron-icon icon="icons:arrow-downward" class="toggle-comments-icon" on-tap="_toggleComments"></iron-icon>
+    <template is="dom-if" if="[[editable]]">
+      <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight" on-remove="_diffRemoved">
+        <template is="dom-repeat" items="[[chunk.diff]]">
+          <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
+        </template>
+      </sortable-js>
+    </template>
+    <template is="dom-if" if="[[!editable]]">
+      <div class="diffs">
+        <template is="dom-repeat" items="[[chunk.diff]]">
+          <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
+        </template>
+      </diff>
+    </template>
+
+    <iron-icon
+      icon="icons:arrow-downward"
+      class="toggle-comments-icon"
+      on-tap="_toggleComments"
+      hidden$="[[!editable]]"
+    ></iron-icon>
     <div class="chunk-comment" hidden$="[[showComments]]">
       <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
         <pull-request-comment comment="[[comment]]"></pull-request-comment>
@@ -77,15 +120,13 @@
     Polymer({
       is: 'pull-request-chunk',
       properties: {
+        editable: {
+          type: Boolean,
+          value: false
+        },
         chunk: Object,
-        title: {
-          type: String,
-          value: 'Untitled chunk'
-        },
-        description: {
-          type: String,
-          value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed turpis lectus, consequat nec feugiat ac, accumsan non dui. Fusce varius pretium sem ut vulputate. Ut sagittis tortor et elit faucibus cursus. Suspendisse imperdiet eros ac purus placerat ullamcorper. Nunc blandit interdum ante, sit amet malesuada enim vestibulum in. Morbi efficitur eget augue eget convallis. Vestibulum tempus, lorem non rhoncus ultricies, libero nisi tincidunt neque, in eleifend mi arcu vel felis. Vivamus ut rutrum nisl, at varius augue. Ut ligula massa, semper sit amet elit eu, molestie auctor risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris justo justo, varius vel pretium et, placerat id diam.'
-        },
+        title: String,
+        description: String,
         showComments: {
           type: Boolean,
           value: true
@@ -93,16 +134,23 @@
         collapsed: {
           type: Boolean,
           reflectToAttribute: true
-        }
+        },
+        owner: String,
+        name: String
       },
       attached: function() {
-        var diffs = this.$$('sortable-js').getElementsByClassName('diff');
-        for (var i = 0, l = diffs.length; i < l; i++) {
-          Sortable.create(diffs[i], {
-            group: 'chunk'
-          });
+        if (this.editable) {
+          var diffs = this.$$('sortable-js').getElementsByClassName('diff');
+          for (var i = 0, l = diffs.length; i < l; i++) {
+            Sortable.create(diffs[i], {
+              group: 'chunk'
+            });
+          }
         }
       },
+      observers: [
+        '_toggleEditable(editable)'
+      ],
       _diffRemoved: function() {
         if (!this.chunk.diff.length) {
           this.fire('empty');
@@ -113,6 +161,9 @@
       },
       _toggleCollapse: function() {
         this.collapsed = !this.collapsed;
+      },
+      _toggleEditable: function(isEditable) {
+        this.showComments = this.showComments && !isEditable
       }
     });
   </script>

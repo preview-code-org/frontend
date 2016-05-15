@@ -1,4 +1,6 @@
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../util/marked-github-element.html">
 
 <dom-module id="markdown-input">
   <template>
@@ -35,9 +37,9 @@
       }
     </style>
 
-    <paper-textarea hidden="[[showPreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
-    <marked-github-element hidden="[[!showPreview]]" markdown="[[markdown]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
-    <paper-toggle-button active="{{showPreview}}">Toggle Preview</paper-toggle-button>
+    <paper-textarea hidden$="[[!showPreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
+    <marked-github-element hidden$="[[showPreview]]" markdown="[[markdown]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    <paper-toggle-button hidden$="[[disabled]]" active="{{previewToggle}}">Toggle Preview</paper-toggle-button>
   </template>
   <script>
     Polymer({
@@ -45,12 +47,23 @@
       properties: {
         owner: String,
         name: String,
-        markdown: String,
+        disabled: {
+          type: Boolean,
+          value: false,
+        },
+        markdown: {
+          type: String,
+          notify: true
+        },
         label: String,
+        previewToggle: Boolean,
         showPreview: {
           type: Boolean,
-          value: false
+          computed: '_showPreview(previewToggle, disabled)'
         }
+      },
+      _showPreview: function(previewToggle, disabled) {
+        return !disabled && !previewToggle;
       }
     });
   </script>

@@ -1,9 +1,17 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="pull-request-chunk.html">
+<link rel="import" href="../bower_components/prism-element/prism-highlighter.html">
+<link rel="import" href="../bower_components/prism-element/prism-style-import.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="pull-request-chunk.html">
 
+<script src="../bower_components/prism/components/prism-diff.min.js"></script>
+// Match all lines that are not insertions or deletions
+Prism.languages.diff.other = /.+/m;
+// Additions and deletions can also be an empty line
+Prism.languages.diff.inserted = /^[+>].*$/m
+Prism.languages.diff.deleted = /^[-<].*$/m
 <dom-module id="pull-request-diff">
   <template>
     <style>
@@ -27,9 +35,6 @@
       [icon='add'] {
         border-radius: 20px;
         background-color: var(--primary-action-green);
-      }
-      .diff-list {
-        overflow-y: auto;
       }
       .additions {
         color: var(--addition-color);
@@ -60,7 +65,11 @@
 
     <div class="diff-list">
       <template is="dom-repeat" items="[[chunks]]" as="chunk">
-        <pull-request-chunk class="draggable" chunk="[[chunk]]" on-empty="_removeChunk">
+        <pull-request-chunk
+          class="draggable"
+          chunk="[[chunk]]"
+          on-empty="_removeChunk"
+          editable=[[editable]]>
         </pull-request-chunk>
       </template>
     </div>
@@ -70,6 +79,10 @@
     Polymer({
       is: 'pull-request-diff',
       properties: {
+        editable: {
+          type: Boolean,
+          value: false
+        },
         pullRequest: Object,
         additions: {
           type: Number,
@@ -102,7 +115,7 @@
       _removeChunk: function(e) {
         this.splice('chunks', e.model.index, 1);
       },
-      _parseDiffToChunks: (function() {
+      _parseDiffToChunks: function() {
         var ANYTHING = '(?:.|\n)+?';
         // Diff chunks are separated by "diff --git" code blocks.
         // We therefore match up to the point that we encounter a new
@@ -160,7 +173,7 @@
             this.unshift('chunks', fileChunk);
           }
         }
-      })()
+      }()
     });
   </script>
 </dom-module>

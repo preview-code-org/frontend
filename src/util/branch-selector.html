@@ -77,7 +77,7 @@
     </style>
 
     <branch-tag branch="[[selected]]"></branch-tag>
-    <div class="popup-menu" hidden="[[hideSelectionMenu]]">
+    <div class="popup-menu" hidden$="[[hideSelectionMenu]]">
       <header>
         <h1>Select a branch</h1>
         <paper-input class=".search" tabindex="0" label="Filter by name" value="{{filter}}"></paper-input>
@@ -96,7 +96,10 @@
       is: 'branch-selector',
       properties: {
         branches: Array,
-        selected: String,
+        selected: {
+          type: String,
+          notify: true
+        },
         filter: String,
         hideSelectionMenu: {
           type: Boolean,
