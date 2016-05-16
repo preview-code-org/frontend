@@ -45,6 +45,7 @@
       handle-as="text"
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"
+      on-response="_showPullRequestInformation"
       ></authenticated-ajax>
 
     <div class="selectBranches">
@@ -52,13 +53,18 @@
       <branch-selector
         tabindex="0" branches="[[branchNames]]"
         selected="{{baseBranch}}" on-selected="_selectHeadBranch"
-        ></branch-selector>from
+        ></branch-selector>
+      from
       <branch-selector
         id="headBranchSelector"
         tabindex="0" branches="[[branchNames]]"
-        selected="{{headBranch}}" on-selected="_showTitleAndDescription"
+        selected="{{headBranch}}"
         ></branch-selector>
     </div>
+
+    <h2 hidden$="[[diff]]">
+      Choose different branches or forks above to discuss and review changes.
+    </h2>
 
     <project-create-pull-request-description
       id="description"
@@ -97,8 +103,7 @@
       },
       observers: [
         '_fetchBranchesAndCollaborators(owner, name)',
-        '_fetchDiff(baseBranch, headBranch)',
-        '_showDiff(diff)'
+        '_fetchDiff(baseBranch, headBranch)'
       ],
       _fetchBranchesAndCollaborators: function() {
         this.$.ajaxBranches.generateRequest();
@@ -117,11 +122,9 @@
       _selectHeadBranch: function() {
         this.$.headBranchSelector.focus();
       },
-      _showTitleAndDescription: function() {
-        this.$.description.show();
-      },
-      _showDiff: function() {
+      _showPullRequestInformation: function() {
         this.$.diffView.show();
+        this.$.description.show();
       }
     });
   </script>

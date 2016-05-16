@@ -78,7 +78,7 @@
     </style>
     <header>
       <iron-icon icon="icons:remove-circle-outline" on-tap="_toggleCollapse"></iron-icon>
-      <paper-input hidden$="[[!editable]]" class="title" label="Enter a title" value="{{title}}"></paper-input>
+      <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this chunk" value="{{title}}"></paper-input>
       <h2 hidden$="[[editable]]">[[title]]</h2>
       <markdown-input
         disabled="[[!editable]]"
