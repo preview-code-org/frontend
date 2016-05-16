@@ -88,20 +88,11 @@
         name="[[name]]"
         ></markdown-input>
     </header>
-    <template is="dom-if" if="[[editable]]">
-      <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight" on-remove="_diffRemoved">
-        <template is="dom-repeat" items="[[chunk.diff]]">
-          <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
-        </template>
-      </sortable-js>
-    </template>
-    <template is="dom-if" if="[[!editable]]">
-      <div class="diffs">
-        <template is="dom-repeat" items="[[chunk.diff]]">
-          <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
-        </template>
-      </diff>
-    </template>
+    <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight" disabled="[[!editable]]" on-remove="_diffRemoved">
+      <template is="dom-repeat" items="[[chunk.diff]]">
+        <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
+      </template>
+    </sortable-js>
 
     <iron-icon
       icon="icons:arrow-downward"
