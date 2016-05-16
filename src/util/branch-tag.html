@@ -9,9 +9,20 @@
         font-weight: 300;
         --tag-color: var(--anchor-color);
       }
+      /* Mimic dropdown arrow. Copied from GitHub compare page dropdown selectors */
+      span::after {
+        content: "";
+        vertical-align: middle;
+        display: inline-block;
+        border: 4px solid;
+        margin-left: 4px;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+      }
     </style>
     <list-item-label type="box">
-      [[branch]]
+      <span>[[branch]]</span>
     </list-item-label>
   </template>
   <script>
