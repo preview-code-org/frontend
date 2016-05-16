@@ -1,0 +1,37 @@
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+
+<script>
+var FadeInBehaviorImpl = {
+  properties: {
+    owner: String,
+    name: String,
+    shown: {
+      type: Boolean,
+      value: false
+    },
+    title: String,
+    description: String,
+    animationConfig: {
+      type: Object,
+      value: function() {
+        return {
+          'entry': [{
+            name: 'fade-in-animation',
+            node: this
+          }]
+        }
+      }
+    }
+  },
+  show: function() {
+    if (!this.shown) {
+      this.shown = true;
+      this.style.display = 'block';
+      this.playAnimation('entry');
+    }
+  }
+};
+
+FadeInBehavior = [FadeInBehaviorImpl, Polymer.NeonAnimationRunnerBehavior];
+</script>

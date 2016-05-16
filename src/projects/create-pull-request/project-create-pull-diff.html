@@ -1,5 +1,4 @@
-<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
-<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../util/fade-in-behavior.html">
 <link rel="import" href="../../pull-request/pull-request-diff.html">
 
 <dom-module id="project-create-pull-diff">
@@ -20,34 +19,7 @@
   <script>
     Polymer({
       is: 'project-create-pull-diff',
-      behaviors: [
-        Polymer.NeonAnimationRunnerBehavior
-      ],
-      properties: {
-        diff: String,
-        shown: {
-          type: Boolean,
-          value: false
-        },
-        animationConfig: {
-          type: Object,
-          value: function() {
-            return {
-              'entry': [{
-                 name: 'fade-in-animation',
-                 node: this
-              }]
-            }
-          }
-        }
-      },
-      show: function() {
-        if (!this.shown) {
-          this.shown = true;
-          this.style.display = 'block';
-          this.playAnimation('entry');
-        }
-      }
+      behaviors: [FadeInBehavior]
     });
   </script>
 </dom-module>
