@@ -86,7 +86,7 @@
         <template is="dom-repeat" items="[[branches]]" as="branch">
           <div class="branch" branch="[[branch]]" tabindex="0"
                hidden$="[[_filter(branch, filter)]]"
-               on-tap="_toggleSelectionMenu" on-keydown="_selectBranch">[[branch]]</div>
+               on-tap="_hideSelectionMenu" on-keydown="_selectBranch">[[branch]]</div>
         </template>
       </iron-selector>
     </div>
@@ -109,10 +109,11 @@
       attached: function() {
         this.addEventListener('focus', function() {
           this.hideSelectionMenu = false;
+          this.$$('paper-input').focus();
           this.updateStyles();
         })
         this.addEventListener('blur', function() {
-          this.hideSelectionMenu = true;
+          this._hideSelectionMenu();
           this.updateStyles();
         });
       },
@@ -122,19 +123,15 @@
         }
         return branch.search(filter) < 0;
       },
-      _toggleSelectionMenu: function() {
-        this.hideSelectionMenu = !this.hideSelectionMenu;
-        if (this.hideSelectionMenu) {
-          this.blur();
-          this.fire('selected');
-        } else {
-          this.$$('paper-input').focus();
-        }
+      _hideSelectionMenu: function() {
+        this.hideSelectionMenu = true;
+        this.fire('selected');
+        this.$$('paper-input').focus();
       },
       _selectBranch: function(e) {
         if (e.keyCode === 13) {
           this.selected = e.model.branch;
-          this._toggleSelectionMenu();
+          this._hideSelectionMenu();
         }
       }
     });
