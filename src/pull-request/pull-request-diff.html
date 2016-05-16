@@ -1,17 +1,9 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../bower_components/prism-element/prism-highlighter.html">
-<link rel="import" href="../bower_components/prism-element/prism-style-import.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="pull-request-chunk.html">
 
-<script src="../bower_components/prism/components/prism-diff.min.js"></script>
-// Match all lines that are not insertions or deletions
-Prism.languages.diff.other = /.+/m;
-// Additions and deletions can also be an empty line
-Prism.languages.diff.inserted = /^[+>].*$/m
-Prism.languages.diff.deleted = /^[-<].*$/m
 <dom-module id="pull-request-diff">
   <template>
     <style>
@@ -50,8 +42,6 @@ Prism.languages.diff.deleted = /^[-<].*$/m
       handle-as="text"
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"></authenticated-ajax>
-
-    <prism-highlighter></prism-highlighter>
 
     <paper-toolbar justify="around">
       <div class="title">
@@ -115,7 +105,7 @@ Prism.languages.diff.deleted = /^[-<].*$/m
       _removeChunk: function(e) {
         this.splice('chunks', e.model.index, 1);
       },
-      _parseDiffToChunks: function() {
+      _parseDiffToChunks: (function() {
         var ANYTHING = '(?:.|\n)+?';
         // Diff chunks are separated by "diff --git" code blocks.
         // We therefore match up to the point that we encounter a new
@@ -173,7 +163,7 @@ Prism.languages.diff.deleted = /^[-<].*$/m
             this.unshift('chunks', fileChunk);
           }
         }
-      }()
+      })()
     });
   </script>
 </dom-module>
