@@ -102,7 +102,9 @@
     ></iron-icon>
     <div class="chunk-comment" hidden$="[[showComments]]">
       <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
-        <pull-request-comment comment="[[comment]]"></pull-request-comment>
+        <pull-request-comment
+            text="[[comment.body]]" author="[[comment.user]]"
+            date="[[comment.timeopened]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
       </template>
       <pull-request-add-comments comments="{{chunk.comments}}"></pull-request-add-comments>
     </div>

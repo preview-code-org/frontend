@@ -29,9 +29,11 @@
       _addComment: function() {
         var newComment = {};
         if(this.newtext.replace(/\s/g, '') !== ""){
-          newComment.text = this.newtext;
-          newComment.poster = "Eva";
-          newComment.timeopened = "12 hours";
+          newComment.body = this.newtext;
+          newComment.user = {
+            login: "Eva"
+          }
+          newComment.timeopened = 12345678;
           this.push('comments', newComment);
           this.newtext = "";
         }
