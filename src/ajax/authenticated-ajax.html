@@ -48,7 +48,7 @@
         refurl: String,
         params: {
           type: Object,
-          computed: '_generateParams(shared)',
+          computed: '_generateParams(shared, perPage)',
           observer: '_maybeFire'
         },
         perPage: {
@@ -162,14 +162,14 @@
           shared.instances[i](shared);
         }
       },
-      _generateParams: function(shared) {
+      _generateParams: function(shared, perPage) {
         var accessToken = shared.accessToken;
         if (!accessToken) {
           return undefined;
         }
         return {
           "access_token": accessToken,
-          "per_page": this.perPage
+          "per_page": perPage
         }
       },
       _setHeader: function(name, value) {
