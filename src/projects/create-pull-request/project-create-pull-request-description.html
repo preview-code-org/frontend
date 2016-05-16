@@ -42,6 +42,12 @@
   <script>
     Polymer({
       is: 'project-create-pull-request-description',
+      properties: {
+        owner: String,
+        name: String,
+        title: String,
+        description: String
+      },
       behaviors: [FadeInBehavior]
     });
   </script>
