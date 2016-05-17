@@ -1,0 +1,30 @@
+
+<dom-module id="list-tab">
+    <template>
+        <style>
+            :host {
+                display: block;
+                width:24px;
+                height:24px;
+                margin: 1px;
+                background-color: white;
+            }
+        </style>
+          <content on-tap="_toggleList"></content>
+    </template>
+    <script>
+        Polymer({
+            is: 'list-tab',
+            properties: {
+              showList: {
+                value: true,
+                type: Boolean,
+                notify: true
+              },
+            },
+            _toggleList: function(){
+              this.showList = !this.showList;
+            }
+        });
+    </script>
+</dom-module>

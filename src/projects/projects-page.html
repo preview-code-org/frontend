@@ -1,5 +1,6 @@
-<link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
-<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
 <link rel="import" href="../pull-request/pull-request-page.html">
 <link rel="import" href="project-pull-requests.html">
 <link rel="import" href="no-project-selected.html">
@@ -9,6 +10,7 @@
 <link rel="import" href="../list-items/preview-list.html">
 <link rel="import" href="search-behavior.html">
 <link rel="import" href="search-box.html">
+<link rel="import" href="../list-items/list-tab.html">
 
 <dom-module id="projects-page">
   <template>
@@ -21,14 +23,11 @@
         -ms-transition: all 500ms ease;
         -o-transition: all 500ms ease;
         transition: all 500ms ease;
+        flex-direction: row;
+
       }
       [hidden] {
         display: none !important;
-      }
-      .container {
-        display: flex;
-        flex: 1;
-        flex-direction: row;
       }
       preview-list, .project {
         flex: 1;
@@ -55,11 +54,17 @@
       a {
         color: inherit;
       }
-      preview-list.false {
-        flex: 0 0;
-      }
       search-box {
         margin-top:19.920px;
+      }
+      .tab-content {
+        display:block;
+        transform: rotate(0.25turn);
+      }
+      .tabs{
+        display:flex;
+        flex-direction: column;
+        position: absolute;
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
@@ -70,34 +75,34 @@
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls"
       handle-as="json"
       last-response="{{pullrequests}}"></authenticated-ajax>
-    <div class="container">
-      <preview-list class$="[[shouldShowProjects]]">
-        <search-box value="{{searchWord}}"></search-box>
-        <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
-          <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
-            <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
-                               tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
-          </a>
-        </template>
-      </preview-list>
-      <div class="container">
-        <project-pull-requests hidden$="[[!projectSelected]]" route="{{nameTail}}" tabindex="0"
-                               project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
-                               project-button-clicked="{{projectButtonClicked}}"
-                               prid-selected="[[prid]]"
-                               hide-project-button="[[pullRequestSelected]]"></project-pull-requests>
+    <preview-list hidden$="[[shouldHideProjects]]">
+      <search-box value="{{searchWord}}"></search-box>
+      <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
+        <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
+          <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
+                             tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
+        </a>
+      </template>
+    </preview-list>
 
-        <iron-pages class="project"
-                    selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
-                    attr-for-selected="data-route">
-            <no-project-selected data-route="no-selected"></no-project-selected>
-            <project-overview-page data-route="overview" tabindex="0"
-                project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
-            <pull-request-page data-route="pr" prid="[[prid]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
-                               project="[[projectTitle]]"></pull-request-page>
-        </iron-pages>
-      </div>
+    <project-pull-requests hidden$="[[shouldHidePulls]]" route="{{nameTail}}" tabindex="0"
+                           project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
+                           prid-selected="[[prid]]"></project-pull-requests>
+
+    <div class="tabs">
+      <list-tab show-list="{{showProjectsList}}"><iron-icon icon="icons:view-list"></iron-icon></list-tab>
+      <list-tab show-list="{{showPullList}}"><iron-icon icon="editor:merge-type"></iron-icon></list-tab>
     </div>
+
+    <iron-pages class="project"
+                selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
+                attr-for-selected="data-route">
+        <no-project-selected data-route="no-selected"></no-project-selected>
+        <project-overview-page data-route="overview" tabindex="0"
+            project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
+        <pull-request-page data-route="pr" prid="[[prid]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
+                           project="[[projectTitle]]"></pull-request-page>
+    </iron-pages>
   </template>
   <script>
     Polymer({
@@ -108,17 +113,22 @@
           type: String,
           value: ''
         },
+        showProjectsList: {
+          type: Boolean,
+          value: false
+        },
+        showPullList: Boolean,
         route: {
           type: Object,
           notify: true
         },
-        projectButtonClicked: {
+        shouldHideProjects: {
           type: Boolean,
-          value: false,
+          computed: '_shouldHideProjects(pullRequestSelected, showProjectsList)'
         },
-        shouldShowProjects: {
-          type: String,
-          computed: '_shouldShowProjects(projectSelected, pullRequestSelected, projectButtonClicked)'
+        shouldHidePulls: {
+          type: Boolean,
+          computed: '_shouldHidePulls(projectSelected, showPullList)'
         },
         prid: {
           type: Number,
@@ -170,7 +180,8 @@
               return [projectData.name, projectData.owner];
             };
           }
-        }
+        },
+        activeProject: Object
       },
       observers: [
         'chooseProject(projectTitle.*)'
@@ -206,10 +217,14 @@
         } else if (!pullRequestSelected) {
           return 'overview';
         }
+        this.showProjectsList = true;
         return 'pr';
       },
-      _shouldShowProjects: function(projectSelected, pullRequestSelected, clicked) {
-        return (!pullRequestSelected || clicked) ? 'true' : 'false';
+      _shouldHideProjects: function(pullRequestSelected, showProjectsList) {
+        return (showProjectsList);
+      },
+      _shouldHidePulls: function(projectSelected, showPullList) {
+        return (!projectSelected || !showPullList);
       }
     });
   </script>
