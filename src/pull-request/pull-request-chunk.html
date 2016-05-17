@@ -5,6 +5,7 @@
 <link rel="import" href="pull-request-add-comments.html">
 <link rel="import" href="pull-request-comment.html">
 <link rel="import" href="../util/markdown-input.html">
+<link rel="import" href="../util/collapse-icon.html">
 
 <dom-module id="pull-request-chunk">
   <template>
@@ -41,23 +42,6 @@
         margin-bottom: 1em;
         margin-top: 0.5em;
       }
-      .collapse-icon {
-        fill: var(--pr-status-color);
-        float: right;
-        opacity: 0;
-        -webkit-transition: all 0.3s ease;
-        -moz-transition: all 0.3s ease;
-        -ms-transition: all 0.3s ease;
-        -o-transition: all 0.3s ease;
-        transition: all 0.3s ease;
-        border-radius: 12px;
-      }
-      .collapse-icon:hover, .collapse-icon.true {
-        fill: var(--primary-action-red);
-      }
-      :host(:hover) .collapse-icon, .collapse-icon.true {
-        opacity: 1;
-      }
       paper-input.title {
         --paper-input-container: {
           padding: 0 0 1em 0;
@@ -77,7 +61,7 @@
       }
     </style>
     <header>
-      <iron-icon icon="icons:remove-circle-outline" class$="collapse-icon [[collapsed]]" on-tap="_toggleCollapse"></iron-icon>
+      <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
       <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this chunk" value="{{title}}"></paper-input>
       <h2 hidden$="[[editable]]">[[title]]</h2>
       <markdown-input
@@ -151,9 +135,6 @@
       },
       _toggleComments: function() {
         this.showComments = !this.showComments;
-      },
-      _toggleCollapse: function() {
-        this.collapsed = !this.collapsed;
       },
       _toggleEditable: function(isEditable) {
         this.showComments = this.showComments && !isEditable

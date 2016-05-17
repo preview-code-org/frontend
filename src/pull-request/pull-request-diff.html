@@ -12,6 +12,9 @@
         /* 30px is 2 times a possible scrollbar */
         max-width: calc(100vw - var(--pull-request-list-width) - var(--project-list-width) - 30px);
       }
+      [hidden] {
+        display: none !important;
+      }
       .overview {
         max-width: 500px;
       }
@@ -52,6 +55,7 @@
       </div>
       <div class="actions">
         <paper-icon-button
+            hidden$="[[!editable]]"
             class="add-chunk-button" icon="add" on-tap="_addChunk"
             title="Add a new chunk to this pull request"></paper-icon-button>
       </div>
@@ -73,7 +77,10 @@
     Polymer({
       is: 'pull-request-diff',
       properties: {
-        editable: Boolean,
+        editable: {
+          type: Boolean,
+          value: false
+        },
         pullRequest: Object,
         additions: {
           type: Number,
