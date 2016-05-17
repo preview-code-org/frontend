@@ -1,16 +1,27 @@
 <!-- Load these elements first to have fetch sub-pages as fast as possible -->
-<link rel="import" href="../bower_components/iron-lazy-pages/iron-lazy-pages.html">
-<link rel="import" href="../bower_components/carbon-route/carbon-location.html">
-<link rel="import" href="../bower_components/carbon-route/carbon-route.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-styles/color.html">
-<link rel="import" href="../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="bower_components/iron-lazy-pages/iron-lazy-pages.html">
+<link rel="import" href="bower_components/carbon-route/carbon-location.html">
+<link rel="import" href="bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-styles/color.html">
+<link rel="import" href="bower_components/paper-card/paper-card.html">
+<link rel="import" href="bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="bower_components/prism-element/prism-highlighter.html">
+<link rel="import" href="bower_components/prism-element/prism-style-import.html">
 
-<link rel="stylesheet" href="../bower_components/font-roboto/roboto.html">
-<link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="stylesheet" href="bower_components/font-roboto/roboto.html">
+<link rel="import" href="ajax/authenticated-ajax.html">
+
+<script src="bower_components/prism/components/prism-diff.min.js"></script>
+<script>
+// Match all lines that are not insertions or deletions
+Prism.languages.diff.other = /.+/m;
+// Additions and deletions can also be an empty line
+Prism.languages.diff.inserted = /^[+>].*$/m
+Prism.languages.diff.deleted = /^[-<].*$/m
+</script>
 
 <dom-module id="rite-app">
   <template>
@@ -73,6 +84,8 @@
       handle-as="json"
       on-response="storeAccessToken"></iron-ajax>
     <authenticated-ajax id="authenticatedAjax"></authenticated-ajax>
+
+    <prism-highlighter></prism-highlighter>
 
     <paper-header-panel>
       <div class="paper-header">
