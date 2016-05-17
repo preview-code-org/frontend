@@ -98,7 +98,7 @@
       icon="icons:arrow-downward"
       class="toggle-comments-icon"
       on-tap="_toggleComments"
-      hidden$="[[!editable]]"
+      hidden$="[[editable]]"
     ></iron-icon>
     <div class="chunk-comment" hidden$="[[showComments]]">
       <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
