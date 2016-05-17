@@ -1,0 +1,36 @@
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="collapse-icon">
+  <template>
+    <style>
+      .collapse-icon {
+        fill: var(--pr-status-color);
+        float: right;
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+      }
+      .collapse-icon:hover, .collapse-icon.true {
+        fill: var(--primary-action-red);
+      }
+    </style>
+    <iron-icon icon="icons:expand-more" class$="collapse-icon [[collapsed]]" on-tap="_toggleCollapse"></iron-icon>
+  </template>
+  <script>
+    Polymer({
+      is: 'collapse-icon',
+      properties: {
+        collapsed: {
+          type: Boolean,
+          notify: true
+        }
+      },
+      _toggleCollapse: function() {
+        this.collapsed = !this.collapsed;
+      }
+    });
+  </script>
+</dom-module>

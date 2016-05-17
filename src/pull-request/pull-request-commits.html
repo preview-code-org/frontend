@@ -40,6 +40,10 @@
         margin-top: 1em;
         margin-bottom: -1em;
       }
+      .commits {
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+        background-color: white;
+      }
     </style>
     <authenticated-ajax
       id="ajaxComments"
@@ -47,19 +51,27 @@
       handle-as="json"
       per-page="50"
       last-response="{{commits}}"></authenticated-ajax>
+
+    <div class="commits">
       <template is="dom-repeat" items="{{commits}}" index-as="index">
-      <div class="commited"> [[item.author.login]] commited [[toDateString(item.commit.committer.date)]] ago: </div>
-        <div class="top-container">
-          <div class="right-column">
-            <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
+        <div class="commit">
+          <div class="commited">
+            <span>[[item.author.login]] commited [[toDateString(item.commit.committer.date)]] ago:</span>
           </div>
-        <div class="container">
-          <marked-github-element class="message" markdown="{{_getFirst(item.commit.message)}}" name="{{name}}" owner="{{owner}}"></marked-github-element>
-          <hide-content class="commit-text" hidden$="{{_empty(item.commit.message)}}">
-            <marked-github-element class="description" markdown="{{_getLast(item.commit.message)}}" name="{{name}}" owner="{{owner}}"></marked-github-element>
-          </hide-content>
+          <div class="top-container">
+            <div class="right-column">
+              <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
+            </div>
+            <div class="container">
+              <marked-github-element class="message" markdown="{{_getFirst(item.commit.message)}}" name="{{name}}" owner="{{owner}}"></marked-github-element>
+              <hide-content class="commit-text" hidden$="{{_empty(item.commit.message)}}">
+                <marked-github-element class="description" markdown="{{_getLast(item.commit.message)}}" name="{{name}}" owner="{{owner}}"></marked-github-element>
+              </hide-content>
+            </div>
+          </div>
         </div>
       </template>
+    </div>
   </template>
   <script>
     Polymer({

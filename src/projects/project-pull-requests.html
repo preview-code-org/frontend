@@ -61,23 +61,28 @@
       .back-button.false {
         transform: rotate(0.5turn);
       }
-
-
+      .header {
+        display: flex;
+      }
+      .add {
+        color: var(--primary-action-green);
+      }
     </style>
     <preview-list hide-end-indicator>
       <iron-icon hidden$="{{!hideProjectButton}}" class$="back-button [[projectButtonClicked]]" icon="icon:icons:arrow-back" on-tap="_showProjects"></iron-icon>
-      <h2>[[name]]</h2>
-      <div class=dropdown>
-        <paper-dropdown-menu label="Pull request status" value="{{status}}">
-          <paper-menu class="dropdown-content">
-            <paper-item>All</paper-item>
-            <paper-item>Under review</paper-item>
-            <paper-item>Waiting for contributor</paper-item>
-          </paper-menu>
-        </paper-dropdown-menu>
+      <h2>[[name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
+      <div class="header">
+        <div class=dropdown>
+          <paper-dropdown-menu label="Pull request status" value="{{status}}">
+            <paper-menu class="dropdown-content">
+              <paper-item>All</paper-item>
+              <paper-item>Under review</paper-item>
+              <paper-item>Waiting for contributor</paper-item>
+            </paper-menu>
+          </paper-dropdown-menu>
+        </div>
+        <search-box value="{{search}}"></search-box>
       </div>
-      <a href$="[[route.prefix]]/createpull"></a>
-      <search-box value="{{search}}"></search-box>
       <template is="dom-repeat" items="[[_filter(pullrequests, status, search)]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"

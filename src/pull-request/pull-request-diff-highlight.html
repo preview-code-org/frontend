@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../util/collapse-icon.html">
 
 <dom-module id='pull-request-diff-highlight'>
   <template>
@@ -7,6 +8,13 @@
       :host {
         display: block;
         margin: 1em 0;
+        overflow: hidden;
+        padding: 1em 2em;
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
       }
       header {
         background-color: var(--secondary-background-color);
@@ -30,10 +38,14 @@
       .deleted {
         background-color: var(--deletion-color);
       }
+      :host([collapsed]) {
+        height: 1em;
+      }
     </style>
 
     <header>
       [[fromFile]]
+      <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
     </header>
     <pre>
       <code id="output"></code>
@@ -54,7 +66,11 @@
           observer: '_setFromAndTo'
         },
         fromFile: String,
-        toFile: String
+        toFile: String,
+        collapsed: {
+          type: Boolean,
+          reflectToAttribute: true
+        }
       },
       _setFromAndTo: function(f) {
         var split = f.split(' ');

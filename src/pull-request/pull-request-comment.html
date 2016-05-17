@@ -45,7 +45,7 @@
     <div class="content">
       <div class="title">
         <a-user user="[[author]]"></a-user>
-        <list-item-label class="time" type="info" icon="device:access-time">[[toDateString(date)]] ago</list-item-label>
+        <list-item-label class="time" type="info" icon="device:access-time" title$="Posted [[_timeString]] ago">[[_timeString]] ago</list-item-label>
       </div>
       <marked-github-element markdown="[[text]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
     </div>
@@ -60,7 +60,11 @@
         author: Object,
         date: String,
         owner: String,
-        name: String
+        name: String,
+        _timeString: {
+          type: String,
+          computed: 'toDateString(date)'
+        }
       }
     });
   </script>
