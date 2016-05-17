@@ -9,7 +9,7 @@
     <style>
       :host {
         display: none;
-        padding: 2em 2em;
+        padding: 2em;
         border-bottom: solid 1px var(--secondary-background-color);
         background-color: var(--primary-background-color);
       }
@@ -32,12 +32,13 @@
       }
     </style>
 
-    <paper-input class="title" label="Enter a pull request title" value="{{title}}"></paper-input>
-    <markdown-input
-      label="Enter a description for your pull request. Markdown is supported."
-      owner="[[owner]]"
-      name="[[name]]"
-      markdown="{{description}}"></markdown-input>
+      <paper-input class="title" label="Enter a pull request title" value="{{title}}"></paper-input>
+      <markdown-input
+        label="Enter a description for your pull request. Markdown is supported."
+        owner="[[owner]]"
+        name="[[name]]"
+        markdown="{{description}}"></markdown-input>
+    </div>
   </template>
   <script>
     Polymer({

@@ -7,6 +7,15 @@
     <style>
       :host {
         display: block;
+        padding: 1em;
+      }
+      :host([disabled]) {
+        border: 0;
+        background-color: transparent;
+      }
+      :host(.noPreview) {
+        border: solid 1px var(--secondary-background-color);
+        background-color: var(--tertiary-background-color);
       }
       [hidden] {
         display: none !important;
@@ -27,8 +36,8 @@
       }
       paper-toggle-button {
         margin-top: 1em;
-        --paper-toggle-button-checked-bar-color:  var(--primary-action-green);
-        --paper-toggle-button-checked-button-color:  var(--primary-action-green);
+        --paper-toggle-button-checked-bar-color: var(--primary-action-green);
+        --paper-toggle-button-checked-button-color: var(--primary-action-green);
         --paper-toggle-button-checked-ink-color: var(--primary-action-green);
       }
       marked-github-element {
@@ -37,8 +46,8 @@
       }
     </style>
 
-    <paper-textarea hidden$="[[!showPreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
-    <marked-github-element hidden$="[[showPreview]]" markdown="[[markdown]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    <paper-textarea hidden$="[[!hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
+    <marked-github-element hidden$="[[hidePreview]]" markdown="[[markdown]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
     <paper-toggle-button hidden$="[[disabled]]" active="{{previewToggle}}">Toggle Preview</paper-toggle-button>
   </template>
   <script>
@@ -49,7 +58,7 @@
         name: String,
         disabled: {
           type: Boolean,
-          value: false,
+          value: false
         },
         markdown: {
           type: String,
@@ -57,13 +66,15 @@
         },
         label: String,
         previewToggle: Boolean,
-        showPreview: {
+        hidePreview: {
           type: Boolean,
-          computed: '_showPreview(previewToggle, disabled)'
+          computed: '_hidePreview(previewToggle, disabled)'
         }
       },
-      _showPreview: function(previewToggle, disabled) {
-        return !disabled && !previewToggle;
+      _hidePreview: function(previewToggle, disabled) {
+        var shouldBeHidden = !disabled && !previewToggle;
+        this.toggleClass('noPreview', shouldBeHidden);
+        return shouldBeHidden;
       }
     });
   </script>

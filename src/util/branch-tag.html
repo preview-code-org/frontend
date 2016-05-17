@@ -9,8 +9,8 @@
         font-weight: 300;
         --tag-color: var(--anchor-color);
       }
-      /* Mimic dropdown arrow. Copied from GitHub compare page dropdown selectors */
-      span::after {
+
+      span.selectable.true::after {
         content: "";
         vertical-align: middle;
         display: inline-block;
@@ -22,14 +22,18 @@
       }
     </style>
     <list-item-label type="box">
-      <span>[[branch]]</span>
+      <span class$="selectable [[selectable]]">[[branch]]</span>
     </list-item-label>
   </template>
   <script>
     Polymer({
       is: 'branch-tag',
       properties: {
-        branch: String
+        branch: String,
+        selectable: {
+          type: Boolean,
+          value: false
+        }
       }
     });
   </script>
