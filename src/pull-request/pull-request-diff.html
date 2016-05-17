@@ -1,29 +1,32 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="pull-request-chunk.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="pull-request-chunk.html">
 
 <dom-module id="pull-request-diff">
   <template>
     <style>
       :host {
-        display: flex;
-        flex-direction: column;
+        display: block;
+        /* 30px is 2 times a possible scrollbar */
+        max-width: calc(100vw - var(--pull-request-list-width) - var(--project-list-width) - 30px);
+      }
+      .overview {
+        max-width: 500px;
+      }
+      .description {
+        display: block;
       }
       .actions {
         margin-right: 15px;
       }
       paper-toolbar {
-        border-radius: 1em;
         --paper-toolbar-background: var(--primary-background-color);
       }
       [icon='add'] {
         border-radius: 20px;
         background-color: var(--primary-action-green);
-      }
-      .diff-list {
-        overflow-y: auto;
       }
       .additions {
         color: var(--addition-color);
@@ -46,13 +49,19 @@
         <span class="deletions">- [[deletions]]</span>
       </div>
       <div class="actions">
-        <paper-icon-button class="add-chunk-button" icon="add" on-tap="_addChunk"></paper-icon-button>
+        <paper-icon-button
+            class="add-chunk-button" icon="add" on-tap="_addChunk"
+            title="Add a new chunk to this pull request"></paper-icon-button>
       </div>
     </paper-toolbar>
 
     <div class="diff-list">
       <template is="dom-repeat" items="[[chunks]]" as="chunk">
-        <pull-request-chunk class="draggable" chunk="[[chunk]]" on-empty="_removeChunk">
+        <pull-request-chunk
+          class="draggable"
+          chunk="[[chunk]]"
+          on-empty="_removeChunk"
+          editable=[[editable]]>
         </pull-request-chunk>
       </template>
     </div>
@@ -62,6 +71,7 @@
     Polymer({
       is: 'pull-request-diff',
       properties: {
+        editable: Boolean,
         pullRequest: Object,
         additions: {
           type: Number,
@@ -133,7 +143,8 @@
           var file, chunk;
           while ((file = DIFF_REGEX.exec(diff)) !== null) {
             var fileChunk = {
-              diff: []
+              diff: [],
+              comments: []
             }
             while ((chunk = CHUNK_REGEX.exec(file[3])) !== null) {
               var deletions = chunk[2].match(/\n\-/g);

@@ -7,6 +7,7 @@
 <link rel="import" href="../util/to-date-string-behavior.html">
 <link rel="import" href="../util/marked-github-element.html">
 <link rel="import" href="../util/a-user.html">
+<link rel="import" href="../util/branch-tag.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
 <link rel="import" href="../list-items/tags-list.html">
 <link rel="import" href="reviewers-list.html">
@@ -15,10 +16,11 @@
 <dom-module id="pull-request-general-information">
   <template>
     <style>
+      :host {
+        overflow: hidden;
+      }
       .description {
         overflow: hidden;
-        background-color: var(--primary-background-color);
-        border-radius: 1em;
         margin-bottom: 1em;
       }
       pull-request-comments {
@@ -47,19 +49,9 @@
         margin-right: 1em;
       }
       .state.open {
-        --tag-color: {
-          background-color: var(--primary-action-green);
-        };
+        --tag-color: var(--primary-action-green);
       }
-      .branch {
-        font-family: 'Roboto Mono';
-        font-size: 0.8em;
-        font-weight: 300;
-        --tag-color: {
-          background-color: var(--anchor-color);
-        };
-      }
-      .base, .time-open {
+      .head, .time-open {
         margin-right: 1em;
       }
       .line-stats {
@@ -101,9 +93,9 @@
       <header>
         <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
         <span><a-user user=[[pullRequest.user]]></a-user> wants to merge</span>
-        <list-item-label class="branch head" type="box">[[pullRequest.head.label]]</list-item-label>
+        <branch-tag branch="[[pullRequest.head.label]]"></branch-tag>
         <span>into</span>
-        <list-item-label class="branch base" type="box">[[pullRequest.base.label]]</list-item-label>
+        <branch-tag class="head" branch="[[pullRequest.base.label]]"></branch-tag>
         <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
       </header>
       <div class="sub-header">

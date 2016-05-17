@@ -1,0 +1,29 @@
+<link rel="import" href="../../util/fade-in-behavior.html">
+<link rel="import" href="../../pull-request/pull-request-diff.html">
+
+<dom-module id="project-create-pull-diff">
+  <template>
+    <style>
+      :host {
+        display: none;
+        background-color: var(--primary-background-color);
+        padding: 2em;
+      }
+      h2 {
+        margin-top: 0;
+      }
+    </style>
+    <h2>Describe your changes</h2>
+    <h3>You can drag the different chunks and diff views separately.</h3>
+    <pull-request-diff editable data-route="diff" diff="[[diff]]"></pull-request-diff>
+  </template>
+  <script>
+    Polymer({
+      is: 'project-create-pull-diff',
+      properties: {
+        diff: String
+      },
+      behaviors: [FadeInBehavior]
+    });
+  </script>
+</dom-module>

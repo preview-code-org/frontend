@@ -1,0 +1,139 @@
+<link rel="import" href="branch-tag.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<dom-module id="branch-selector">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      :host(:focus) {
+        outline: 0;
+      }
+      :host(:focus) > branch-tag {
+        --tag-color: var(--anchor-hover-color);
+      }
+      [hidden] {
+        display: none !important;
+      }
+      branch-tag:hover {
+        cursor: pointer;
+      }
+      .popup-menu {
+        z-index: 1;
+        min-width: 300px;
+        display: block;
+        position: absolute;
+        background-color: var(--secondary-background-color);
+        margin-top: 0.5em;
+        -webkit-box-shadow: 0 0 8px 2px rgba(0,0,0,0.2);
+        box-shadow: 0 0 8px 2px rgba(0,0,0,0.2);
+      }
+      .popup-menu[hidden] {
+        display: none;
+      }
+      iron-selector {
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: block;
+        background-color: var(--primary-background-color);
+      }
+      iron-selector > * {
+        display: block;
+      }
+      iron-selector .branch {
+        color: var(--secondary-text-color);
+        font-family: 'Roboto Mono';
+        border-bottom: solid 1px var(--secondary-background-color);
+        font-size: 0.9em;
+        padding: 1em;
+        cursor: pointer;
+      }
+      iron-selector .branch:hover {
+        color: var(--anchor-color);
+      }
+      h1 {
+        font-size: 1.2em;
+        margin: 0;
+        padding: 0.5em;
+        border-bottom: solid 1px var(--secondary-background-color);
+      }
+      paper-input {
+        --paper-input-container: {
+          padding: 0.5em;
+        };
+        --paper-input-container-label: {
+          color: var(--anchor-color);
+        };
+        --paper-input-container-color: var(--secondary-background-color);
+        --paper-input-container-focus-color: var(--anchor-color);
+      }
+    </style>
+
+    <branch-tag branch="[[selected]]"></branch-tag>
+    <div class="popup-menu" hidden$="[[hideSelectionMenu]]">
+      <header>
+        <h1>Select a branch</h1>
+        <paper-input class=".search" tabindex="0" label="Filter by name" value="{{filter}}"></paper-input>
+      </header>
+      <iron-selector attr-for-selected="branch" selected="{{selected}}">
+        <template is="dom-repeat" items="[[branches]]" as="branch">
+          <div class="branch" branch="[[branch]]" tabindex="0"
+               hidden$="[[_filter(branch, filter)]]"
+               on-tap="_hideSelectionMenu" on-keydown="_selectBranch">[[branch]]</div>
+        </template>
+      </iron-selector>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'branch-selector',
+      properties: {
+        branches: Array,
+        selected: {
+          type: String,
+          notify: true
+        },
+        filter: String,
+        hideSelectionMenu: {
+          type: Boolean,
+          value: true
+        }
+      },
+      attached: function() {
+        this.addEventListener('focus', function() {
+          this.hideSelectionMenu = false;
+          this.$$('paper-input').focus();
+          this.updateStyles();
+        })
+        this.addEventListener('blur', function() {
+          this._hideSelectionMenu();
+          this.updateStyles();
+        });
+      },
+      _filter: function(branch, filter) {
+        if (filter === '') {
+          return false;
+        }
+        return branch.search(filter) < 0;
+      },
+      _hideSelectionMenu: function() {
+        this.hideSelectionMenu = true;
+        this.fire('selected');
+        this.$$('paper-input').focus();
+      },
+      _selectBranch: function(e) {
+        if (e.keyCode === 13) {
+          this.selected = e.model.branch;
+          this._hideSelectionMenu();
+        }
+      }
+    });
+  </script>
+</dom-module>
