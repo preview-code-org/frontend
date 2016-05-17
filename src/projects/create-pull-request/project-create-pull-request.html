@@ -34,7 +34,7 @@
     </style>
     <authenticated-ajax
       id="ajaxBranches"
-      refurl="https://api.github.com/repos/[[owner]]/[[name]]/branches"
+      refurl="https://api.github.com/repos/[[project.owner]]/[[project.name]]/branches"
       handle-as="json"
       per-page="250"
       last-response="{{branches}}"
@@ -42,7 +42,7 @@
 
     <authenticated-ajax
       id="ajaxCollaborators"
-      refurl="https://api.github.com/repos/[[owner]]/[[name]]/contributors"
+      refurl="https://api.github.com/repos/[[project.owner]]/[[project.name]]/contributors"
       handle-as="json"
       per-page="250"
       last-response="{{contributors}}"
@@ -50,7 +50,7 @@
 
     <authenticated-ajax
       id="ajaxDiff"
-      refurl="https://api.github.com/repos/[[owner]]/[[name]]/compare/[[name]]:[[baseBranch]]...[[name]]:[[headBranch]]"
+      refurl="https://api.github.com/repos/[[project.owner]]/[[project.name]]/compare/[[baseBranch]]...[[headBranch]]"
       handle-as="text"
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"
@@ -74,8 +74,7 @@
 
       <project-create-pull-request-description
         id="description"
-        owner="[[owner]]"
-        name="[[name]]"
+        project="[[project]]"
         title$="[[title]]"
         description="[[description]]"
         ></project-create-pull-request-description>
@@ -89,8 +88,7 @@
     Polymer({
       is: 'project-create-pull-request',
       properties: {
-        owner: String,
-        name: String,
+        project: Object,
         title: String,
         description: String,
         contributors: Array,
@@ -109,7 +107,7 @@
         }
       },
       observers: [
-        '_fetchBranchesAndCollaborators(owner, name)',
+        '_fetchBranchesAndCollaborators(project)',
         '_fetchDiff(baseBranch, headBranch)'
       ],
       _fetchBranchesAndCollaborators: function() {

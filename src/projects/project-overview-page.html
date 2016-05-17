@@ -115,7 +115,7 @@
                 fallback-selection="404">
       <project-activity data-route="activity"></project-activity>
       <project-create-pull-request data-route="createpull"
-          owner="[[project.owner]]" name="[[project.name]]"></project-create-pull-request>
+          project="[[project]]"></project-create-pull-request>
 
       <span data-route="404">
         Oops you hit a 404!
@@ -133,13 +133,8 @@
         route: Object,
         pullrequests: Array
       },
-
       _shouldBeAtTop: function(small) {
         return small ? 'bottom' : 'top';
-      },
-
-      _withOwnerOnSmall: function(small, name, owner) {
-        return name + (small ? ' by ' + owner : '');
       }
     });
   </script>

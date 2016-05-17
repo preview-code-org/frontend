@@ -30,7 +30,7 @@
         @apply(--commits);
       }
     </style>
-    <marked-element markdown="[[markdown]]" callback="[[parseMarkdown(owner, name)]]">
+    <marked-element markdown="[[markdown]]" callback="[[parseMarkdown(project.owner, project.name)]]">
       <div class="markdown-html"></div>
     </marked-element>
   </template>
@@ -45,8 +45,7 @@
     Polymer({
       is: 'marked-github-element',
       properties: {
-        owner: String,
-        name: String,
+        project: Object,
         markdown: String
       },
       parseMarkdown: function(owner, name) {

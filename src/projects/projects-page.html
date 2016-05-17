@@ -82,7 +82,7 @@
       </preview-list>
       <div class="container">
         <project-pull-requests hidden$="[[!projectSelected]]" route="{{nameTail}}" tabindex="0"
-                               owner="[[projectTitle.owner]]" name="[[projectTitle.name]]" pullrequests="[[pullrequests]]"
+                               project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
                                project-button-clicked="{{projectButtonClicked}}"
                                hide-project-button="[[pullRequestSelected]]"></project-pull-requests>
 
@@ -93,7 +93,7 @@
             <project-overview-page data-route="overview" tabindex="0"
                 project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
             <pull-request-page data-route="pr" prid="[[pr.pr]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
-                               owner="[[projectTitle.owner]]" name="[[projectTitle.name]]"></pull-request-page>
+                               project="[[projectTitle]]"></pull-request-page>
         </iron-pages>
       </div>
     </div>

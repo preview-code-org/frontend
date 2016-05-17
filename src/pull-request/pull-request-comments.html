@@ -10,7 +10,7 @@
     <preview-list hide-end-indicator>
       <template is="dom-repeat" items="[[orderedComments]]">
         <pull-request-comment text="[[item.body]]" author="[[item.user]]"
-          date="[[item.created_at]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
+          date="[[item.created_at]]" project="[[project]]"></pull-request-comment>
       </template>
     </preview-list>
   </template>
@@ -23,8 +23,7 @@
           type: Array,
           computed: '_reverse(comments)'
         },
-        owner: String,
-        name: String
+        project: Object
       },
       _reverse: function(array) {
         return array.reverse();

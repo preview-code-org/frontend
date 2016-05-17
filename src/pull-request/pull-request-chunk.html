@@ -68,9 +68,7 @@
         disabled="[[!editable]]"
         label="Enter a description for these changes"
         markdown="{{description}}"
-        owner="[[owner]]"
-        name="[[name]]"
-        ></markdown-input>
+        project="[[project]]"></markdown-input>
     </header>
     <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight" disabled="[[!editable]]" on-remove="_diffRemoved">
       <template is="dom-repeat" items="[[chunk.diff]]">
@@ -88,7 +86,7 @@
       <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
         <pull-request-comment
             text="[[comment.body]]" author="[[comment.user]]"
-            date="[[comment.timeopened]]" owner="[[owner]]" name="[[name]]"></pull-request-comment>
+            date="[[comment.timeopened]]" project="[[project]]"></pull-request-comment>
       </template>
       <pull-request-add-comments comments="{{chunk.comments}}"></pull-request-add-comments>
     </div>
@@ -112,8 +110,7 @@
           type: Boolean,
           reflectToAttribute: true
         },
-        owner: String,
-        name: String
+        project: Object
       },
       attached: function() {
         if (this.editable) {

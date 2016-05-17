@@ -9,10 +9,6 @@
 <link rel="import" href="pull-request-general-information.html">
 <link rel="import" href="pull-request-commits.html">
 
-<script>
-
-</script>
-
 <dom-module id="pull-request-page">
   <template>
     <style>
@@ -130,9 +126,9 @@
                 attr-for-selected="data-route"
                 fallback-selection="404">
       <pull-request-general-information data-route="overview" class="overview"
-        pull-request="[[pr]]" owner="[[owner]]" name="[[name]]"></pull-request-general-information>
+        pull-request="[[pr]]" project="[[project]]"></pull-request-general-information>
       <pull-request-diff data-route="diff" diff="[[diff]]"></pull-request-diff>
-      <pull-request-commits data-route="commits" pull-request="[[pr]]" owner="[[owner]]" name="[[name]]"></pull-request-commits>
+      <pull-request-commits data-route="commits" pull-request="[[pr]]" project="[[project]]"></pull-request-commits>
 
       <span data-route="404">
         Oops you hit a 404!
@@ -145,8 +141,7 @@
       is: 'pull-request-page',
       properties: {
         route: Object,
-        owner: String,
-        name: String,
+        project: Object,
         prid: String,
         diff: String,
         pullrequests: Array,
