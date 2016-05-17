@@ -6,15 +6,26 @@
     <style>
       :host {
         display: none;
+        padding: 2em 0;
+      }
+      .title {
         background-color: var(--primary-background-color);
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         padding: 2em;
+        margin-bottom: 2em;
       }
       h2 {
         margin-top: 0;
       }
+      h3 {
+        margin-bottom: 0;
+      }
     </style>
-    <h2>Describe your changes</h2>
-    <h3>You can drag the different chunks and diff views separately.</h3>
+    <div class="title">
+      <h2>Describe your changes</h2>
+      <h3>You can drag the different chunks and diff views separately.</h3>
+    </div>
     <pull-request-diff editable data-route="diff" diff="[[diff]]"></pull-request-diff>
   </template>
   <script>

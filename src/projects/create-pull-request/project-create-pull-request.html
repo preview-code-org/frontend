@@ -22,6 +22,15 @@
         padding: 2em 2em;
         border-bottom: solid 1px var(--secondary-background-color);
       }
+      .inputs {
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+      }
+      h2 {
+        font-size: 1.2em;
+        color: var(--secondary-text-color);
+        margin-top: 0;
+      }
     </style>
     <authenticated-ajax
       id="ajaxBranches"
@@ -48,31 +57,29 @@
       on-response="_showPullRequestInformation"
       ></authenticated-ajax>
 
-    <div class="selectBranches">
-      Merge into
-      <branch-selector
-        tabindex="0" branches="[[branchNames]]"
-        selected="{{baseBranch}}" on-selected="_selectHeadBranch"
-        ></branch-selector>
-      from
-      <branch-selector
-        id="headBranchSelector"
-        tabindex="0" branches="[[branchNames]]"
-        selected="{{headBranch}}"
-        ></branch-selector>
+    <div class="inputs">
+      <div class="selectBranches">
+        <h2>Choose branches to create a pull request on</h2>
+        Merge into
+        <branch-selector
+          tabindex="0" branches="[[branchNames]]"
+          selected="{{baseBranch}}" on-selected="_selectHeadBranch"
+          ></branch-selector>
+        from <branch-selector
+          id="headBranchSelector"
+          tabindex="0" branches="[[branchNames]]"
+          selected="{{headBranch}}"
+          ></branch-selector>
+      </div>
+
+      <project-create-pull-request-description
+        id="description"
+        owner="[[owner]]"
+        name="[[name]]"
+        title$="[[title]]"
+        description="[[description]]"
+        ></project-create-pull-request-description>
     </div>
-
-    <h2 hidden$="[[diff]]">
-      Choose different branches or forks above to discuss and review changes.
-    </h2>
-
-    <project-create-pull-request-description
-      id="description"
-      owner="[[owner]]"
-      name="[[name]]"
-      title$="[[title]]"
-      description="[[description]]"
-      ></project-create-pull-request-description>
     <project-create-pull-diff
       id="diffView"
       diff="[[diff]]"
