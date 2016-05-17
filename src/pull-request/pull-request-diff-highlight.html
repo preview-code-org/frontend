@@ -46,7 +46,7 @@
     </style>
 
     <header>
-      [[fromFile]]
+      [[file]]
       <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
     </header>
     <pre>
@@ -63,21 +63,11 @@
           type: String,
           observer: '_render'
         },
-        file: {
-          type: String,
-          observer: '_setFromAndTo'
-        },
-        fromFile: String,
-        toFile: String,
         collapsed: {
           type: Boolean,
           reflectToAttribute: true
-        }
-      },
-      _setFromAndTo: function(f) {
-        var split = f.split(' ');
-        this.fromFile = split[1];
-        this.toFile = split[3];
+        },
+        file: String,
       },
       attached: function() {
         this._render();
