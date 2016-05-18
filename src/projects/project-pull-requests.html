@@ -17,6 +17,7 @@
     <style>
       :host {
         display: inherit;
+        outline: none;
       }
       [hidden] {
         display: none !important;
@@ -74,7 +75,7 @@
         margin-right: auto;
       }
     </style>
-    <preview-list hide-end-indicator>
+    <preview-list>
       <iron-icon hidden$="{{!hideProjectButton}}" class$="back-button [[projectButtonClicked]]" icon="icon:icons:arrow-back" on-tap="_showProjects"></iron-icon>
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
       <div class="header">

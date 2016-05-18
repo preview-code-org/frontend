@@ -1,3 +1,63 @@
+<dom-module id="tag-list-item">
+  <template>
+    <style>
+      :host {
+        --tag-color: #bbb;
+      }
+      li {
+        list-style-type:  none;
+        line-height: 24px;
+        font-size: 0.9em;
+        margin: 3px 12px;
+        color: var(--primary-background-color);
+        padding: 0 6px 0 0;
+        background-color: var(--tag-color);
+        border-radius: 5px;
+      }
+      li:before {
+        content: "";
+        float: left;
+        top: 0;
+        margin-left: -10px;
+        width: 0;
+        height: 0;
+        border-color: transparent var(--tag-color) transparent transparent;
+        border-style: solid;
+        border-width: 12px 12px 12px 0;
+
+      }
+      li:after {
+        content:"";
+        margin-top: 9px;
+        margin-right: 6px;
+        float:left;
+        width:6px;
+        height:6px;
+        -moz-border-radius:2px;
+        -webkit-border-radius:2px;
+        border-radius:2px;
+        background:#fff;
+      }
+    </style>
+    <li><content></content></li>
+  </template>
+  <script>
+    Polymer({
+      is: 'tag-list-item',
+      properties: {
+        backgroundcolor: {
+          type: String,
+          observer: '_updateColor'
+        }
+      },
+      _updateColor: function(color) {
+        this.customStyle['--tag-color'] = '#' + color;
+        this.updateStyles();
+      }
+    });
+  </script>
+</dom-module>
+
 <dom-module id="tags-list">
   <template>
     <style>
@@ -8,42 +68,7 @@
         flex-wrap: wrap;
         align-items: flex-end;
         flex-direction: row;
-        @apply(--tag-flex-direction);
       }
-      ::content li {
-        list-style-type:  none;
-        line-height: 24px;
-        font-size: 0.9em;
-        margin: 3px 6px 3px 12px;
-        color: var(--primary-background-color);
-        padding: 0 6px 0 0;
-        background-color: var(--pr-status-color);
-        border-radius: 5px;
-      }
-      ::content li:before {
-        content: "";
-        float: left;
-        top: 0;
-        margin-left: -10px;
-        width: 0;
-        height: 0;
-        border-color: transparent var(--pr-status-color) transparent transparent;
-        border-style: solid;
-        border-width: 12px 12px 12px 0;
-
-      }
-      ::content li:after{
-      	content:"";
-        margin-top: 9px;
-        margin-right: 6px;
-      	float:left;
-      	width:6px;
-      	height:6px;
-      	-moz-border-radius:2px;
-      	-webkit-border-radius:2px;
-      	border-radius:2px;
-      	background:#fff;
-    	}
     </style>
 
     <ul>

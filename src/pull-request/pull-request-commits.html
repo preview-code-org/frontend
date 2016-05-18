@@ -44,6 +44,13 @@
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         background-color: white;
       }
+      a {
+        color: var(--primary-text-color);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
     </style>
     <authenticated-ajax
       id="ajaxComments"
@@ -63,7 +70,9 @@
               <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
             </div>
             <div class="container">
-              <marked-github-element class="message" markdown="[[_getFirst(item.commit.message)]]" project="[[project]]"></marked-github-element>
+              <a href$="[[item.html_url]]" target="_blank">
+                [[_getFirst(project, item.commit.message)]]
+              </a>
               <hide-content class="commit-text" hidden$="[[_empty(item.commit.message)]]">
                 <marked-github-element class="description" markdown="[[_getLast(item.commit.message)]]" project="[[project]]"></marked-github-element>
               </hide-content>
@@ -76,7 +85,7 @@
   <script>
     Polymer({
       is: 'pull-request-commits',
-      behaviors: [ToDateStringBehavior],
+      behaviors: [ToDateStringBehavior, ParseGitHubBehavior],
       properties: {
         pullRequest: Object,
         commits: Array,
@@ -88,8 +97,8 @@
       _fireAjax: function() {
         this.$.ajaxComments.generateRequest();
       },
-      _getFirst: function(text) {
-        return text.split('\n\n')[0];
+      _getFirst: function(project, text) {
+        return this.parseMarkdown(project.owner, project.name)(null, text.split('\n\n')[0]);
       },
       _getLast: function(text) {
         return text.substring(text.indexOf('\n\n')+1);

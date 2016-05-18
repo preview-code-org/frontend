@@ -1,4 +1,4 @@
-<link rel="import" href="../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 
 <dom-module id="search-box">
@@ -12,10 +12,13 @@
         margin-left: auto ;
         margin-right: auto ;
       }
+      paper-input {
+        display: inline-block;
+      }
     </style>
     <div class="search-box" >
       <iron-icon icon="search"></iron-icon>
-      <input placeholder="search" type="search" value="{{value::input}}"></input>
+      <paper-input placeholder="Search" type="search" value="{{value}}"></paper-input>
     </div>
   </template>
   <script>
