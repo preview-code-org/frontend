@@ -35,7 +35,7 @@
       <template is="dom-if" if="[[icon]]">
         <iron-icon icon="[[icon]]"></iron-icon>
       </template>
-      <span on-tap="_toggleList"><content></content></span>
+      <span><content></content></span>
     </template>
     <script>
         Polymer({
@@ -47,6 +47,9 @@
                 notify: true
               },
               icon: String
+            },
+            attached: function() {
+              this.addEventListener('tap', this._toggleList.bind(this));
             },
             _toggleList: function(){
               this.showList = !this.showList;

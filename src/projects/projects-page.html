@@ -72,7 +72,8 @@
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls"
       handle-as="json"
       last-response="{{pullrequests}}"></authenticated-ajax>
-    <preview-list hidden$="[[shouldHideProjects]]">
+
+    <preview-list hidden$="[[!showProjectsList]]">
       <search-box value="{{searchWord}}"></search-box>
       <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
         <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
@@ -82,13 +83,13 @@
       </template>
     </preview-list>
 
-    <project-pull-requests hidden$="[[shouldHidePulls]]" route="{{nameTail}}" tabindex="0"
+    <project-pull-requests hidden$="[[!showPullList]]" route="{{nameTail}}" tabindex="0"
                            project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
                            prid-selected="[[prid]]"></project-pull-requests>
 
     <div class="tabs">
       <list-tab show-list="{{showProjectsList}}" icon="icons:view-list">Repositories</list-tab>
-      <list-tab show-list="{{showPullList}}" icon="editor:merge-type">Pull Requests</list-tab>
+      <list-tab show-list="{{showPullList}}" hidden$=[[!projectSelected]] icon="editor:merge-type">Pull Requests</list-tab>
     </div>
 
     <iron-pages class="project"
@@ -118,14 +119,6 @@
         route: {
           type: Object,
           notify: true
-        },
-        shouldHideProjects: {
-          type: Boolean,
-          computed: '_shouldHideProjects(pullRequestSelected, showProjectsList)'
-        },
-        shouldHidePulls: {
-          type: Boolean,
-          computed: '_shouldHidePulls(projectSelected, showPullList)'
         },
         prid: {
           type: Number,
@@ -181,7 +174,10 @@
         activeProject: Object
       },
       observers: [
-        'chooseProject(projectTitle.*)'
+        'chooseProject(projectTitle.*)',
+        '_resetListsOnProjectChange(projectSelected)',
+        '_resetListsOnPullChange(pullRequestSelected)'
+
       ],
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
@@ -214,14 +210,15 @@
         } else if (!pullRequestSelected) {
           return 'overview';
         }
-        this.showProjectsList = true;
         return 'pr';
       },
-      _shouldHideProjects: function(pullRequestSelected, showProjectsList) {
-        return (showProjectsList);
+      _resetListsOnProjectChange: function(newValue) {
+        console.log(newValue);
+        this.showProjectsList = true;
+        this.showPullList = newValue;
       },
-      _shouldHidePulls: function(projectSelected, showPullList) {
-        return (!projectSelected || !showPullList);
+      _resetListsOnPullChange: function(newValue) {
+        this.showProjectsList = this.showProjectsList && !newValue;
       }
     });
   </script>
