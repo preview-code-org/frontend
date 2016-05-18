@@ -142,7 +142,7 @@
       properties: {
         route: Object,
         project: Object,
-        prid: String,
+        prid: Number,
         diff: String,
         pullrequests: Array,
         pr: {
@@ -158,9 +158,8 @@
         this.$.ajaxDiff.generateRequest();
       },
       _getPR: function(pullrequests, prid) {
-        var number = parseInt(prid);
         return pullrequests.filter(function(pr) {
-          return pr.number === number;
+          return pr.number === prid;
         })[0];
       }
     });

@@ -92,7 +92,7 @@
       <template is="dom-repeat" items="[[_filter(pullrequests, status, search)]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
-                show-status="[[_equals('All', status)]]"
+                show-status="[[_equals('All', status)]]" selected="[[_equals(pridSelected, pr.number)]]"
                 on-keydown="maybeSelectPR" on-tap="_resetButton"></project-pull-request-list-item>
         </a>
       </template>
@@ -105,6 +105,7 @@
       properties: {
         project: Object,
         route: Object,
+        pridSelected: Number,
         search: {
           type: String,
           value: '',
@@ -138,18 +139,10 @@
       _equals: function(one, other) {
         return one === other;
       },
-      _shouldBeAtTop: function(small) {
-        return small ? 'bottom' : 'top';
-      },
       maybeSelectPR: function(e) {
         if (e.keyCode === 13) {
           this.set('route.path', '/pulls/' + e.model.pr.number + '/overview');
         }
-      },
-      _has: function() {
-        return Array.prototype.slice.call(arguments).reduce(function(prev, current) {
-          return prev && !!current;
-        }, true);
       },
       _showProjects: function() {
         return this.projectButtonClicked = !this.projectButtonClicked;

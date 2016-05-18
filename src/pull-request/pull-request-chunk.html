@@ -30,6 +30,9 @@
       :host([collapsed]) {
         height: 3em;
       }
+      header {
+        min-height: 2em;
+      }
       h2.title {
         height: 25px;
       }
@@ -63,10 +66,11 @@
     <header>
       <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
       <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this chunk" value="{{title}}"></paper-input>
-      <h2 hidden$="[[editable]]">[[title]]</h2>
+      <h2 hidden$="[[_is(editable, title)]]">[[title]]</h2>
       <markdown-input
+        hidden$="[[_is(editable, description)]]"
         disabled="[[!editable]]"
-        label="Enter a description for these changes"
+        label="Enter a description for these changes. Markdown is supported."
         markdown="{{description}}"
         project="[[project]]"></markdown-input>
     </header>
@@ -101,7 +105,10 @@
         },
         chunk: Object,
         title: String,
-        description: String,
+        description: {
+          type: String,
+          value: ''
+        },
         showComments: {
           type: Boolean,
           value: true
@@ -133,8 +140,11 @@
       _toggleComments: function() {
         this.showComments = !this.showComments;
       },
-      _toggleEditable: function(isEditable) {
-        this.showComments = this.showComments && !isEditable
+      _toggleEditable: function(editable) {
+        this.showComments = this.showComments && !editable
+      },
+      _is: function(editable, description) {
+        return !editable && description;
       }
     });
   </script>
