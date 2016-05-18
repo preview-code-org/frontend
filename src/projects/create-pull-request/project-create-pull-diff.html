@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../util/fade-in-behavior.html">
 <link rel="import" href="../../pull-request/pull-request-diff.html">
 
@@ -21,18 +22,31 @@
       h3 {
         margin-bottom: 0;
       }
+      paper-button {
+        background-color: var(--primary-action-green);
+        color: white;
+        display: block;
+        max-width: 215px;
+        margin-top: 15px;
+        margin-left: auto;
+        margin-right: auto;
+      }
     </style>
     <div class="title">
       <h2>Describe your changes</h2>
       <h3>You can drag the different chunks and diff views separately.</h3>
+
+      <paper-button raised>Create pull request</paper-button>
     </div>
-    <pull-request-diff editable data-route="diff" diff="[[diff]]"></pull-request-diff>
+    <pull-request-diff editable diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]"></pull-request-diff>
   </template>
   <script>
     Polymer({
       is: 'project-create-pull-diff',
       properties: {
-        diff: String
+        diff: String,
+        baseUrl: String,
+        sha: String
       },
       behaviors: [FadeInBehavior]
     });

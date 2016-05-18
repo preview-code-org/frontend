@@ -84,6 +84,7 @@
         <project-pull-requests hidden$="[[!projectSelected]]" route="{{nameTail}}" tabindex="0"
                                project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
                                project-button-clicked="{{projectButtonClicked}}"
+                               prid-selected="[[prid]]"
                                hide-project-button="[[pullRequestSelected]]"></project-pull-requests>
 
         <iron-pages class="project"
@@ -92,7 +93,7 @@
             <no-project-selected data-route="no-selected"></no-project-selected>
             <project-overview-page data-route="overview" tabindex="0"
                 project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
-            <pull-request-page data-route="pr" prid="[[pr.pr]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
+            <pull-request-page data-route="pr" prid="[[prid]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
                                project="[[projectTitle]]"></pull-request-page>
         </iron-pages>
       </div>
@@ -118,6 +119,10 @@
         shouldShowProjects: {
           type: String,
           computed: '_shouldShowProjects(projectSelected, pullRequestSelected, projectButtonClicked)'
+        },
+        prid: {
+          type: Number,
+          computed: '_parseInt(pr.pr)'
         },
         projects: {
           type: Array,
@@ -175,24 +180,17 @@
 
         this.$.ajaxPullRequest.generateRequest();
       },
-      _resolvePath: function(owner, name) {
-        return this.resolveUrl(owner + '/' + name + '/pulls');
-      },
       maybeOpenProject: function(e) {
         if (e.keyCode === 13) {
-          this.set('owner.owner', e.model.project.owner);
-          this.set('name.name', e.model.project.name);
-          this.set('nameTail.path', 'pulls');
+          this.set('route.path', e.model.project.owner + '/' + e.model.project.name + '/activity');
           this.$$('project-overview-page').focus();
         }
       },
-      _has: function() {
-        return Array.prototype.slice.call(arguments).reduce(function(prev, current) {
-          return prev && !!current;
-        }, true);
+      _parseInt: function(num) {
+        return parseInt(num);
       },
-      _isActiveProject: function(name, project, activeProject) {
-        return !!name && project === activeProject;
+      _isActiveProject: function(project, activeProject) {
+        return project === activeProject;
       },
       _getCurrentView: function(projectSelected, pullRequestSelected) {
         if (!projectSelected) {

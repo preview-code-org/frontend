@@ -1,0 +1,12 @@
+[
+  [
+    {
+      "file": "README.md",
+      "diffId": "@@ -1 +1,32 @@"
+    },
+    {
+      "file": "src/service-worker.js",
+      "diffId": "@@ -0,0 +1,51 @@"
+    }
+  ]
+]
