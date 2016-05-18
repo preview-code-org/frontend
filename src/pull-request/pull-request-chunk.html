@@ -76,7 +76,7 @@
     </header>
     <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight" disabled="[[!editable]]" on-remove="_diffRemoved">
       <template is="dom-repeat" items="[[chunk.diff]]">
-        <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]"></pull-request-diff-highlight>
+        <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
       </template>
     </sortable-js>
 

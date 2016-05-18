@@ -47,6 +47,7 @@
 
     <header>
       [[file]]
+      <a href$="[[fileUrl]]" target="_blank">Full file</a>
       <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
     </header>
     <pre>
@@ -63,6 +64,7 @@
           type: String,
           observer: '_render'
         },
+        fileUrl: String,
         collapsed: {
           type: Boolean,
           reflectToAttribute: true

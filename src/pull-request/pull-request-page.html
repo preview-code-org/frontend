@@ -134,7 +134,8 @@
                 fallback-selection="404">
       <pull-request-general-information data-route="overview" class="overview"
         pull-request="[[pr]]" project="[[project]]"></pull-request-general-information>
-      <pull-request-diff data-route="diff" diff="[[diff]]" ordering="[[ordering]]"></pull-request-diff>
+      <pull-request-diff data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
+          base-url="[[pr.head.repo.html_url]]" sha="[[pr.head.sha]]"></pull-request-diff>
       <pull-request-commits data-route="commits" pull-request="[[pr]]" project="[[project]]"></pull-request-commits>
 
       <span data-route="404">

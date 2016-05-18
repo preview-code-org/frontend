@@ -60,8 +60,8 @@
           class="draggable"
           chunk="[[chunk]]"
           on-empty="_removeChunk"
-          editable=[[editable]]>
-        </pull-request-chunk>
+          editable="[[editable]]"
+          ></pull-request-chunk>
       </template>
     </div>
 
@@ -74,7 +74,8 @@
           type: Boolean,
           value: false
         },
-        pullRequest: Object,
+        baseUrl: String,
+        sha: String,
         additions: {
           type: Number,
           value: 0
@@ -88,6 +89,12 @@
           observer: '_parseDiffToChunks'
         },
         chunks: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+        ordering: {
           type: Array,
           value: function() {
             return [];
@@ -196,8 +203,10 @@
                   fileHeader = 'from ' + fromFile + ' to ' + toFile;
                 }
               }
+              var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileHeader;
               chunks.push({
                 file: fileHeader,
+                fileUrl: fileUrl,
                 diffId: chunk[1],
                 changes: chunk[2]
               });
