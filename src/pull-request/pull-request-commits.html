@@ -63,9 +63,9 @@
               <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
             </div>
             <div class="container">
-              <marked-github-element class="message" markdown="{{_getFirst(item.commit.message)}}" name="{{name}}" owner="{{owner}}"></marked-github-element>
-              <hide-content class="commit-text" hidden$="{{_empty(item.commit.message)}}">
-                <marked-github-element class="description" markdown="{{_getLast(item.commit.message)}}" name="{{name}}" owner="{{owner}}"></marked-github-element>
+              <marked-github-element class="message" markdown="[[_getFirst(item.commit.message)]]" project="[[project]]"></marked-github-element>
+              <hide-content class="commit-text" hidden$="[[_empty(item.commit.message)]]">
+                <marked-github-element class="description" markdown="[[_getLast(item.commit.message)]]" project="[[project]]"></marked-github-element>
               </hide-content>
             </div>
           </div>
@@ -80,8 +80,7 @@
       properties: {
         pullRequest: Object,
         commits: Array,
-        owner: String,
-        name, String
+        project: Object
       },
       observers: [
         '_fireAjax(pullRequest)',

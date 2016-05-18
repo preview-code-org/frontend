@@ -110,10 +110,10 @@
           </template>
         </tags-list>
       </div>
-      <marked-github-element markdown="[[pullRequest.body]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+      <marked-github-element markdown="[[pullRequest.body]]" project="[[project]]"></marked-github-element>
       <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
     </div>
-    <pull-request-comments comments={{comments}} owner="[[owner]]" name="[[name]]"></pull-request-comments>
+    <pull-request-comments comments={{comments}} project="[[project]]"></pull-request-comments>
   </template>
   <script>
     Polymer({
@@ -123,8 +123,7 @@
         comments: Array,
         issue: Object,
         pullRequest: Object,
-        owner: String,
-        name: String
+        project: Object
       },
       observers: [
         '_fireAjax(pullRequest)',

@@ -32,19 +32,17 @@
       }
     </style>
 
-    <paper-input class="title" label="Enter a pull request title" value="{{title}}"></paper-input>
+    <paper-input class="title" label="Enter a pull request title" value="[[title]]"></paper-input>
     <markdown-input
       label="Enter a description for your pull request. Markdown is supported."
-      owner="[[owner]]"
-      name="[[name]]"
-      markdown="{{description}}"></markdown-input>
+      project="[[project]]"
+      markdown="[[descriptiom]]"></markdown-input>
   </template>
   <script>
     Polymer({
       is: 'project-create-pull-request-description',
       properties: {
-        owner: String,
-        name: String,
+        project: Object,
         title: String,
         description: String
       },

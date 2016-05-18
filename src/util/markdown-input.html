@@ -47,15 +47,14 @@
     </style>
 
     <paper-textarea hidden$="[[!hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
-    <marked-github-element hidden$="[[hidePreview]]" markdown="[[markdown]]" owner="[[owner]]" name="[[name]]"></marked-github-element>
+    <marked-github-element hidden$="[[hidePreview]]" markdown="[[markdown]]" project="[[project]]"></marked-github-element>
     <paper-toggle-button hidden$="[[disabled]]" active="{{previewToggle}}">Toggle Preview</paper-toggle-button>
   </template>
   <script>
     Polymer({
       is: 'markdown-input',
       properties: {
-        owner: String,
-        name: String,
+        project: Object,
         disabled: {
           type: Boolean,
           value: false

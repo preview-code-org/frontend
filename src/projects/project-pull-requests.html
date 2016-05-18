@@ -76,7 +76,7 @@
     </style>
     <preview-list hide-end-indicator>
       <iron-icon hidden$="{{!hideProjectButton}}" class$="back-button [[projectButtonClicked]]" icon="icon:icons:arrow-back" on-tap="_showProjects"></iron-icon>
-      <h2>[[name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
+      <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
       <div class="header">
         <search-box value="{{search}}"></search-box>
         <div class=dropdown>
@@ -103,8 +103,7 @@
       is: 'project-pull-requests',
       behaviors: [searchBehavior],
       properties: {
-        owner: String,
-        name: String,
+        project: Object,
         route: Object,
         search: {
           type: String,
@@ -141,9 +140,6 @@
       },
       _shouldBeAtTop: function(small) {
         return small ? 'bottom' : 'top';
-      },
-      _withOwnerOnSmall: function(small, name, owner) {
-        return name + (small ? ' by ' + owner : '');
       },
       maybeSelectPR: function(e) {
         if (e.keyCode === 13) {
