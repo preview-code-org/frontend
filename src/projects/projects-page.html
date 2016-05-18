@@ -57,14 +57,11 @@
       search-box {
         margin-top:19.920px;
       }
-      .tab-content {
-        display:block;
-        transform: rotate(0.25turn);
-      }
-      .tabs{
-        display:flex;
+      .tabs {
         flex-direction: column;
         position: absolute;
+        transform: rotate(0.25turn);
+        transform-origin: bottom left;
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
@@ -90,8 +87,8 @@
                            prid-selected="[[prid]]"></project-pull-requests>
 
     <div class="tabs">
-      <list-tab show-list="{{showProjectsList}}"><iron-icon icon="icons:view-list"></iron-icon></list-tab>
-      <list-tab show-list="{{showPullList}}"><iron-icon icon="editor:merge-type"></iron-icon></list-tab>
+      <list-tab show-list="{{showProjectsList}}" icon="icons:view-list">Repositories</list-tab>
+      <list-tab show-list="{{showPullList}}" icon="editor:merge-type">Pull Requests</list-tab>
     </div>
 
     <iron-pages class="project"

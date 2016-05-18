@@ -1,26 +1,52 @@
 
 <dom-module id="list-tab">
     <template>
-        <style>
-            :host {
-                display: block;
-                width:24px;
-                height:24px;
-                margin: 1px;
-                background-color: white;
-            }
-        </style>
-          <content on-tap="_toggleList"></content>
+      <style>
+        :host {
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+          border-top-left-radius: 0.5em;
+          border-top-right-radius: 0.5em;
+          cursor: pointer;
+          display: inline-block;
+          padding: 0.5em 1em;
+          background-color: var(--primary-background-color);
+          /*-webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+          box-shadow: 3px 0 8px 0 rgba(0,0,0,0.2);*/
+          border-top: solid 3px rgba(0,0,0,0.2);
+          border-left: solid 1px rgba(0,0,0,0.2);
+          border-right: solid 3px rgba(0,0,0,0.2);
+        }
+        iron-icon {
+          margin-left: 24px;
+          display: inline-block;
+          transform: rotate(-0.25turn);
+          transform-origin: bottom left;
+        }
+        span {
+          margin-left: -24px;
+          line-height: 24px;
+          vertical-align: middle;
+        }
+      </style>
+
+      <template is="dom-if" if="[[icon]]">
+        <iron-icon icon="[[icon]]"></iron-icon>
+      </template>
+      <span on-tap="_toggleList"><content></content></span>
     </template>
     <script>
         Polymer({
             is: 'list-tab',
             properties: {
               showList: {
-                value: true,
                 type: Boolean,
+                value: true,
                 notify: true
               },
+              icon: String
             },
             _toggleList: function(){
               this.showList = !this.showList;
