@@ -24,5 +24,14 @@ This code may only be used under the BSD style license found at http://polymer.g
 <body>
   <span id="browser-sync-binding"></span>
   <rite-app></rite-app>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then(function() {
+        console.log('Service Worker Registered');
+      });
+  }
+  </script>
 </body>
 </html>
