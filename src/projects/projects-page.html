@@ -28,41 +28,62 @@
       [hidden] {
         display: none !important;
       }
-      .hide {
-        -webkit-transition: all 0.3s ease;
-        -moz-transition: all 0.3s ease;
-        -ms-transition: all 0.3s ease;
-        -o-transition: all 0.3s ease;
-        transition: all 0.3s ease;
-      }
-      .hide.true {
-        -webkit-box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
-        box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
-        margin-left: -var(--project-list-width);
-      }
-      .collapsable {
-        max-width: var(--project-list-width);
-        display: flex;
-        flex: 1;
-        height: calc(100vh - 48px);
+      aside {
+        position: fixed;
         z-index: 2;
-        left: var(--sidebar-width);
-      }
-      preview-list {
-        z-index: 3;
-        width: var(--project-list-width);
-      }
-      project-pull-requests {
-        z-index: 2;
-        left: var(--project-list-width);
-        width: var(--pull-request-list-width);
-      }
-      preview-list,
-      project-pull-requests {
         height: 100%;
+      }
+      aside .container {
+        position: relative;
+        max-width: 400px;
+        height: 100%;
+        display: flex;
+        transform: translateX(-102%);
+        will-change: transform;
+        transition: transform 0.2s linear;
+      }
+      aside.no-list {
+        position: relative;
+        flex: 1;
+        max-width: 0;
+      }
+      aside:not(.no-list) .container {
+        transform: none;
+      }
+      iron-pages {
+        overflow: auto;
+        width: 100%;
+        flex: 1;
+        will-change: width;
+        transition: width 0.2s linear;
+      }
+      .filler {
+        width: 0;
+        max-width: 400px;
+        will-change: width;
+        transition: width 0.2s linear;
+        background-color: var(--secondary-background-color);
+      }
+      aside:not(.no-list) + .filler {
+        width: 400px;
+      }
+      aside:not(.no-list) + iron-pages {
+        width: calc(100vw - 400px);
+      }
+      .project-list,
+      .pull-list {
+        transition: width 0.2s linear;
+        min-width: 400px;
+        width: 400px;
+        flex: 1;
+        min-height: 100%;
         background-color: var(--primary-background-color);
         -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+      }
+      .project-list.false,
+      .pull-list.false {
+        width: 0;
       }
       .project {
         display: flex;
@@ -70,16 +91,11 @@
       project-overview-page {
         flex: 1;
       }
-      project-overview-page,
-      preview-list {
-        overflow-y: auto;
-        overflow-x: hidden;
-      }
       a {
         color: inherit;
       }
       search-box {
-        margin-top:19.920px;
+        margin-top: 19.920px;
       }
       .tabs {
         z-index: 4;
@@ -99,12 +115,6 @@
         -webkit-box-shadow: inset 0 3px 8px 2px rgba(0,0,0,0.5);
         box-shadow: inset 0 3px 8px 2px rgba(0,0,0,0.5);
       }
-      iron-pages {
-        flex: 1;
-        z-index: 1;
-        flex-basis: 100%;
-        overflow: auto;
-      }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
     <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{prTail}}" active="{{pullRequestSelected}}"></carbon-route>
@@ -117,25 +127,30 @@
 
     <div class="tabs">
       <div class="rotate">
-        <list-tab selected="{{showProjectsList}}" icon="icons:view-list">Repositories</list-tab><list-tab selected="{{showPullList}}" hidden$=[[!projectSelected]] icon="editor:merge-type">Pull Requests</list-tab>
+        <list-tab selected="{{showProjectsList}}" icon="icons:view-list">Repositories</list-tab>
+        <list-tab selected="{{showPullList}}" icon="editor:merge-type">Pull Requests</list-tab>
       </div>
     </div>
-    <div class$="collapsable hide [[!showProjectsList]]">
-      <preview-list>
-        <search-box value="{{searchWord}}"></search-box>
-        <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
-          <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
-            <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
-                               tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
-          </a>
-        </template>
-      </preview-list>
+    <aside class$="collapsable [[_calcListClass(showProjectsList, showPullList)]]">
+      <div class="container">
+        <div class="project-list" hidden$="[[!showProjectsList]]">
+          <preview-list>
+            <search-box value="{{searchWord}}"></search-box>
+            <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
+              <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
+                <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
+                                   tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
+              </a>
+            </template>
+          </preview-list>
+        </div>
 
-      <project-pull-requests class$="hide [[!showPullList]]" route="{{nameTail}}" tabindex="0"
+        <project-pull-requests class$="pull-list" hidden$="[[!showPullList]]" route="{{nameTail}}" tabindex="0"
                              project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
                              prid-selected="[[prid]]"></project-pull-requests>
-    </div>
-
+      </div>
+    </aside>
+    <div class="filler"></div>
     <iron-pages class="project"
                 selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
                 attr-for-selected="data-route">
@@ -244,6 +259,19 @@
       },
       _parseInt: function(num) {
         return parseInt(num);
+      },
+      _calcListClass: function(showProjectsList, showPullList) {
+        if (!showProjectsList && !showPullList) {
+          return 'no-list';
+        } else if (showProjectsList && showPullList) {
+          return 'both-list';
+        }
+        return 'one-list';
+      },
+      _has: function() {
+        return Array.prototype.slice.call(arguments).reduce(function(prev, current) {
+          return prev && !!current;
+        }, true);
       },
       _isActiveProject: function(project, activeProject) {
         return project === activeProject;
