@@ -98,7 +98,7 @@
         this.$.ajaxComments.generateRequest();
       },
       _getFirst: function(project, text) {
-        return this.createMarkdownSubstituter(project.owner, project.name)(null, text.split('\n\n')[0]);
+        return text.split('\n\n')[0];
       },
       _getLast: function(text) {
         return text.substring(text.indexOf('\n\n')+1);

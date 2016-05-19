@@ -55,8 +55,8 @@
       </div>
       <div class="main">
         <list-item-label type="title">
-          <iron-icon title="CI passed" class$="icon-passed [[_cistatus]]" icon="icons:check-circle"></iron-icon>
-          <iron-icon title="CI failed" class$="icon-failed [[_cistatus]]" icon="icons:cancel"></iron-icon>
+        <a href$="{{_latestStatusUrl}}"><iron-icon title="CI passed" class$="icon-passed [[_cistatus]]" icon="icons:check-circle"></iron-icon></a>
+        <a href$="{{_latestStatusUrl}}">  <iron-icon title="CI failed" class$="icon-failed [[_cistatus]]" icon="icons:cancel"></iron-icon></a>
           <span title$="[[pr.title]]">[[pr.title]]</span>
         </list-item-label>
         <list-item-label type="subtitle">[[pr.user.login]]</list-item-label>
@@ -86,6 +86,7 @@
         issue: Object,
         showStatus: Boolean,
         selected: Boolean,
+        statuses: Array,
         _cistatus: {
           type: String,
           computed: '_getCIStatus(statuses)'
@@ -93,6 +94,10 @@
         _updatedAtString: {
           type: String,
           computed: 'toDateString(pr.updated_at)'
+        },
+        _latestStatusUrl: {
+          type: String,
+          computed: '_getLatestStatusUrl(statuses)'
         }
       },
       observers: [
@@ -127,6 +132,11 @@
       },
       _setStatus: function(pr, issue) {
         pr.labels = issue.labels;
+      },
+      _getLatestStatusUrl: function(statuses) {
+        if (statuses[0] !== undefined) {
+          return statuses[0].target_url;
+        }
       }
     });
   </script>

@@ -125,14 +125,16 @@
           }
         }
       },
-
+      observers: [
+        '_resetSearch(pridSelected)'
+      ],
       _filter: function(pullrequests, status, searchWord) {
         if (status !== 'All') {
           pullrequests = pullrequests.filter(function(e) {
             return e.status === status;
           });
         }
-        return this.search(pullrequests, searchWord);
+        return this._search(pullrequests, searchWord);
       },
       _equals: function(one, other) {
         return one === other;
@@ -147,6 +149,12 @@
           return prev && !!current;
         }, true);
       },
+      _resetButton: function() {
+        this.projectButtonClicked = false;
+      },
+      _resetSearch: function(){
+        this.search = '';
+      }
     });
   </script>
 </dom-module>
