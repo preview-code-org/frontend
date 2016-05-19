@@ -1,5 +1,4 @@
 <link rel="import" href="../bower_components/Sortable/Sortable.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="pull-request-diff-highlight.html">
 <link rel="import" href="pull-request-add-comments.html">
@@ -62,6 +61,10 @@
         --paper-input-container-color: var(--secondary-background-color);
         --paper-input-container-focus-color: var(--anchor-color);
       }
+      .toggle-comments {
+        background-color: var(--secondary-background-color);
+        padding: 0.5em;
+      }
     </style>
     <header>
       <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
@@ -80,12 +83,9 @@
       </template>
     </sortable-js>
 
-    <iron-icon
-      icon="icons:arrow-downward"
-      class="toggle-comments-icon"
-      on-tap="_toggleComments"
-      hidden$="[[editable]]"
-    ></iron-icon>
+    <p class="toggle-comments" on-tap="_toggleComments" hidden$="[[editable]]">
+      comments <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
+    </p>
     <div class="chunk-comment" hidden$="[[showComments]]">
       <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
         <pull-request-comment
