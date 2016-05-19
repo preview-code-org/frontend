@@ -83,8 +83,9 @@
       </template>
     </sortable-js>
 
-    <p class="toggle-comments" on-tap="_toggleComments" hidden$="[[editable]]">
-      comments <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
+    <p class="toggle-comments" hidden$="[[editable]]">
+      <span>comments</span>
+      <collapse-icon collapsed="{{showComments}}"></collapse-icon>
     </p>
     <div class="chunk-comment" hidden$="[[showComments]]">
       <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
@@ -139,9 +140,6 @@
         if (!this.chunk.diff.length) {
           this.fire('empty');
         }
-      },
-      _toggleComments: function() {
-        this.showComments = !this.showComments;
       },
       _toggleEditable: function(editable) {
         this.showComments = this.showComments && !editable

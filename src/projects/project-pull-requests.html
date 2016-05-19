@@ -134,7 +134,7 @@
             return e.status === status;
           });
         }
-        return this._search(pullrequests, searchWord);
+        return this.search(pullrequests, searchWord);
       },
       _equals: function(one, other) {
         return one === other;
@@ -153,7 +153,7 @@
         this.projectButtonClicked = false;
       },
       _resetSearch: function(){
-        this.search = '';
+        this.searchWord = '';
       }
     });
   </script>
