@@ -85,7 +85,7 @@
   <script>
     Polymer({
       is: 'pull-request-commits',
-      behaviors: [ToDateStringBehavior, ParseGitHubBehavior],
+      behaviors: [ToDateStringBehavior, SubstituteRenderedGitHubMarkdownBehavior],
       properties: {
         pullRequest: Object,
         commits: Array,
@@ -98,7 +98,7 @@
         this.$.ajaxComments.generateRequest();
       },
       _getFirst: function(project, text) {
-        return this.parseMarkdown(project.owner, project.name)(null, text.split('\n\n')[0]);
+        return this.createMarkdownSubstituter(project.owner, project.name)(null, text.split('\n\n')[0]);
       },
       _getLast: function(text) {
         return text.substring(text.indexOf('\n\n')+1);

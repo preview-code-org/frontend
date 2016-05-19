@@ -8,8 +8,8 @@
     return githublink + url + '" target="_blank">' + text + '</a>';
   }
 
-  ParseGitHubBehavior = {
-    parseMarkdown: function(owner, name) {
+  SubstituteRenderedGitHubMarkdownBehavior = {
+    createMarkdownSubstituter: function(owner, name) {
       var replacers = [
         // Substitute issue references #1234
         {
@@ -73,14 +73,14 @@
         @apply(--commits);
       }
     </style>
-    <marked-element markdown="[[markdown]]" callback="[[parseMarkdown(project.owner, project.name)]]">
+    <marked-element markdown="[[markdown]]" callback="[[createMarkdownSubstituter(project.owner, project.name)]]">
       <div class="markdown-html"></div>
     </marked-element>
   </template>
   <script>
     Polymer({
       is: 'marked-github-element',
-      behaviors: [ParseGitHubBehavior],
+      behaviors: [SubstituteRenderedGitHubMarkdownBehavior],
       properties: {
         project: Object,
         markdown: String
