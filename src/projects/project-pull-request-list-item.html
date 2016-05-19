@@ -96,7 +96,7 @@
         }
       },
       observers: [
-        '_fireAjax(pr)'
+        '_fireAjax(pr)','_setStatus(pr, issue)'
       ],
       _hasLabels: function(showStatus, issue) {
         return !showStatus || !issue.labels.length;
@@ -124,6 +124,9 @@
       _fireAjax: function() {
         this.$.ajaxIssue.generateRequest();
         this.$.ajaxStatuses.generateRequest();
+      },
+      _setStatus: function(pr, issue) {
+        pr.labels = issue.labels;
       }
     });
   </script>

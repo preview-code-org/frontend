@@ -1,24 +1,37 @@
 <script>
 searchBehavior = {
-  _search: function(pullrequests, search, type) {
-    search = search.toLowerCase();
-    if (search === '') {
-      return pullrequests
+
+  properties: {
+    getFields: {
+      type: Function
+    },
+    search: {
+      type: Function,
+      value: function() {
+        return function(list, searchWord) {
+          return list;
+        }
+      }
     }
-    else {
-      return pullrequests.filter(function(e) {
-        if(type === "project"){
-          if((e.name).toLowerCase().indexOf(search) > -1 || (e.owner).toLowerCase().indexOf(search) > -1){
-            return true;
-          }
-        }
-        else if(type === "pr"){
-          if((e.title).toLowerCase().indexOf(search) > -1 || (e.user.login).toLowerCase().indexOf(search) > -1){
-            return true;
-          }
-        }
-        return false;
-      });
+  },
+  observers: ['_setSearch(getFields)'],
+  _setSearch: function(getFields) {
+    this.search = function(list, searchWord) {
+      if (this.searchWord === ''){
+        return list;
+      }
+      else {
+        searchWord = searchWord.toLowerCase();
+        return list.filter(function(e) {
+          var count = 0;
+          getFields(e).forEach(function(f){
+            if (f.toLowerCase().indexOf(searchWord) > -1) {
+              count++;
+            }
+          });
+          return count > 0;
+        });
+      }
     }
   }
 };
