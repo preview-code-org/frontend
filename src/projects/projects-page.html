@@ -166,8 +166,8 @@
         getFields: {
           type: Function,
           value: function() {
-            return function(e) {
-              return [e.name, e.owner];
+            return function(projectData) {
+              return [projectData.name, projectData.owner];
             };
           }
         }

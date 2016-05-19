@@ -130,11 +130,11 @@
         getFields: {
           type: Function,
           value: function() {
-            return function(e) {
-              var array = [e.title, e.user.login];
-              if(e.labels !== undefined){
-                e.labels.forEach(function(f) {
-                  array.push(f.name);
+            return function(prData) {
+              var array = [prData.title, prData.user.login];
+              if (prData.labels !== undefined) {
+                prData.labels.forEach(function(label) {
+                  array.push(label.name);
                 });
               }
               return array;

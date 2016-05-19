@@ -22,14 +22,13 @@ searchBehavior = {
       }
       else {
         searchWord = searchWord.toLowerCase();
-        return list.filter(function(e) {
+        return list.filter(function(data) {
           var count = 0;
-          getFields(e).forEach(function(f){
-            if (f.toLowerCase().indexOf(searchWord) > -1) {
-              count++;
+          for(var i = 0; i < getFields(data).length; i++){
+            if(getFields(data)[i].toLowerCase().indexOf(searchWord) > -1){
+              return true;
             }
-          });
-          return count > 0;
+          }
         });
       }
     }
