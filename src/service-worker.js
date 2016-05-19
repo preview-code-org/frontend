@@ -28,7 +28,9 @@ function insertETagFromResponse(request, response) {
 self.addEventListener('fetch', function(event) {
   var request = event.request;
   if (request.method === 'GET'
-      && request.url.match('^https://api.github.com')) {
+      && request.url.match('^https://api.github.com')
+      // Diff views are fetched from the same end-points as normal PRs, so ignore these.
+      && request.headers.get('Accept') !== 'application/vnd.github.VERSION.diff') {
     event.respondWith(
       caches.open(cacheName).then(function(cache) {
         return cache.match(request)
