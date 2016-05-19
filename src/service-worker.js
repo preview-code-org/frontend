@@ -31,19 +31,25 @@ self.addEventListener('fetch', function(event) {
       && request.url.match('^https://api.github.com')) {
     event.respondWith(
       caches.open(cacheName).then(function(cache) {
-        return cache.match(request.url)
-          .then(function(response) {
+        return cache.match(request)
+          .then(function(oldResponse) {
             var newRequest = request;
-            if (response) {
-              newRequest = insertETagFromResponse(request, response);
+            if (oldResponse) {
+              newRequest = insertETagFromResponse(request, oldResponse);
             }
-            return fetch(newRequest).then(function(response) {
-              cache.put(newRequest, response.clone());
-              return response;
+            return fetch(newRequest).then(function(newResponse) {
+              if (newResponse.status === 304) {
+                return oldResponse;
+              }
+              cache.put(newRequest, newResponse.clone());
+              return newResponse;
             });
           })
           .catch(function(e) {
-            return cache.add(request);
+            return fetch(request).then(function(newResponse) {
+              cache.put(request, newResponse.clone());
+              return newResponse;
+            });
           });
       })
     );
