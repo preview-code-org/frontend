@@ -17,6 +17,8 @@
     <style>
       :host {
         flex: 1;
+        /*overflow: hidden;*/
+        display: flex;
         -webkit-transition: all 500ms ease;
         -moz-transition: all 500ms ease;
         -ms-transition: all 500ms ease;
@@ -39,9 +41,10 @@
         margin-left: -var(--project-list-width);
       }
       .collapsable {
-        position: fixed;
+        max-width: var(--project-list-width);
         display: flex;
-        height: 100%;
+        flex: 1;
+        height: calc(100vh - 48px);
         z-index: 2;
         left: var(--sidebar-width);
       }
@@ -81,9 +84,13 @@
       .tabs {
         z-index: 4;
         flex-direction: column;
-        position: fixed;
+        min-width: var(--sidebar-width);
+        max-width: var(--sidebar-width);
+        height: calc(100vh - 48px);
+        overflow: hidden;
       }
       .rotate {
+        flex: 1;
         margin-top: -var(--sidebar-width);
         background-color: var(--sidebar-background-color);
         width: 100vh;
@@ -93,10 +100,10 @@
         box-shadow: inset 0 3px 8px 2px rgba(0,0,0,0.5);
       }
       iron-pages {
+        flex: 1;
         z-index: 1;
-        position: fixed;
-        width: 100%;
-        height: 100%;
+        flex-basis: 100%;
+        overflow: auto;
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
