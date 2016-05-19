@@ -79,7 +79,7 @@
       <iron-icon hidden$="{{!hideProjectButton}}" class$="back-button [[projectButtonClicked]]" icon="icon:icons:arrow-back" on-tap="_showProjects"></iron-icon>
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
       <div class="header">
-        <search-box value="{{search}}"></search-box>
+        <search-box value="{{searchWord}}"></search-box>
         <div class=dropdown>
           <paper-dropdown-menu label="Pull request status" value="{{status}}">
             <paper-menu class="dropdown-content">
@@ -90,7 +90,7 @@
           </paper-dropdown-menu>
         </div>
       </div>
-      <template is="dom-repeat" items="[[_filter(pullrequests, status, search)]]" as="pr">
+      <template is="dom-repeat" items="[[_filter(pullrequests, status, searchWord)]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
                 show-status="[[_equals('All', status)]]" selected="[[_equals(pridSelected, pr.number)]]"
@@ -107,7 +107,7 @@
         project: Object,
         route: Object,
         pridSelected: Number,
-        search: {
+        searchWord: {
           type: String,
           value: '',
         },
@@ -126,16 +126,30 @@
         hideProjectButton: {
           type: String,
           value: ''
+        },
+        getFields: {
+          type: Function,
+          value: function() {
+            return function(prData) {
+              var array = [prData.title, prData.user.login];
+              if (prData.labels !== undefined) {
+                prData.labels.forEach(function(label) {
+                  array.push(label.name);
+                });
+              }
+              return array;
+            };
+          }
         }
       },
 
-      _filter: function(pullrequests, status, search) {
-        if (status === 'All') {
-          return this._search(pullrequests,search,'pr');
+      _filter: function(pullrequests, status, searchWord) {
+        if (status !== 'All') {
+          pullrequests = pullrequests.filter(function(e) {
+            return e.status === status;
+          });
         }
-        return this._search(pullrequests.filter(function(e) {
-          return e.status === status;
-        }),search,'pr');
+        return this.search(pullrequests, searchWord);
       },
       _equals: function(one, other) {
         return one === other;

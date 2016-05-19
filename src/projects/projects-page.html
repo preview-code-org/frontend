@@ -72,8 +72,8 @@
       last-response="{{pullrequests}}"></authenticated-ajax>
     <div class="container">
       <preview-list class$="[[shouldShowProjects]]">
-        <search-box value="{{search}}"></search-box>
-        <template is="dom-repeat" items="[[_search(projects,search,'project')]]" as="project">
+        <search-box value="{{searchWord}}"></search-box>
+        <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
           <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
             <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
                                tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
@@ -104,7 +104,7 @@
       is: 'projects-page',
       behaviors: [searchBehavior],
       properties: {
-        search: {
+        searchWord: {
           type: String,
           value: ''
         },
@@ -161,6 +161,14 @@
                 notification: true
               }
             ];
+          }
+        },
+        getFields: {
+          type: Function,
+          value: function() {
+            return function(projectData) {
+              return [projectData.name, projectData.owner];
+            };
           }
         }
       },
