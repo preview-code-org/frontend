@@ -16,8 +16,6 @@
 <dom-module id="pull-request-general-information">
   <template>
     <style>
-      :host {
-      }
       .description {
         background-color: var(--primary-background-color);
         -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
@@ -32,10 +30,11 @@
         padding: 1em;
         background-color: var(--tertiary-background-color);
       }
-      .sub-header {
-        height: 68px;
-        padding: 0.5em 1.5em;
-        border-bottom: solid 1px var(--secondary-background-color);
+      section {
+        display: flex;
+      }
+      section > * {
+        flex: 1;
       }
       header > * {
         vertical-align: middle;
@@ -68,15 +67,10 @@
         margin: 1em 0;
       }
       .sidebar {
-        float: right;
         margin: 1em 0;
         padding: 0 2em;
         border-left: solid 1px var(--secondary-background-color);
-      }
-      tags-list {
-        --tag-flex-direction: {
-          flex-direction: column;
-        }
+        max-width: 150px;
       }
     </style>
     <authenticated-ajax
@@ -100,18 +94,20 @@
         <branch-tag class="head" branch="[[pullRequest.base.label]]"></branch-tag>
         <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
       </header>
-      <div class="sub-header">
-        <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewer-list>
-      </div>
-      <div class="sidebar">
-        <tags-list>
-          <template is="dom-repeat" items="[[issue.labels]]">
-            <li>[[item.name]]</li>
-          </template>
-        </tags-list>
-      </div>
-      <marked-github-element markdown="[[pullRequest.body]]" project="[[project]]"></marked-github-element>
-      <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
+      <section>
+        <div>
+          <marked-github-element markdown="[[pullRequest.body]]" project="[[project]]"></marked-github-element>
+          <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
+        </div>
+        <div class="sidebar">
+          <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewers-list>
+          <tags-list>
+            <template is="dom-repeat" items="[[issue.labels]]">
+              <tag-list-item backgroundcolor="[[item.color]]">[[item.name]]</tag-list-item>
+            </template>
+          </tags-list>
+        </div>
+      </section>
     </div>
     <pull-request-comments comments={{comments}} project="[[project]]"></pull-request-comments>
   </template>
@@ -141,7 +137,7 @@
           return [];
         }
         assignee.lgtm = Math.random() > 0.5 ? 'true' : 'false';
-        return [assignee];
+        return [assignee, assignee];
       },
       _equals: function(one, other) {
         return one === other;

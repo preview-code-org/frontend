@@ -75,7 +75,7 @@
         project="[[project]]"></markdown-input>
     </header>
     <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight" disabled="[[!editable]]" on-remove="_diffRemoved">
-      <template is="dom-repeat" items="[[chunk.diff]]">
+      <template is="dom-repeat" items="[[chunk.diff]]" filter="_isNotEmptyDiff">
         <pull-request-diff-highlight code="[[item.changes]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
       </template>
     </sortable-js>
@@ -132,6 +132,9 @@
       observers: [
         '_toggleEditable(editable)'
       ],
+      _isNotEmptyDiff: function(diff) {
+        return diff.changes !== '';
+      },
       _diffRemoved: function() {
         if (!this.chunk.diff.length) {
           this.fire('empty');

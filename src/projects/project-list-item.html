@@ -1,17 +1,21 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="../bower_components/iron-behaviors/iron-control-state.html">
 <link rel="import" href="../list-items/column-list-item.html">
 <link rel="import" href="../list-items/list-item-label.html">
 
 <dom-module id="project-list-item">
   <template>
     <style>
+      :host {
+        outline: none;
+      }
       .indicator.true {
         background-color: var(--primary-action-red);
       }
     </style>
 
-    <column-list-item selected="[[selected]]">
+    <column-list-item selected="[[selected]]" focused="[[focused]]">
       <div class$="margin indicator [[project.notification]]"></div>
       <div class="main">
         <list-item-label type="title">[[project.name]]</list-item-label>
@@ -27,6 +31,7 @@
   <script>
     Polymer({
       is: 'project-list-item',
+      behaviors: [Polymer.IronControlState],
       properties: {
         project: Object,
         selected: {

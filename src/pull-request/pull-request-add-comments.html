@@ -1,19 +1,28 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../util/markdown-input.html">
 
 <dom-module id="pull-request-add-comments">
   <template>
     <style>
       :host {
         display: block;
-        padding: 2em 12.5%;
+        padding: 2em;
         border-bottom: solid 1px var(--secondary-background-color);
       }
       .comment-input{
         width: 100%;
       }
+      paper-button {
+        background-color: var(--primary-action-green);
+        color: white;
+        display: block;
+        margin-top: 5px;
+        margin-left: auto;
+        width: 150px;
+      }
     </style>
-    <paper-textarea class="comment-input" value="{{newtext}}"></paper-textarea>
+    <markdown-input markdown="{{newtext}}" project="[[project]]" label="Leave a comment."></markdown-input>
     <paper-button raised class="button" on-tap="_addComment">New comment</paper-button>
   </template>
   <script>

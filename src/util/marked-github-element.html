@@ -1,5 +1,48 @@
 <link rel="import" href="../bower_components/marked-element/marked-element.html">
 
+<script>
+(function() {
+  var githublink = '<a href="https://www.github.com/';
+
+  function toLink(url, text) {
+    return githublink + url + '" target="_blank">' + text + '</a>';
+  }
+
+  SubstituteRenderedGitHubMarkdownBehavior = {
+    createMarkdownSubstituter: function(owner, name) {
+      var replacers = [
+        // Substitute issue references #1234
+        {
+          regex: /&?#(\d+)/g,
+          callback: function(match, digits) {
+            // Character was escaped, we should modify these numbers
+            if (match.charAt(0) === '&') {
+              return match;
+            }
+            return toLink(owner + '/' + name + '/issues/' + digits, '#' + digits);
+          }
+        },
+        // Substitute user name references @TimvdLippe
+        {
+          regex: /\@(\w+)/g,
+          callback: function(match, username) {
+            return toLink(username, match);
+          }
+        }
+      ];
+
+      return function(err, text) {
+        for (var i = 0, l = replacers.length; i < l; i++) {
+          var replacer = replacers[i];
+          text = text.replace(replacer.regex, replacer.callback);
+        }
+        return text;
+      };
+    }
+  };
+})();
+</script>
+
 <dom-module id="marked-github-element">
   <template>
     <style>
@@ -30,55 +73,18 @@
         @apply(--commits);
       }
     </style>
-    <marked-element markdown="[[markdown]]" callback="[[parseMarkdown(project.owner, project.name)]]">
+    <marked-element markdown="[[markdown]]" callback="[[createMarkdownSubstituter(project.owner, project.name)]]">
       <div class="markdown-html"></div>
     </marked-element>
   </template>
   <script>
-  (function() {
-    var githublink = '<a href="https://www.github.com/';
-
-    function toLink(url, text) {
-      return githublink + url + '" target="_blank">' + text + '</a>';
-    }
-
     Polymer({
       is: 'marked-github-element',
+      behaviors: [SubstituteRenderedGitHubMarkdownBehavior],
       properties: {
         project: Object,
         markdown: String
-      },
-      parseMarkdown: function(owner, name) {
-        var replacers = [
-          // Substitute issue references #1234
-          {
-            regex: /&?#(\d+)/g,
-            callback: function(match, digits) {
-              // Character was escaped, we should modify these numbers
-              if (match.charAt(0) === '&') {
-                return match;
-              }
-              return toLink(owner + '/' + name + '/issues/' + digits, '#' + digits);
-            }
-          },
-          // Substitute user name references @TimvdLippe
-          {
-            regex: /\@(\w+)/g,
-            callback: function(match, username) {
-              return toLink(username, match);
-            }
-          }
-        ];
-
-        return function(err, text) {
-          for (var i = 0, l = replacers.length; i < l; i++) {
-            var replacer = replacers[i];
-            text = text.replace(replacer.regex, replacer.callback);
-          }
-          return text;
-        };
       }
-    });
-  })();
+  });
   </script>
 </dom-module>
