@@ -125,12 +125,12 @@
       },
       _hideSelectionMenu: function() {
         this.hideSelectionMenu = true;
-        this.fire('selected');
         this.$$('paper-input').focus();
       },
       _selectBranch: function(e) {
         if (e.keyCode === 13) {
           this.selected = e.model.branch;
+          this.fire('selected');
           this._hideSelectionMenu();
         }
       }
