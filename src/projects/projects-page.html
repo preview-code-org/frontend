@@ -31,30 +31,31 @@
         -moz-transition: all 0.3s ease;
         -ms-transition: all 0.3s ease;
         -o-transition: all 0.3s ease;
-        transition: all 0.3s ease
+        transition: all 0.3s ease;
       }
       .hide.true {
         -webkit-box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
         box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
-        margin-left: -400px;
+        margin-left: -var(--project-list-width);
       }
       .collapsable {
         position: fixed;
         display: flex;
         height: 100%;
         z-index: 2;
-        left: 48px;
+        left: var(--sidebar-width);
       }
       preview-list {
         z-index: 3;
+        width: var(--project-list-width);
       }
       project-pull-requests {
         z-index: 2;
-        left: 400px;
+        left: var(--project-list-width);
+        width: var(--pull-request-list-width);
       }
       preview-list,
       project-pull-requests {
-        width: 400px;
         height: 100%;
         background-color: var(--primary-background-color);
         -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
@@ -83,7 +84,7 @@
         position: fixed;
       }
       .rotate {
-        margin-top: -48px;
+        margin-top: -var(--sidebar-width);
         background-color: var(--sidebar-background-color);
         width: 100vh;
         transform: rotate(0.25turn);
