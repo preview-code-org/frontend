@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 
 <dom-module id="list-tab">
     <template>
@@ -7,52 +8,66 @@
           -moz-user-select: none;
           -ms-user-select: none;
           user-select: none;
-          border-top-left-radius: 0.5em;
-          border-top-right-radius: 0.5em;
           cursor: pointer;
           display: inline-block;
-          padding: 0.5em 1em;
-          background-color: var(--primary-background-color);
-          /*-webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
-          box-shadow: 3px 0 8px 0 rgba(0,0,0,0.2);*/
-          border-top: solid 3px rgba(0,0,0,0.2);
-          border-left: solid 1px rgba(0,0,0,0.2);
-          border-right: solid 3px rgba(0,0,0,0.2);
+          padding: 12px 24px;
+          line-height: 24px;
+          -webkit-transition: background 0.3s ease;
+          -moz-transition: background 0.3s ease;
+          -ms-transition: background 0.3s ease;
+          -o-transition: background 0.3s ease;
+          transition: background 0.3s ease;
         }
         iron-icon {
+          fill: var(--sidebar-text-color);
           margin-left: 24px;
           display: inline-block;
           transform: rotate(-0.25turn);
           transform-origin: bottom left;
         }
         span {
+          color: var(--sidebar-text-color);
           margin-left: -24px;
-          line-height: 24px;
           vertical-align: middle;
+          -moz-transform: scale(-1);
+          -o-transform: scale(-1);
+          -webkit-transform: scale(-1);
+          transform: scale(-1);
+          display: inline-block;
+        }
+        :host([selected]) {
+          background-color: var(--sidebar-selected-color);
+        }
+        :host([selected]) span {
+          color: var(--sidebar-selected-text-color);
+        }
+        :host([selected]) iron-icon {
+          fill: var(--sidebar-selected-text-color);
         }
       </style>
 
       <template is="dom-if" if="[[icon]]">
         <iron-icon icon="[[icon]]"></iron-icon>
       </template>
-      <span><content></content></span>
+      <span selected="[[selected]]"><content></content></span>
     </template>
     <script>
         Polymer({
             is: 'list-tab',
             properties: {
-              showList: {
+              selected: {
                 type: Boolean,
                 value: true,
-                notify: true
+                notify: true,
+                reflectToAttribute: true
               },
-              icon: String
+              icon: String,
             },
             attached: function() {
               this.addEventListener('tap', this._toggleList.bind(this));
             },
             _toggleList: function(){
-              this.showList = !this.showList;
+              this.selected = !this.selected;
             }
         });
     </script>

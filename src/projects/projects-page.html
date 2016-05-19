@@ -16,25 +16,49 @@
   <template>
     <style>
       :host {
-        display: flex;
         flex: 1;
         -webkit-transition: all 500ms ease;
         -moz-transition: all 500ms ease;
         -ms-transition: all 500ms ease;
         -o-transition: all 500ms ease;
         transition: all 500ms ease;
-        flex-direction: row;
-
       }
       [hidden] {
         display: none !important;
       }
-      preview-list, .project {
-        flex: 1;
+      .hide {
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease
+      }
+      .hide.true {
+        -webkit-box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
+        margin-left: -400px;
+      }
+      .collapsable {
+        position: fixed;
+        display: flex;
+        height: 100%;
+        z-index: 2;
+        left: 48px;
       }
       preview-list {
-        flex: 0 0 var(--project-list-width);
-        border-right: solid 4px var(--secondary-background-color);
+        z-index: 3;
+      }
+      project-pull-requests {
+        z-index: 2;
+        left: 400px;
+      }
+      preview-list,
+      project-pull-requests {
+        width: 400px;
+        height: 100%;
+        background-color: var(--primary-background-color);
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
       }
       .project {
         display: flex;
@@ -46,10 +70,6 @@
       preview-list {
         overflow-y: auto;
         overflow-x: hidden;
-        -webkit-transition: flex 0.5s ease;
-        -moz-transition: flex 0.5s ease;
-        -o-transition: flex 0.5s ease;
-        transition: flex 0.5s ease;
       }
       a {
         color: inherit;
@@ -58,10 +78,24 @@
         margin-top:19.920px;
       }
       .tabs {
+        z-index: 4;
         flex-direction: column;
-        position: absolute;
+        position: fixed;
+      }
+      .rotate {
+        margin-top: -48px;
+        background-color: var(--sidebar-background-color);
+        width: 100vh;
         transform: rotate(0.25turn);
         transform-origin: bottom left;
+        -webkit-box-shadow: inset 0 3px 8px 2px rgba(0,0,0,0.5);
+        box-shadow: inset 0 3px 8px 2px rgba(0,0,0,0.5);
+      }
+      iron-pages {
+        z-index: 1;
+        position: fixed;
+        width: 100%;
+        height: 100%;
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
@@ -73,23 +107,25 @@
       handle-as="json"
       last-response="{{pullrequests}}"></authenticated-ajax>
 
-    <preview-list hidden$="[[!showProjectsList]]">
-      <search-box value="{{searchWord}}"></search-box>
-      <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
-        <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
-          <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
-                             tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
-        </a>
-      </template>
-    </preview-list>
-
-    <project-pull-requests hidden$="[[!showPullList]]" route="{{nameTail}}" tabindex="0"
-                           project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
-                           prid-selected="[[prid]]"></project-pull-requests>
-
     <div class="tabs">
-      <list-tab show-list="{{showProjectsList}}" icon="icons:view-list">Repositories</list-tab>
-      <list-tab show-list="{{showPullList}}" hidden$=[[!projectSelected]] icon="editor:merge-type">Pull Requests</list-tab>
+      <div class="rotate">
+        <list-tab selected="{{showProjectsList}}" icon="icons:view-list">Repositories</list-tab><list-tab selected="{{showPullList}}" hidden$=[[!projectSelected]] icon="editor:merge-type">Pull Requests</list-tab>
+      </div>
+    </div>
+    <div class$="collapsable hide [[!showProjectsList]]">
+      <preview-list>
+        <search-box value="{{searchWord}}"></search-box>
+        <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
+          <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
+            <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
+                               tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
+          </a>
+        </template>
+      </preview-list>
+
+      <project-pull-requests class$="hide [[!showPullList]]" route="{{nameTail}}" tabindex="0"
+                             project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
+                             prid-selected="[[prid]]"></project-pull-requests>
     </div>
 
     <iron-pages class="project"
@@ -213,7 +249,6 @@
         return 'pr';
       },
       _resetListsOnProjectChange: function(newValue) {
-        console.log(newValue);
         this.showProjectsList = true;
         this.showPullList = newValue;
       },
