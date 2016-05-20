@@ -241,8 +241,8 @@
         'chooseProject(projectTitle.*)',
         '_resetListsOnProjectChange(projectSelected)',
         '_resetListsOnPullChange(pullRequestSelected)',
-        '_expandGeneralInfoArea(expandGeneralInfo)'
-
+        '_expandGeneralInfoArea(expandGeneralInfo)',
+        '_resetExpandGeneralInfoArea(showProjectsList)'
       ],
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
@@ -302,6 +302,11 @@
       _expandGeneralInfoArea(expandGeneralInfo) {
         if(expandGeneralInfo){
           this.showProjectsList = false;
+        }
+      },
+      _resetExpandGeneralInfoArea(showProjectsList){
+        if(showProjectsList){
+          this.expandGeneralInfo = false;
         }
       }
     });
