@@ -17,7 +17,6 @@
     <style>
       :host {
         flex: 1;
-        /*overflow: hidden;*/
         display: flex;
         -webkit-transition: all 500ms ease;
         -moz-transition: all 500ms ease;
@@ -40,7 +39,7 @@
         display: flex;
         transform: translateX(-102%);
         will-change: transform;
-        transition: transform 0.2s linear;
+        transition: transform 0.5s ease;
       }
       aside.no-list {
         position: relative;
@@ -55,13 +54,13 @@
         width: 100%;
         flex: 1;
         will-change: width;
-        transition: width 0.2s linear;
+        transition: width 0.5s ease;
       }
       .filler {
         width: 0;
         max-width: 400px;
         will-change: width;
-        transition: width 0.2s linear;
+        transition: width 0.5s ease;
         background-color: var(--secondary-background-color);
       }
       aside:not(.no-list) + .filler {
@@ -72,7 +71,7 @@
       }
       .project-list,
       .pull-list {
-        transition: width 0.2s linear;
+        transition: width 0.5s ease;
         min-width: 400px;
         width: 400px;
         flex: 1;
@@ -157,7 +156,7 @@
                 attr-for-selected="data-route">
         <no-project-selected data-route="no-selected"></no-project-selected>
         <project-overview-page data-route="overview" tabindex="0" on-tap="_hideProjectList"
-            project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]" expanded="{{expandGeneralInfo}}"></project-overview-page>
+            project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
         <pull-request-page data-route="pr" prid="[[prid]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
                            project="[[projectTitle]]"></pull-request-page>
     </iron-pages>
