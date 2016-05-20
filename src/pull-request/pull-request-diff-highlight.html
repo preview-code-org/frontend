@@ -104,8 +104,9 @@
       ],
       _observeLinesChanged: function(linesChanged, code) {
         var lines = code.split('\n')
-        // The first and list line are always empty and should be ignored.
+        // The first line is always empty and should be ignored.
         lines.shift();
+        // The last line is only sometimes empty.
         if (code.charAt(code.length-1) == '\n') {
           lines.pop();
         }
