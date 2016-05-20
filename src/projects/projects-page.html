@@ -156,7 +156,7 @@
                 selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
                 attr-for-selected="data-route">
         <no-project-selected data-route="no-selected"></no-project-selected>
-        <project-overview-page data-route="overview" tabindex="0"
+        <project-overview-page data-route="overview" tabindex="0" on-tap="_hideProjectList"
             project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]" expanded="{{expandGeneralInfo}}"></project-overview-page>
         <pull-request-page data-route="pr" prid="[[prid]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
                            project="[[projectTitle]]"></pull-request-page>
@@ -183,10 +183,6 @@
         prid: {
           type: Number,
           computed: '_parseInt(pr.pr)'
-        },
-        expandGeneralInfo: {
-          type: Boolean,
-          value: false
         },
         projects: {
           type: Array,
@@ -240,9 +236,7 @@
       observers: [
         'chooseProject(projectTitle.*)',
         '_resetListsOnProjectChange(projectSelected)',
-        '_resetListsOnPullChange(pullRequestSelected)',
-        '_expandGeneralInfoArea(expandGeneralInfo)',
-        '_resetExpandGeneralInfoArea(showProjectsList)'
+        '_resetListsOnPullChange(pullRequestSelected)'
       ],
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
@@ -274,11 +268,6 @@
         }
         return 'one-list';
       },
-      _has: function() {
-        return Array.prototype.slice.call(arguments).reduce(function(prev, current) {
-          return prev && !!current;
-        }, true);
-      },
       _isActiveProject: function(project, activeProject) {
         return project === activeProject;
       },
@@ -293,21 +282,12 @@
       _resetListsOnProjectChange: function(newValue) {
         this.showProjectsList = true;
         this.showPullList = newValue;
-        expandGeneralInfo = false;
       },
       _resetListsOnPullChange: function(newValue) {
         this.showProjectsList = this.showProjectsList && !newValue;
-        expandGeneralInfo = false;
       },
-      _expandGeneralInfoArea(expandGeneralInfo) {
-        if(expandGeneralInfo){
-          this.showProjectsList = false;
-        }
-      },
-      _resetExpandGeneralInfoArea(showProjectsList){
-        if(showProjectsList){
-          this.expandGeneralInfo = false;
-        }
+      _hideProjectList: function() {
+        this.showProjectsList = false;
       }
     });
   </script>
