@@ -1,0 +1,75 @@
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="list-tab">
+  <template>
+    <style>
+      :host {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: pointer;
+        display: inline-block;
+        padding: 12px 24px;
+        line-height: 24px;
+        height: 24px;
+        -webkit-transition: background 0.3s ease;
+        -moz-transition: background 0.3s ease;
+        -ms-transition: background 0.3s ease;
+        -o-transition: background 0.3s ease;
+        transition: background 0.3s ease;
+      }
+      iron-icon {
+        fill: var(--sidebar-text-color);
+        margin-left: 24px;
+        display: inline-block;
+        transform: rotate(-0.25turn);
+        transform-origin: bottom left;
+      }
+      span {
+        color: var(--sidebar-text-color);
+        margin-left: -24px;
+        vertical-align: middle;
+        -moz-transform: scale(-1);
+        -o-transform: scale(-1);
+        -webkit-transform: scale(-1);
+        transform: scale(-1);
+        display: inline-block;
+      }
+      :host([selected]) {
+        background-color: var(--sidebar-selected-color);
+      }
+      :host([selected]) span {
+        color: var(--sidebar-selected-text-color);
+      }
+      :host([selected]) iron-icon {
+        fill: var(--sidebar-selected-text-color);
+      }
+    </style>
+
+    <template is="dom-if" if="[[icon]]">
+      <iron-icon icon="[[icon]]"></iron-icon>
+    </template>
+    <span selected="[[selected]]"><content></content></span>
+  </template>
+  <script>
+    Polymer({
+        is: 'list-tab',
+        properties: {
+          selected: {
+            type: Boolean,
+            value: true,
+            notify: true,
+            reflectToAttribute: true
+          },
+          icon: String
+        },
+        listeners: {
+          'tap': '_toggleList'
+        },
+        _toggleList: function() {
+          this.selected = !this.selected;
+        }
+    });
+  </script>
+</dom-module>

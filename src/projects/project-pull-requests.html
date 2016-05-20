@@ -55,13 +55,6 @@
       input{
         width: 27%;
       }
-      .back-button {
-        transform: none;
-        transition: transform 0.2s linear 0s;
-      }
-      .back-button.false {
-        transform: rotate(0.5turn);
-      }
       .header {
         display: flex;
         align-items: baseline;
@@ -76,7 +69,6 @@
       }
     </style>
     <preview-list>
-      <iron-icon hidden$="{{!hideProjectButton}}" class$="back-button [[projectButtonClicked]]" icon="icon:icons:arrow-back" on-tap="_showProjects"></iron-icon>
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
       <div class="header">
         <search-box value="{{searchWord}}"></search-box>
@@ -94,7 +86,7 @@
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
                 show-status="[[_equals('All', status)]]" selected="[[_equals(pridSelected, pr.number)]]"
-                on-keydown="maybeSelectPR" on-tap="_resetButton"></project-pull-request-list-item>
+                on-keydown="maybeSelectPR"></project-pull-request-list-item>
         </a>
       </template>
     </preview-list>
@@ -117,15 +109,6 @@
         status: {
           type: String,
           value: 'All'
-        },
-        projectButtonClicked: {
-          type: Boolean,
-          notify: true,
-          value: false
-        },
-        hideProjectButton: {
-          type: String,
-          value: ''
         },
         getFields: {
           type: Function,
@@ -159,12 +142,11 @@
           this.set('route.path', '/pulls/' + e.model.pr.number + '/overview');
         }
       },
-      _showProjects: function() {
-        return this.projectButtonClicked = !this.projectButtonClicked;
+      _has: function() {
+        return Array.prototype.slice.call(arguments).reduce(function(prev, current) {
+          return prev && !!current;
+        }, true);
       },
-      _resetButton: function() {
-        this.projectButtonClicked = false;
-      }
     });
   </script>
 </dom-module>
