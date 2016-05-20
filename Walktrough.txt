@@ -1,0 +1,15 @@
+John is a reviewer and works for a few open source projects, besides his main job as a software developer.
+
+After dinner John starts up his computer to review some pull requests.
+Whenever he is doing reviewing he is losing so much time getting to know the changes of a pull request,
+because the ordering is so illogical.
+
+He decides to give this new tool a try a few contributors are using.
+When he opens the tool he logs in with github.
+
+Then he clicks on the Polymer/Polymer project, because that is the first project he wants to review.
+He opens a new pull request and first reads the description.
+After that he looks at the changes this pull request has made.
+This view seems a lot more logical and he decides to comment on few changes, because he does not like them.
+
+He then leaves an overall comment on the pull request and goes on to the next one.
