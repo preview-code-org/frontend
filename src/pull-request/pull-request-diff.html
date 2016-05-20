@@ -180,8 +180,12 @@
         //
         // [0] = full match
         // [1] = CHUNK_DELIMETER
-        // [2] = all changes matched by ANTYHING
-        var CHUNK_DELIMETER = '@@.+@@';
+        // [2] - Start line number before the change is applied
+        // [3] - Amount of lines before the change is applied
+        // [4] - Start line number after the change is applied
+        // [5] - Amount of lines after the change is applied
+        // [6] = all changes matched by ANTYHING
+        var CHUNK_DELIMETER = '@@ \\-(\\d+),(\\d+) \\+(\\d+),(\\d+) @@';
         var CHUNK_EXPRESSION = '(' + CHUNK_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=\n' + CHUNK_DELIMETER + ')|$)';
         var CHUNK_REGEX = new RegExp(CHUNK_EXPRESSION, 'g');
 
@@ -192,11 +196,11 @@
           var file, chunk;
           while ((file = DIFF_REGEX.exec(diff)) !== null) {
             while ((chunk = CHUNK_REGEX.exec(file[3])) !== null) {
-              var deletions = chunk[2].match(/\n\-/g);
+              var deletions = chunk[6].match(/\n\-/g);
               if (deletions) {
                 this.deletions += deletions.length;
               }
-              var additions = chunk[2].match(/\n\+/g);
+              var additions = chunk[6].match(/\n\+/g);
               if (additions) {
                 this.additions += additions.length;
               }
@@ -217,7 +221,9 @@
                 file: fileHeader,
                 fileUrl: fileUrl,
                 diffId: chunk[1],
-                changes: chunk[2]
+                changes: chunk[6],
+                linesChanged: {startLineBefore: chunk[2], rangeBefore: chunk[3],
+                               startLineAfter: chunk[4],  rangeAfter: chunk[5]}
               });
             }
           }
