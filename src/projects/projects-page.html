@@ -145,12 +145,13 @@
           </preview-list>
         </div>
 
-        <project-pull-requests class$="pull-list" hidden$="[[!showPullList]]" route="{{nameTail}}" tabindex="0"
+        <project-pull-requests class="pull-list" hidden$="[[!showPullList]]" route="{{nameTail}}" tabindex="0"
                              project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
                              prid-selected="[[prid]]"></project-pull-requests>
       </div>
     </aside>
     <div class="filler"></div>
+
     <iron-pages class="project"
                 selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
                 attr-for-selected="data-route">
