@@ -88,7 +88,7 @@
 
     <iron-media-query query="(max-width: 1250px)" query-matches="{{small}}"></iron-media-query>
 
-    <div class="info-area">
+    <div class="info-area" on-tap="_expandView">
       <div class="content">
         <header>
           <h1 hidden$="[[small]]">[[project.owner]]</h1>
@@ -131,10 +131,17 @@
       properties: {
         project: Object,
         route: Object,
-        pullrequests: Array
+        pullrequests: Array,
+        expanded: {
+          type: Boolean,
+          notify: true
+        }
       },
       _shouldBeAtTop: function(small) {
         return small ? 'bottom' : 'top';
+      },
+      _expandView: function() {
+        this.expanded = true;
       }
     });
   </script>

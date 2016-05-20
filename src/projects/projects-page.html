@@ -128,7 +128,7 @@
     <div class="tabs">
       <div class="rotate">
         <list-tab selected="{{showProjectsList}}" icon="icons:view-list">Repositories</list-tab>
-        <list-tab selected="{{showPullList}}" icon="editor:merge-type">Pull Requests</list-tab>
+        <list-tab selected="{{showPullList}}" hidden$="[[!projectSelected]]" icon="editor:merge-type">Pull Requests</list-tab>
       </div>
     </div>
     <aside class$="collapsable [[_calcListClass(showProjectsList, showPullList)]]">
@@ -156,7 +156,7 @@
                 attr-for-selected="data-route">
         <no-project-selected data-route="no-selected"></no-project-selected>
         <project-overview-page data-route="overview" tabindex="0"
-            project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
+            project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]" expanded="{{expandGeneralInfo}}"></project-overview-page>
         <pull-request-page data-route="pr" prid="[[prid]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
                            project="[[projectTitle]]"></pull-request-page>
     </iron-pages>
@@ -182,6 +182,10 @@
         prid: {
           type: Number,
           computed: '_parseInt(pr.pr)'
+        },
+        expandGeneralInfo: {
+          type: Boolean,
+          value: false
         },
         projects: {
           type: Array,
@@ -235,7 +239,8 @@
       observers: [
         'chooseProject(projectTitle.*)',
         '_resetListsOnProjectChange(projectSelected)',
-        '_resetListsOnPullChange(pullRequestSelected)'
+        '_resetListsOnPullChange(pullRequestSelected)',
+        '_expandGeneralInfoArea(expandGeneralInfo)'
 
       ],
       chooseProject: function(projectTitle) {
@@ -287,9 +292,16 @@
       _resetListsOnProjectChange: function(newValue) {
         this.showProjectsList = true;
         this.showPullList = newValue;
+        expandGeneralInfo = false;
       },
       _resetListsOnPullChange: function(newValue) {
         this.showProjectsList = this.showProjectsList && !newValue;
+        expandGeneralInfo = false;
+      },
+      _expandGeneralInfoArea(expandGeneralInfo) {
+        if(expandGeneralInfo){
+          this.showProjectsList = false;
+        }
       }
     });
   </script>

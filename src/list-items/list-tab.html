@@ -64,8 +64,8 @@
           },
           icon: String
         },
-        attached: function() {
-          this.addEventListener('tap', this._toggleList.bind(this));
+        listeners: {
+          'tap': '_toggleList'
         },
         _toggleList: function() {
           this.selected = !this.selected;
