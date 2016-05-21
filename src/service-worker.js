@@ -25,6 +25,37 @@ function insertETagFromResponse(request, response) {
   });
 }
 
+function retrieveETagFromGitHubCache(request) {
+  return caches.open(cacheName).then(function(cache) {
+    return cache.match(request.url)
+      .then(function(oldResponse) {
+        var newRequest = request;
+        if (oldResponse) {
+          newRequest = insertETagFromResponse(request, oldResponse);
+        }
+        return fetch(newRequest).then(function(newResponse) {
+          if (newResponse.status >= 304) {
+            return oldResponse.clone();
+          }
+          cache.put(request.url, newResponse.clone());
+          return newResponse.clone();
+        }).catch(function(e) {
+          console.log('Cached file resulted in network error', e);
+          return oldResponse.clone();
+        });
+      })
+      .catch(function(e) {
+        console.log('Cached file resulted in network error', e);
+        return fetch(request).then(function(newResponse) {
+          cache.put(request.url, newResponse.clone());
+          return newResponse.clone();
+        }).catch(function(e2) {
+          console.log('Fetching uncached failed too, are we offline?', e2);
+        });
+      });
+  });
+}
+
 self.addEventListener('fetch', function(event) {
   var request = event.request;
   if (request.method === 'GET'
@@ -32,28 +63,7 @@ self.addEventListener('fetch', function(event) {
       // Diff views are fetched from the same end-points as normal PRs, so ignore these.
       && request.headers.get('Accept') !== 'application/vnd.github.VERSION.diff') {
     event.respondWith(
-      caches.open(cacheName).then(function(cache) {
-        return cache.match(request)
-          .then(function(oldResponse) {
-            var newRequest = request;
-            if (oldResponse) {
-              newRequest = insertETagFromResponse(request, oldResponse);
-            }
-            return fetch(newRequest).then(function(newResponse) {
-              if (newResponse.status === 304) {
-                return oldResponse;
-              }
-              cache.put(newRequest, newResponse.clone());
-              return newResponse;
-            });
-          })
-          .catch(function(e) {
-            return fetch(request).then(function(newResponse) {
-              cache.put(request, newResponse.clone());
-              return newResponse;
-            });
-          });
-      })
+      retrieveETagFromGitHubCache(request)
     );
   }
 });

@@ -162,9 +162,11 @@
       _addChunk: function() {
         this.unshift('pr.chunks', {});
       },
-      _fetchDiff: function() {
-        this.$.ajaxDiff.generateRequest();
-        this.$.ajaxOrdering.generateRequest();
+      _fetchDiff: function(pullRequest) {
+        if (pullRequest) {
+          this.$.ajaxDiff.generateRequest();
+          this.$.ajaxOrdering.generateRequest();
+        }
       },
       _getPR: function(pullrequests, prid) {
         return pullrequests.filter(function(pr) {

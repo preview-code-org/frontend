@@ -54,7 +54,7 @@
     </paper-toolbar>
 
     <div class="diff-list">
-      <template is="dom-repeat" items="[[_makeChunk(chunks.*)]]" as="chunk" sort="_applyOrdering">
+      <template is="dom-repeat" items="[[orderedChunks]]" as="chunk">
         <pull-request-chunk
           class="draggable"
           chunk="[[chunk]]"
@@ -93,6 +93,10 @@
             return [];
           }
         },
+        orderedChunks: {
+          type: Array,
+          computed: '_orderChunks(chunks.*, ordering)'
+        },
         ordering: {
           type: Array,
           value: function() {
@@ -105,7 +109,7 @@
         this.chunks.forEach(function(e) {
           delete e._index;
         });
-        this.notifyPath('chunks', this.chunks);
+        // this.notifyPath('chunks', this.chunks);
       },
       _addChunk: function() {
         this.unshift('chunks', {
@@ -116,42 +120,57 @@
         });
       },
       _removeChunk: function(e) {
-        this.splice('chunks', e.model.index, 1);
+        // this.splice('chunks', e.model.chunk.originalIndex, 1);
       },
-      _makeChunk: function(chunks) {
-        var otherChunks = [];
-        for (var i=0,l=chunks.base.length;i<l;i++) {
-          otherChunks[i] = {
-            diff: [chunks.base[i]],
-            comments: []
-          };
+      _orderChunks: (function() {
+        function findChunk(chunks, properties) {
+          for (var i=0,l=chunks.length;i<l;i++) {
+            if (chunks[i].file === properties.file
+                && chunks[i].diffId === properties.diffId) {
+              chunks[i].__index = i;
+              return chunks[i];
+            }
+          }
         }
-        return otherChunks;
-      },
-      _applyOrdering: (function() {
-        var findChunk = function(ordering, chunk) {
-          for (var i=0,l=ordering.length;i<l;i++) {
+
+        return function(chunksSplices, ordering) {
+          var chunks = chunksSplices.base;
+          console.log(chunks);
+          var orderedChunks = [];
+          for (var i=0,l=ordering.length; i<l; i++) {
             for (var j=0,d=ordering[i].length;j<d;j++) {
-              var c = ordering[i][j];
-              if (c.file === chunk.file && c.diffId === chunk.diffId) {
-                return i;
+              var c = findChunk(chunks, ordering[i][j]);
+              if (c) {
+                orderedChunks[i] = orderedChunks[i] || {
+                  diff: [],
+                  comments: []
+                };
+                orderedChunks[i].diff.push(c);
               }
             }
           }
-          return -1;
-        }
-
-        return function(one, other) {
-          var oneIndex = one._index || (one._index = findChunk(this.ordering, one));
-          var otherIndex = other._index || (other._index = findChunk(this.ordering, other));
-          if (oneIndex < otherIndex) {
-            return 1;
-          } else if (oneIndex > otherIndex) {
-            return -1;
+          var unSortedChunk = orderedChunks[orderedChunks.length] = {
+            diff: [],
+            comments: []
+          };
+          for (var i=0,l=chunks.length;i<l;i++) {
+            if (!chunks[i].__index) {
+              unSortedChunk.diff.push(chunks[i]);
+            }
           }
-          return 0;
-        };
+          return orderedChunks;
+        }
       })(),
+      incrementLineModificationCounter: function(lines) {
+        var deletions = lines.match(/\n\-/g);
+        if (deletions) {
+          this.deletions += deletions.length;
+        }
+        var additions = lines.match(/\n\+/g);
+        if (additions) {
+          this.additions += additions.length;
+        }
+      },
       _parseDiffToChunks: (function() {
         var ANYTHING = '(?:.|\n)+?';
         // Diff chunks are separated by "diff --git" code blocks.
@@ -188,6 +207,20 @@
         var CHUNK_EXPRESSION = '(' + CHUNK_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=\n' + CHUNK_DELIMETER + ')|$)';
         var CHUNK_REGEX = new RegExp(CHUNK_EXPRESSION, 'g');
 
+        function getFileHeader(file, fromFile, toFile) {
+          if (fromFile !== toFile) {
+            // Newly created file
+            if (file[1] === '/dev/null') {
+              return toFile;
+              // File was renamed
+            } else if (file[2] !== '/dev/null') {
+              return 'from ' + fromFile + ' to ' + toFile;
+            }
+          }
+          // Removed or updated file
+          return fromFile;
+        }
+
         return function(diff) {
           var chunks = [];
           this.deletions = 0;
@@ -195,27 +228,11 @@
           var file, chunk;
           while ((file = DIFF_REGEX.exec(diff)) !== null) {
             while ((chunk = CHUNK_REGEX.exec(file[3])) !== null) {
-              var deletions = chunk[6].match(/\n\-/g);
-              if (deletions) {
-                this.deletions += deletions.length;
-              }
-              var additions = chunk[6].match(/\n\+/g);
-              if (additions) {
-                this.additions += additions.length;
-              }
-              var fromFile = file[1].substring(2);
-              var toFile = file[2].substring(2);
-              var fileHeader = fromFile;
-              if (fromFile !== toFile) {
-                if (file[1] === '/dev/null') {
-                  fileHeader = toFile;
-                } else if (file[2] === '/dev/null') {
-                  fileHeader = fromFile;
-                } else {
-                  fileHeader = 'from ' + fromFile + ' to ' + toFile;
-                }
-              }
+              this.incrementLineModificationCounter(chunk[6]);
+
+              var fileHeader = getFileHeader(file, file[1].substring(2), file[2].substring(2));
               var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileHeader;
+
               chunks.push({
                 file: fileHeader,
                 fileUrl: fileUrl,

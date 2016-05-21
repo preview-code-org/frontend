@@ -33,8 +33,10 @@
       observers: [
         '_fireAjax(pullRequest)'
       ],
-      _fireAjax: function() {
-        this.$.ajaxComments.generateRequest();
+      _fireAjax: function(pullRequest) {
+        if (pullRequest) {
+          this.$.ajaxComments.generateRequest();
+        }
       }
     });
   </script>
