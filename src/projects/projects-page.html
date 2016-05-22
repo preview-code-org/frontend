@@ -18,74 +18,57 @@
       :host {
         flex: 1;
         display: flex;
-        -webkit-transition: all 500ms ease;
-        -moz-transition: all 500ms ease;
-        -ms-transition: all 500ms ease;
-        -o-transition: all 500ms ease;
-        transition: all 500ms ease;
       }
       [hidden] {
         display: none !important;
       }
-      aside {
+      .collapsable {
         position: fixed;
+        left: var(--sidebar-width);
+        width: var(--project-list-width);
+        transition: left 0.4s ease;
         z-index: 2;
         height: 100%;
       }
-      aside .container {
-        position: relative;
-        max-width: 400px;
-        height: 100%;
-        display: flex;
-        transform: translateX(-102%);
-        will-change: transform;
-        transition: transform 0.5s ease;
-      }
-      aside.no-list {
-        position: relative;
-        flex: 1;
-        max-width: 0;
-      }
-      aside:not(.no-list) .container {
-        transform: none;
-      }
       iron-pages {
+        display: flex;
         overflow: auto;
         width: 100%;
-        flex: 1;
-        will-change: width;
-        transition: width 0.5s ease;
+        background-color: var(--secondary-background-color);
       }
       .filler {
         width: 0;
-        max-width: 400px;
-        will-change: width;
-        transition: width 0.5s ease;
+        transition: width 0.4s ease;
         background-color: var(--secondary-background-color);
       }
-      aside:not(.no-list) + .filler {
-        width: 400px;
+      .collapsable:not(.no-list) + .filler {
+        width: var(--project-list-width);
       }
-      aside:not(.no-list) + iron-pages {
-        width: calc(100vw - 400px);
+      .project-list{
+        z-index: 3;
+      }
+      .pull-list {
+        z-index: 2;
       }
       .project-list,
       .pull-list {
-        transition: width 0.5s ease;
-        min-width: 400px;
-        width: 400px;
-        flex: 1;
-        min-height: 100%;
+        overflow: auto;
+        position: absolute;
+        width: var(--project-list-width);
+        left: -var(--project-list-width);
+        height: calc(100% - var(--header-height));
+        transition: left 0.4s ease;
         background-color: var(--primary-background-color);
         -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
       }
-      .project-list.false,
-      .pull-list.false {
-        width: 0;
+      .collapsable.one-list .project-list.true,
+      .collapsable.both-list .project-list.true,
+      .collapsable.one-list .pull-list {
+        left: 0;
       }
-      .project {
-        display: flex;
+      .collapsable.both-list .pull-list.true {
+        left: var(--project-list-width);
       }
       project-overview-page {
         flex: 1;
@@ -101,7 +84,7 @@
         flex-direction: column;
         min-width: var(--sidebar-width);
         max-width: var(--sidebar-width);
-        height: calc(100vh - 48px);
+        height: calc(100vh -  var(--header-height));
         overflow: hidden;
       }
       .rotate {
@@ -130,25 +113,23 @@
         <list-tab selected="{{showPullList}}" hidden$="[[!projectSelected]]" icon="editor:merge-type">Pull Requests</list-tab>
       </div>
     </div>
-    <aside class$="collapsable [[_calcListClass(showProjectsList, showPullList)]]">
-      <div class="container">
-        <div class="project-list" hidden$="[[!showProjectsList]]">
-          <preview-list>
-            <search-box value="{{searchWord}}"></search-box>
-            <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
-              <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
-                <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
-                                   tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
-              </a>
-            </template>
-          </preview-list>
-        </div>
-
-        <project-pull-requests class="pull-list" hidden$="[[!showPullList]]" route="{{nameTail}}" tabindex="0"
-                             project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
-                             prid-selected="[[prid]]"></project-pull-requests>
+    <div class$="collapsable [[_calcListClass(showProjectsList, showPullList)]]">
+      <div class$="project-list [[showProjectsList]]">
+        <preview-list>
+          <search-box value="{{searchWord}}"></search-box>
+          <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
+            <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
+              <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
+                                 tabindex="0" on-keydown="maybeOpenProject"></project-list-item>
+            </a>
+          </template>
+        </preview-list>
       </div>
-    </aside>
+
+      <project-pull-requests class$="pull-list [[showPullList]]" route="{{nameTail}}" tabindex="0"
+                           project="[[projectTitle.owner]]" pullrequests="[[pullrequests]]"
+                           prid-selected="[[prid]]"></project-pull-requests>
+    </div>
     <div class="filler"></div>
 
     <iron-pages class="project"
