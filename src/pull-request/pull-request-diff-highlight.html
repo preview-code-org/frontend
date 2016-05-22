@@ -115,33 +115,26 @@
         var after = linesChanged.startLineAfter;
 
         var createSpan = function(content) {
-          var span = document.createElement('span');
-          span.textContent = content;
-          return span;
+          return '<span>' + content + '</span>';
         }
 
-        var removeAllChildren = function(elem) {
-          while (elem.firstChild) {
-            elem.removeChild(elem.firstChild);
-          }
-        }
-
-        removeAllChildren(Polymer.dom(this.$.beforeColumn));
-        removeAllChildren(Polymer.dom(this.$.afterColumn));
-
-        lineCounters = lines.forEach(function(line) {
+        var beforeContent = '';
+        var afterContent = '';
+        lines.forEach(function(line) {
           if (line.startsWith('-')) {
-            Polymer.dom(this.$.beforeColumn).appendChild(createSpan(before++));
-            Polymer.dom(this.$.afterColumn).appendChild(createSpan(''));
+            beforeContent += createSpan(before++);
+            afterContent += createSpan('');
           } else if (line.startsWith('+')) {
-            Polymer.dom(this.$.beforeColumn).appendChild(createSpan(''));
-            Polymer.dom(this.$.afterColumn).appendChild(createSpan(after++));
+            beforeContent += createSpan('');
+            afterContent += createSpan(after++);
           } else {
-            Polymer.dom(this.$.beforeColumn).appendChild(createSpan(before++));
-            Polymer.dom(this.$.afterColumn).appendChild(createSpan(after++));
+            beforeContent += createSpan(before++);
+            afterContent += createSpan(after++);
           }
         }.bind(this));
 
+        Polymer.dom(this.$.beforeColumn).innerHTML = beforeContent;
+        Polymer.dom(this.$.afterColumn).innerHTML = afterContent;
       },
       attached: function() {
         this._render();
