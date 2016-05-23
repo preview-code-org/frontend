@@ -156,13 +156,13 @@
           var chunks = chunksSplices.base;
           var orderedChunks = [];
           for (var i=0,l=ordering.length; i<l; i++) {
-            orderedChunks[i] = {
-              diff: [],
-              comments: []
-            };
             for (var j=0,d=ordering[i].length;j<d;j++) {
               var c = findChunk(chunks, ordering[i][j]);
               if (c) {
+                orderedChunks[i] = orderedChunks[i] || {
+                  diff: [],
+                  comments: []
+                };
                 orderedChunks[i].diff.push(c);
               }
             }
