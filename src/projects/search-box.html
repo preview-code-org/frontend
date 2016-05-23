@@ -6,6 +6,9 @@
     <style>
       :host {
         display: block;
+        --paper-input-container-input: {
+          font-size: 16px;
+        };
       }
       .search-box {
         text-align: center;
@@ -14,11 +17,13 @@
       }
       paper-input {
         display: inline-block;
+        --paper-input-container-focus-color: var(--anchor-color);
       }
     </style>
     <div class="search-box" >
-      <iron-icon icon="search"></iron-icon>
-      <paper-input placeholder="Search" type="search" value="{{value}}"></paper-input>
+      <paper-input placeholder="Search" type="search" value="{{value}}">
+        <div prefix><iron-icon icon="search"></iron-icon></div>
+      </paper-input>
     </div>
   </template>
   <script>

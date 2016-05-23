@@ -233,7 +233,8 @@
       observers: [
         'chooseProject(projectTitle.*)',
         '_resetListsOnProjectChange(projectSelected)',
-        '_resetListsOnPullChange(pullRequestSelected)'
+        '_resetListsOnPullChange(pullRequestSelected)',
+        '_resetSearch(activeProject)'
       ],
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
@@ -285,6 +286,12 @@
       },
       _hideProjectList: function() {
         this.showProjectsList = false;
+      },
+      _shouldShowProjects: function(projectSelected, pullRequestSelected, clicked) {
+        return (!pullRequestSelected || clicked) ? 'true' : 'false';
+      },
+      _resetSearch(){
+        this.searchWord = '';
       }
     });
   </script>

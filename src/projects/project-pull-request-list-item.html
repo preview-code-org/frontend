@@ -55,8 +55,8 @@
       </div>
       <div class="main">
         <list-item-label type="title">
-          <iron-icon title="CI passed" class$="icon-passed [[_cistatus]]" icon="icons:check-circle"></iron-icon>
-          <iron-icon title="CI failed" class$="icon-failed [[_cistatus]]" icon="icons:cancel"></iron-icon>
+        <a href$="{{_cistatus.target_url}}" target="_blank"><iron-icon title="CI passed" class$="icon-passed [[_cistatus.state]]" icon="icons:check-circle"></iron-icon></a>
+        <a href$="{{_cistatus.target_url}}" target="_blank"><iron-icon title="CI failed" class$="icon-failed [[_cistatus.state]]" icon="icons:cancel"></iron-icon></a>
           <span title$="[[pr.title]]">[[pr.title]]</span>
         </list-item-label>
         <list-item-label type="subtitle">[[pr.user.login]]</list-item-label>
@@ -86,6 +86,7 @@
         issue: Object,
         showStatus: Boolean,
         selected: Boolean,
+        statuses: Array,
         _cistatus: {
           type: String,
           computed: '_getCIStatus(statuses)'
@@ -119,7 +120,7 @@
           }
           return prev;
         }, '');
-        return latestci.state;
+        return latestci;
       },
       _fireAjax: function() {
         this.$.ajaxIssue.generateRequest();
