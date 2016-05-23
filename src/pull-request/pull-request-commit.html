@@ -1,7 +1,5 @@
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../util/marked-github-element.html">
 <link rel="import" href="../util/to-date-string-behavior.html">
-
 
 <dom-module id="pull-request-commit">
   <template>
@@ -33,7 +31,6 @@
       .container.true {
         height: auto;
         overflow: hidden;
-
       }
       .top-container {
         display: flex;
@@ -58,11 +55,8 @@
         margin-right: 1em;
         text-align: center;
       }
-      paper-button {
-        text-transform: none;
-        font-weight: normal;
-        font-size: auto;
-        height: 30px;
+      .container:hover {
+        color: var(--anchor-color);
       }
     </style>
     <div class="commit">
@@ -70,7 +64,9 @@
         <span>[[item.author.login]] commited [[toDateString(item.commit.committer.date)]] ago:</span>
       </div>
       <div class="view-link">
-        <a href$="[[item.html_url]]" target="_blank"><paper-button class="commit-button" raised>View commit</paper-button></a>
+        <a href$="[[item.html_url]]" target="_blank">
+          <img height=30px title="View commit" src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" />
+        </a>
       </div>
       <div class="top-container">
         <div class="left-column">
