@@ -1,0 +1,111 @@
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../util/marked-github-element.html">
+<link rel="import" href="../util/to-date-string-behavior.html">
+
+
+<dom-module id="pull-request-commit">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .icon {
+        display: flex;
+        width: 64px;
+        height: 64px;
+        margin-right: 5px;
+      }
+      .message {
+        font-weight: normal;
+        padding: 2px;
+        --commits: {
+          display: inline;
+        };
+      }
+      .container.false {
+        height: 1.25em;
+        line-height: 1.25;
+        overflow: hidden;
+      }
+      .container.true {
+        height: auto;
+        overflow: hidden;
+
+      }
+      .top-container {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 2px;
+        padding: 1em;
+      }
+      .commited {
+        margin-left: 1em;
+        margin-top: 1em;
+        margin-bottom: -1em;
+      }
+      a {
+        color: var(--primary-text-color);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .view-link {
+        float:right;
+        margin-right: 1em;
+        text-align: center;
+      }
+      paper-button {
+        text-transform: none;
+        font-weight: normal;
+        font-size: auto;
+        height: 30px;
+      }
+    </style>
+    <div class="commit">
+      <div class="commited">
+        <span>[[item.author.login]] commited [[toDateString(item.commit.committer.date)]] ago:</span>
+      </div>
+      <div class="view-link">
+        <a href$="[[item.html_url]]" target="_blank"><paper-button class="commit-button" raised>View commit</paper-button></a>
+      </div>
+      <div class="top-container">
+        <div class="left-column">
+          <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
+        </div>
+        <div class$="container [[showWholeMessage]]" on-tap="_showWholeCommit">
+          <marked-github-element class="message" markdown="[[item.commit.message]]" project="[[project]]"></marked-github-element>
+        </div>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-commit',
+      behaviors: [ToDateStringBehavior, SubstituteRenderedGitHubMarkdownBehavior],
+      properties: {
+        project: Object,
+        item: Object,
+        showWholeMessage: {
+          type: Boolean,
+          value: false
+        }
+      },
+      _getFirst: function(project, text) {
+        return this.createMarkdownSubstituter(project.owner, project.name)(null, text.split('\n\n')[0]);
+      },
+      _getLast: function(text) {
+        return text.substring(text.indexOf('\n\n')+1);
+      },
+      _empty: function(text) {
+        return text.split('\n\n')[1] === undefined;
+      },
+      _showWholeCommit: function() {
+        this.showWholeMessage = !this.showWholeMessage;
+      }
+    });
+  </script>
+</dom-module>
