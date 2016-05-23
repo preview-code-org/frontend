@@ -29,7 +29,8 @@
         z-index: 2;
         height: 100%;
       }
-      .overlay-shadow {
+      .collapsable::before {
+        content: '';
         transition: all 0.4s ease;
         opacity: 0;
         background-color: rgba(0,0,0,1);
@@ -37,25 +38,28 @@
         width: 100%;
         height: 100%;
         pointer-events: none;
-        z-index: 1;
+        will-change: opacity;
       }
-      .collapsable.both-list ~ .overlay-shadow {
-        background-blend-mode: multiply;
+      .collapsable.both-list::before {
         opacity: 0.35;
       }
       iron-pages {
         display: flex;
+        flex: 1;
         overflow: auto;
         width: 100%;
         background-color: var(--secondary-background-color);
+        will-change: width;
       }
       .filler {
-        width: 0;
-        transition: width 0.4s ease;
+        flex: 1;
+        max-width: 0;
+        will-change: max-width;
+        transition: max-width 0.4s ease;
         background-color: var(--secondary-background-color);
       }
       .collapsable:not(.no-list) + .filler {
-        width: var(--project-list-width);
+        max-width: var(--project-list-width);
       }
       .project-list{
         z-index: 3;
@@ -69,6 +73,7 @@
         position: absolute;
         width: var(--project-list-width);
         left: -var(--project-list-width);
+        will-change: left;
         height: calc(100% - var(--header-height));
         transition: left 0.4s ease;
         background-color: var(--primary-background-color);
@@ -144,8 +149,6 @@
                            prid-selected="[[prid]]"></project-pull-requests>
     </div>
     <div class="filler"></div>
-
-    <div class="overlay-shadow"></div>
     <iron-pages class="project"
                 selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
                 attr-for-selected="data-route">
