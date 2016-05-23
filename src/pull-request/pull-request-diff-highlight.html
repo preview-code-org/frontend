@@ -121,17 +121,9 @@
         var beforeContent = '';
         var afterContent = '';
         lines.forEach(function(line) {
-          if (line.startsWith('-')) {
-            beforeContent += createSpan(before++);
-            afterContent += createSpan('');
-          } else if (line.startsWith('+')) {
-            beforeContent += createSpan('');
-            afterContent += createSpan(after++);
-          } else {
-            beforeContent += createSpan(before++);
-            afterContent += createSpan(after++);
-          }
-        }.bind(this));
+          beforeContent += createSpan(line.startsWith('+') ? '' : before++);
+          afterContent += createSpan(line.startsWith('-') ? '' : after++);
+        });
 
         Polymer.dom(this.$.beforeColumn).innerHTML = beforeContent;
         Polymer.dom(this.$.afterColumn).innerHTML = afterContent;
