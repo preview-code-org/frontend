@@ -1,16 +1,16 @@
 <link rel="import" href="../bower_components/carbon-route/carbon-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
+<link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="../list-items/list-tab.html">
+<link rel="import" href="../list-items/preview-list.html">
+<link rel="import" href="navigation/project-pull-requests.html">
+<link rel="import" href="navigation/project-list-item.html">
+<link rel="import" href="navigation/search-behavior.html">
+<link rel="import" href="navigation/search-box.html">
 <link rel="import" href="pull-request/pull-request-page.html">
-<link rel="import" href="project-pull-requests.html">
 <link rel="import" href="no-project-selected.html">
 <link rel="import" href="project-overview-page.html">
-<link rel="import" href="project-list-item.html">
-<link rel="import" href="../ajax/authenticated-ajax.html">
-<link rel="import" href="../list-items/preview-list.html">
-<link rel="import" href="search-behavior.html">
-<link rel="import" href="search-box.html">
-<link rel="import" href="../list-items/list-tab.html">
 
 <dom-module id="projects-page">
   <template>
@@ -163,7 +163,7 @@
   <script>
     Polymer({
       is: 'projects-page',
-      behaviors: [searchBehavior],
+      behaviors: [SearchBehavior],
       properties: {
         searchWord: {
           type: String,
