@@ -144,7 +144,19 @@
           var invertedIndex = (e.detail.newIndex) ? 0 : 1;
           // Remove the dummy diff
           if (!this.chunk.diff[invertedIndex].changes) {
-            this.splice('chunk.diff', invertedIndex, 1);
+            var changes = this.chunk.diff.slice()[e.detail.newIndex];
+            this.set('chunk', {
+              diff: [{
+                file: changes.file,
+                diffId: changes.diffId,
+                fileUrl: changes.file,
+                changes: changes.changes
+              }]
+            });
+            this.fire('upgraded', {
+              file: changes.file,
+              diffId: changes.diffId
+            });
           }
         }
       },

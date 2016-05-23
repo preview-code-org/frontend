@@ -59,6 +59,7 @@
           class="draggable"
           chunk="[[chunk]]"
           on-empty="_removeChunk"
+          on-upgraded="_removeDummyChunk"
           editable="[[editable]]"
           ></pull-request-chunk>
       </template>
@@ -131,6 +132,10 @@
           });
         }
       })(),
+      _removeDummyChunk: function(e) {
+        this.ordering[0].splice(0, 1, e.detail);
+        this.notifyPath('chunks', this.chunks);
+      },
       _removeChunk: function(e) {
         // this.splice('chunks', e.model.chunk.originalIndex, 1);
       },
