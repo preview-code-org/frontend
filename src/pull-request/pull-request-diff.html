@@ -111,20 +111,26 @@
         });
         // this.notifyPath('chunks', this.chunks);
       },
-      _addChunk: function() {
-        this.ordering.unshift([
-          {
-            file: 'New file',
-            diffId: 'new-chunk'
-          }
-        ]);
-        this.unshift('chunks', {
+      _addChunk: (function() {
+        var newChunk = {
           file: 'New file',
-          fileUrl: '',
-          diffId: 'new-chunk',
-          changes: ''
-        });
-      },
+          diffId: 'new-chunk'
+        };
+
+        return function() {
+          if (!this.ordering.length || this.ordering[0][0] !== newChunk) {
+            this.ordering.unshift([
+              newChunk
+            ]);
+          }
+          this.unshift('chunks', {
+            file: 'New file',
+            fileUrl: '',
+            diffId: 'new-chunk',
+            changes: ''
+          });
+        }
+      })(),
       _removeChunk: function(e) {
         // this.splice('chunks', e.model.chunk.originalIndex, 1);
       },
