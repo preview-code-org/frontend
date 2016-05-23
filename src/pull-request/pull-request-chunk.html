@@ -69,12 +69,12 @@
 
     <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
     <div class="collapsedContent" hidden$="[[!collapsed]]">
-      <h2>[[title]]</h2>
+      <h2>[[displayTitle]]</h2>
     </div>
     <div class="content" hidden$="[[collapsed]]">
       <header>
         <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this chunk" value="{{title}}"></paper-input>
-        <h2>[[title]]</h2>
+        <h2>[[displayTitle]]</h2>
         <markdown-input
           hidden$="[[hideDescription]]"
           disabled="[[!editable]]"
@@ -115,6 +115,10 @@
         },
         chunk: Object,
         title: String,
+        displayTitle: {
+          type: String,
+          computed: '_getDisplayTitle(title, chunk)'
+        },
         description: {
           type: String,
           value: ''
@@ -142,6 +146,10 @@
               diffs[i].__added = true;
             }
           }
+        } else {
+          if (!this.description) {
+            this.hideDescription = true;
+          }
         }
       },
       observers: [
@@ -167,6 +175,11 @@
               diffId: changes.diffId
             });
           }
+        }
+      },
+      _getDisplayTitle: function(title, chunk) {
+        if (!this.title) {
+          return "Changes in: " + chunk.diff[0].file;
         }
       },
       _diffMoved: function(e) {
