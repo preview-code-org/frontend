@@ -79,7 +79,8 @@
     </header>
     <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight"
         disabled="[[!editable]]" on-remove="_diffRemoved"
-        on-update="_diffMoved">
+        on-update="_diffMoved"
+        on-add="_diffAdded">
       <template is="dom-repeat" id="repeat" items="[[chunk.diff]]" on-dom-change="_addChunkToSortableGroup">
         <pull-request-diff-highlight code="[[item.changes]]" lines-changed="[[item.linesChanged]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
       </template>
@@ -138,6 +139,15 @@
       observers: [
         '_toggleEditable(editable)'
       ],
+      _diffAdded: function(e) {
+        if (e.detail) {
+          var invertedIndex = (e.detail.newIndex) ? 0 : 1;
+          // Remove the dummy diff
+          if (!this.chunk.diff[invertedIndex].changes) {
+            this.splice('chunk.diff', invertedIndex, 1);
+          }
+        }
+      },
       _diffMoved: function(e) {
         if (e.detail) {
           console.log('Moved from %d to %d', e.detail.newIndex, e.detail.oldIndex);

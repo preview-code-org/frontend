@@ -112,10 +112,16 @@
         // this.notifyPath('chunks', this.chunks);
       },
       _addChunk: function() {
+        this.ordering.unshift([
+          {
+            file: 'New file',
+            diffId: 'new-chunk'
+          }
+        ]);
         this.unshift('chunks', {
           file: 'New file',
           fileUrl: '',
-          diffId: '',
+          diffId: 'new-chunk',
           changes: ''
         });
       },
@@ -135,16 +141,15 @@
 
         return function(chunksSplices, ordering) {
           var chunks = chunksSplices.base;
-          console.log(chunks);
           var orderedChunks = [];
           for (var i=0,l=ordering.length; i<l; i++) {
+            orderedChunks[i] = {
+              diff: [],
+              comments: []
+            };
             for (var j=0,d=ordering[i].length;j<d;j++) {
               var c = findChunk(chunks, ordering[i][j]);
               if (c) {
-                orderedChunks[i] = orderedChunks[i] || {
-                  diff: [],
-                  comments: []
-                };
                 orderedChunks[i].diff.push(c);
               }
             }
@@ -154,7 +159,7 @@
             comments: []
           };
           for (var i=0,l=chunks.length;i<l;i++) {
-            if (!chunks[i].__index) {
+            if (chunks[i].__index === undefined) {
               unSortedChunk.diff.push(chunks[i]);
             }
           }
