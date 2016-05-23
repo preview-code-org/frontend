@@ -151,9 +151,10 @@
     <div class="filler"></div>
     <iron-pages class="project"
                 selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
-                attr-for-selected="data-route">
+                attr-for-selected="data-route"
+                on-tap="_hideProjectList">
         <no-project-selected data-route="no-selected"></no-project-selected>
-        <project-overview-page data-route="overview" tabindex="0" on-tap="_hideProjectList"
+        <project-overview-page data-route="overview" tabindex="0"
             project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
         <pull-request-page data-route="pr" prid="[[prid]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
                            project="[[projectTitle]]"></pull-request-page>

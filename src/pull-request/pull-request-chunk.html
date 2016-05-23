@@ -27,7 +27,7 @@
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
       }
       :host([collapsed]) {
-        height: 3em;
+        height: 3em !important;
       }
       header {
         min-height: 2em;
@@ -66,25 +66,31 @@
         padding: 0.5em;
       }
     </style>
-    <header>
-      <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
-      <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this chunk" value="{{title}}"></paper-input>
-      <h2 hidden$="[[_is(editable, title)]]">[[title]]</h2>
-      <markdown-input
-        hidden$="[[_is(editable, description)]]"
-        disabled="[[!editable]]"
-        label="Enter a description for these changes. Markdown is supported."
-        markdown="{{description}}"
-        project="[[project]]"></markdown-input>
-    </header>
-    <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight"
-        disabled="[[!editable]]" on-remove="_diffRemoved"
-        on-update="_diffMoved"
-        on-add="_diffAdded">
-      <template is="dom-repeat" id="repeat" items="[[chunk.diff]]" on-dom-change="_addChunkToSortableGroup">
-        <pull-request-diff-highlight code="[[item.changes]]" lines-changed="[[item.linesChanged]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
-      </template>
-    </sortable-js>
+
+    <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
+    <div class="collapsedContent" hidden$="[[!collapsed]]">
+      <h2>[[title]]</h2>
+    </div>
+    <div class="content" hidden$="[[collapsed]]">
+      <header>
+        <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this chunk" value="{{title}}"></paper-input>
+        <h2>[[title]]</h2>
+        <markdown-input
+          hidden$="[[hideDescription]]"
+          disabled="[[!editable]]"
+          label="Enter a description for these changes. Markdown is supported."
+          markdown="{{description}}"
+          project="[[project]]"
+        ></markdown-input>
+      </header>
+      <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight"
+          disabled="[[!editable]]" on-remove="_diffRemoved"
+          on-update="_diffMoved"
+          on-add="_diffAdded">
+        <template is="dom-repeat" id="repeat" items="[[chunk.diff]]" on-dom-change="_addChunkToSortableGroup">
+          <pull-request-diff-highlight code="[[item.changes]]" lines-changed="[[item.linesChanged]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
+        </template>
+      </sortable-js>
 
     <p class="toggle-comments" hidden$="[[editable]]">
       <span>comments</span>
@@ -113,12 +119,14 @@
           type: String,
           value: ''
         },
-        showComments: {
+        hideComments: {
           type: Boolean,
           value: true
         },
+        hideDescription: Boolean,
         collapsed: {
           type: Boolean,
+          value: false,
           reflectToAttribute: true
         },
         project: Object
@@ -172,10 +180,7 @@
         }
       },
       _toggleEditable: function(editable) {
-        this.showComments = this.showComments && !editable
-      },
-      _is: function(editable, description) {
-        return !editable && description;
+        this.hideComments = this.hideComments && !editable
       }
     });
   </script>
