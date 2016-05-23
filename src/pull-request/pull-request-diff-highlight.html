@@ -9,23 +9,24 @@
         display: block;
         margin: 1em 0;
         overflow: hidden;
-        padding: 1em 2em;
         -webkit-transition: all 0.3s ease;
         -moz-transition: all 0.3s ease;
         -ms-transition: all 0.3s ease;
         -o-transition: all 0.3s ease;
         transition: all 0.3s ease;
+        border: solid 1px var(--secondary-background-color);
+        background-color: var(--tertiary-background-color);
       }
       header {
         background-color: var(--secondary-background-color);
         padding: 0.5em;
       }
       pre {
-        padding: 0;
         margin: 0;
-        line-height: 10px;
-        padding: 1em;
+        line-height: 18px;
         overflow-x: auto;
+        flex: 1;
+        color: var(--primary-text-color);
       }
       pre span {
         font-size: 12px;
@@ -41,7 +42,29 @@
         background-color: var(--deletion-color);
       }
       :host([collapsed]) {
-        height: 1em;
+        height: 2em;
+      }
+      .content {
+        display: flex;
+        align-items: stretch;
+      }
+      .lines {
+        display: flex;
+        width: 96px;
+      }
+      #beforeColumn, #afterColumn {
+        padding-top: 18px;
+        width: 47px;
+        border-right: solid 1px var(--secondary-background-color);
+      }
+      #beforeColumn > span,
+      #afterColumn > span {
+        color: var(--secondary-text-color);
+        display: block;
+        height: 18px;
+        line-height: 18px;
+        font-size: 12px;
+        text-align: center;
       }
     </style>
 
@@ -50,9 +73,13 @@
       <a href$="[[fileUrl]]" target="_blank">Full file</a>
       <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
     </header>
-    <pre>
-      <code id="output"></code>
-    </pre>
+    <div class="content">
+      <div class="lines">
+        <div id="beforeColumn"></div>
+        <div id="afterColumn"></div>
+      </div>
+      <pre><code id="codeView"></code></pre>
+    </div>
   </template>
 
   <script>
@@ -70,6 +97,36 @@
           reflectToAttribute: true
         },
         file: String,
+        linesChanged: Object
+      },
+      observers: [
+        '_observeLinesChanged(linesChanged, code)'
+      ],
+      _observeLinesChanged: function(linesChanged, code) {
+        var lines = code.split('\n')
+        // The first line is always empty and should be ignored.
+        lines.shift();
+        // The last line is only sometimes empty.
+        if (code.charAt(code.length-1) == '\n') {
+          lines.pop();
+        }
+
+        var before = linesChanged.startLineBefore;
+        var after = linesChanged.startLineAfter;
+
+        var createSpan = function(content) {
+          return '<span>' + content + '</span>';
+        }
+
+        var beforeContent = '';
+        var afterContent = '';
+        lines.forEach(function(line) {
+          beforeContent += createSpan(line.startsWith('+') ? '' : before++);
+          afterContent += createSpan(line.startsWith('-') ? '' : after++);
+        });
+
+        Polymer.dom(this.$.beforeColumn).innerHTML = beforeContent;
+        Polymer.dom(this.$.afterColumn).innerHTML = afterContent;
       },
       attached: function() {
         this._render();
@@ -79,7 +136,7 @@
           return;
         }
         this.async(function() {
-          Polymer.dom(this.$.output).innerHTML = this.highlight(this.code);
+          Polymer.dom(this.$.codeView).innerHTML = this.highlight(this.code);
         });
       },
       highlight: function(code) {
