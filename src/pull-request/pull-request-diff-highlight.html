@@ -140,6 +140,9 @@
         });
       },
       highlight: function(code) {
+        if (!code) {
+          return 'Drag diff here';
+        }
         var event = this.fire('syntax-highlight', {code: code, lang: 'diff'});
         return event.detail.code || code;
       }

@@ -128,9 +128,11 @@
         // we need to manually trigger updating the styles.
         'updateStyles(pullRequest.state)'
       ],
-      _fireAjax: function() {
-        this.$.ajaxComments.generateRequest();
-        this.$.ajaxIssue.generateRequest();
+      _fireAjax: function(pullRequest) {
+        if (pullRequest) {
+          this.$.ajaxComments.generateRequest();
+          this.$.ajaxIssue.generateRequest();
+        }
       },
       _getReviewers: function(assignee) {
         if (!assignee) {

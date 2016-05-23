@@ -77,8 +77,11 @@
         markdown="{{description}}"
         project="[[project]]"></markdown-input>
     </header>
-    <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight" disabled="[[!editable]]" on-remove="_diffRemoved">
-      <template is="dom-repeat" items="[[chunk.diff]]" filter="_isNotEmptyDiff">
+    <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight"
+        disabled="[[!editable]]" on-remove="_diffRemoved"
+        on-update="_diffMoved"
+        on-add="_diffAdded">
+      <template is="dom-repeat" id="repeat" items="[[chunk.diff]]" on-dom-change="_addChunkToSortableGroup">
         <pull-request-diff-highlight code="[[item.changes]]" lines-changed="[[item.linesChanged]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
       </template>
     </sortable-js>
@@ -120,23 +123,50 @@
         },
         project: Object
       },
-      attached: function() {
+      _addChunkToSortableGroup: function() {
         if (this.editable) {
           var diffs = this.$$('sortable-js').getElementsByClassName('diff');
           for (var i = 0, l = diffs.length; i < l; i++) {
-            Sortable.create(diffs[i], {
-              group: 'chunk'
-            });
+            if (!diffs[i].__added) {
+              Sortable.create(diffs[i], {
+                group: 'chunk'
+              });
+              diffs[i].__added = true;
+            }
           }
         }
       },
       observers: [
         '_toggleEditable(editable)'
       ],
-      _isNotEmptyDiff: function(diff) {
-        return diff.changes !== '';
+      _diffAdded: function(e) {
+        if (e.detail) {
+          var invertedIndex = (e.detail.newIndex) ? 0 : 1;
+          // Remove the dummy diff
+          if (!this.chunk.diff[invertedIndex].changes) {
+            var changes = this.chunk.diff.slice()[e.detail.newIndex];
+            this.set('chunk', {
+              diff: [{
+                file: changes.file,
+                diffId: changes.diffId,
+                fileUrl: changes.file,
+                changes: changes.changes,
+                linesChanged: changes.linesChanged
+              }]
+            });
+            this.fire('upgraded', {
+              file: changes.file,
+              diffId: changes.diffId
+            });
+          }
+        }
       },
-      _diffRemoved: function() {
+      _diffMoved: function(e) {
+        if (e.detail) {
+          console.log('Moved from %d to %d', e.detail.newIndex, e.detail.oldIndex);
+        }
+      },
+      _diffRemoved: function(e) {
         if (!this.chunk.diff.length) {
           this.fire('empty');
         }
