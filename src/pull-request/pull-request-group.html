@@ -6,7 +6,7 @@
 <link rel="import" href="../util/markdown-input.html">
 <link rel="import" href="../util/collapse-icon.html">
 
-<dom-module id="pull-request-chunk">
+<dom-module id="pull-request-group">
   <template>
     <style>
       [hidden] {
@@ -73,7 +73,7 @@
     </div>
     <div class="content" hidden$="[[collapsed]]">
       <header>
-        <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this chunk" value="{{title}}"></paper-input>
+        <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this group" value="{{title}}"></paper-input>
         <h2 hidden$="[[editable]]">[[displayTitle]]</h2>
         <markdown-input
           hidden$="[[hideDescription]]"
@@ -83,11 +83,11 @@
           project="[[project]]"
         ></markdown-input>
       </header>
-      <sortable-js class="diffs" group="chunk" draggable="pull-request-diff-highlight"
+      <sortable-js class="diffs" group="group" draggable="pull-request-diff-highlight"
           disabled="[[!editable]]" on-remove="_diffRemoved"
           on-update="_diffMoved"
           on-add="_diffAdded">
-        <template is="dom-repeat" id="repeat" items="[[chunk.diff]]" on-dom-change="_addChunkToSortableGroup">
+        <template is="dom-repeat" id="repeat" items="[[group.diff]]" on-dom-change="_addGroupToSortableGroup">
           <pull-request-diff-highlight code="[[item.changes]]" lines-changed="[[item.linesChanged]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
         </template>
       </sortable-js>
@@ -96,28 +96,28 @@
       <span>comments</span>
       <collapse-icon collapsed="{{showComments}}"></collapse-icon>
     </p>
-    <div class="chunk-comment" hidden$="[[showComments]]">
-      <template is="dom-repeat" items="[[chunk.comments]]" as="comment">
+    <div class="group-comment" hidden$="[[showComments]]">
+      <template is="dom-repeat" items="[[group.comments]]" as="comment">
         <pull-request-comment
             text="[[comment.body]]" author="[[comment.user]]"
             date="[[comment.timeopened]]" project="[[project]]"></pull-request-comment>
       </template>
-      <pull-request-add-comments comments="{{chunk.comments}}"></pull-request-add-comments>
+      <pull-request-add-comments comments="{{group.comments}}"></pull-request-add-comments>
     </div>
   </template>
   <script>
     Polymer({
-      is: 'pull-request-chunk',
+      is: 'pull-request-group',
       properties: {
         editable: {
           type: Boolean,
           value: false
         },
-        chunk: Object,
+        group: Object,
         title: String,
         displayTitle: {
           type: String,
-          computed: '_getDisplayTitle(title, chunk)'
+          computed: '_getDisplayTitle(title, group)'
         },
         description: {
           type: String,
@@ -135,13 +135,13 @@
         },
         project: Object
       },
-      _addChunkToSortableGroup: function() {
+      _addGroupToSortableGroup: function() {
         if (this.editable) {
           var diffs = this.$$('sortable-js').getElementsByClassName('diff');
           for (var i = 0, l = diffs.length; i < l; i++) {
             if (!diffs[i].__added) {
               Sortable.create(diffs[i], {
-                group: 'chunk'
+                group: 'group'
               });
               diffs[i].__added = true;
             }
@@ -159,9 +159,9 @@
         if (e.detail) {
           var invertedIndex = (e.detail.newIndex) ? 0 : 1;
           // Remove the dummy diff
-          if (!this.chunk.diff[invertedIndex].changes) {
-            var changes = this.chunk.diff.slice()[e.detail.newIndex];
-            this.set('chunk', {
+          if (!this.group.diff[invertedIndex].changes) {
+            var changes = this.group.diff.slice()[e.detail.newIndex];
+            this.set('group', {
               diff: [{
                 file: changes.file,
                 diffId: changes.diffId,
@@ -177,7 +177,7 @@
           }
         }
       },
-      _getDisplayTitle: function(title, chunk) {
+      _getDisplayTitle: function(title, group) {
         if (!this.title) {
           return "Unsorted changes";
         }
@@ -189,7 +189,7 @@
         }
       },
       _diffRemoved: function(e) {
-        if (!this.chunk.diff.length) {
+        if (!this.group.diff.length) {
           this.fire('empty');
         }
       },

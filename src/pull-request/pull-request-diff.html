@@ -1,7 +1,7 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../ajax/authenticated-ajax.html">
-<link rel="import" href="pull-request-chunk.html">
+<link rel="import" href="pull-request-group.html">
 
 <dom-module id="pull-request-diff">
   <template>
@@ -48,20 +48,20 @@
       <div class="actions">
         <paper-icon-button
             hidden$="[[!editable]]"
-            class="add-chunk-button" icon="add" on-tap="_addChunk"
-            title="Add a new chunk to this pull request"></paper-icon-button>
+            class="add-group-button" icon="add" on-tap="_addGroup"
+            title="Add a new group to this pull request"></paper-icon-button>
       </div>
     </paper-toolbar>
 
     <div class="diff-list">
-      <template is="dom-repeat" items="[[orderedChunks]]" as="chunk">
-        <pull-request-chunk
+      <template is="dom-repeat" items="[[orderedGroups]]" as="group">
+        <pull-request-group
           class="draggable"
-          chunk="[[chunk]]"
-          on-empty="_removeChunk"
-          on-upgraded="_removeDummyChunk"
+          group="[[group]]"
+          on-empty="_removeGroup"
+          on-upgraded="_removeDummyGroup"
           editable="[[editable]]"
-          ></pull-request-chunk>
+          ></pull-request-group>
       </template>
     </div>
 
@@ -86,97 +86,97 @@
         },
         diff: {
           type: String,
-          observer: '_parseDiffToChunks'
+          observer: '_parseDiffToGroups'
         },
-        chunks: {
+        groups: {
           type: Array,
           value: function() {
             return [];
           }
         },
-        orderedChunks: {
+        orderedGroups: {
           type: Array,
-          computed: '_orderChunks(chunks.*, ordering)'
+          computed: '_orderGroups(groups.*, ordering)'
         },
         ordering: {
           type: Array,
           value: function() {
             return [];
           },
-          observer: '_updateChunks'
+          observer: '_updateGroups'
         }
       },
-      _updateChunks: function() {
-        this.chunks.forEach(function(e) {
+      _updateGroups: function() {
+        this.groups.forEach(function(e) {
           delete e._index;
         });
-        // this.notifyPath('chunks', this.chunks);
+        // this.notifyPath('groups', this.groups);
       },
-      _addChunk: (function() {
-        var newChunk = {
+      _addGroup: (function() {
+        var newGroup = {
           file: 'New file',
-          diffId: 'new-chunk'
+          diffId: 'new-group'
         };
 
         return function() {
-          if (!this.ordering.length || this.ordering[0][0] !== newChunk) {
+          if (!this.ordering.length || this.ordering[0][0] !== newGroup) {
             this.ordering.unshift([
-              newChunk
+              newGroup
             ]);
           }
-          this.unshift('chunks', {
+          this.unshift('groups', {
             file: 'New file',
             fileUrl: '',
-            diffId: 'new-chunk',
+            diffId: 'new-group',
             changes: '',
             linesChanged: {startLineBefore: 0, rangeBefore: 0,
                            startLineAfter: 0,  rangeAfter: 0}
           });
         }
       })(),
-      _removeDummyChunk: function(e) {
+      _removeDummyGroup: function(e) {
         this.ordering[0].splice(0, 1, e.detail);
-        this.notifyPath('chunks', this.chunks);
+        this.notifyPath('groups', this.groups);
       },
-      _removeChunk: function(e) {
-        // this.splice('chunks', e.model.chunk.originalIndex, 1);
+      _removeGroup: function(e) {
+        // this.splice('groups', e.model.group.originalIndex, 1);
       },
-      _orderChunks: (function() {
-        function findChunk(chunks, properties) {
-          for (var i=0,l=chunks.length;i<l;i++) {
-            if (chunks[i].file === properties.file
-                && chunks[i].diffId === properties.diffId) {
-              chunks[i].__index = i;
-              return chunks[i];
+      _orderGroups: (function() {
+        function findGroup(groups, properties) {
+          for (var i=0,l=groups.length;i<l;i++) {
+            if (groups[i].file === properties.file
+                && groups[i].diffId === properties.diffId) {
+              groups[i].__index = i;
+              return groups[i];
             }
           }
         }
 
-        return function(chunksSplices, ordering) {
-          var chunks = chunksSplices.base;
-          var orderedChunks = [];
+        return function(groupsSplices, ordering) {
+          var groups = groupsSplices.base;
+          var orderedGroups = [];
           for (var i=0,l=ordering.length; i<l; i++) {
             for (var j=0,d=ordering[i].length;j<d;j++) {
-              var c = findChunk(chunks, ordering[i][j]);
+              var c = findGroup(groups, ordering[i][j]);
               if (c) {
-                orderedChunks[i] = orderedChunks[i] || {
+                orderedGroups[i] = orderedGroups[i] || {
                   diff: [],
                   comments: []
                 };
-                orderedChunks[i].diff.push(c);
+                orderedGroups[i].diff.push(c);
               }
             }
           }
-          var unSortedChunk = orderedChunks[orderedChunks.length] = {
+          var unSortedGroup = orderedGroups[orderedGroups.length] = {
             diff: [],
             comments: []
           };
-          for (var i=0,l=chunks.length;i<l;i++) {
-            if (chunks[i].__index === undefined) {
-              unSortedChunk.diff.push(chunks[i]);
+          for (var i=0,l=groups.length;i<l;i++) {
+            if (groups[i].__index === undefined) {
+              unSortedGroup.diff.push(groups[i]);
             }
           }
-          return orderedChunks;
+          return orderedGroups;
         }
       })(),
       incrementLineModificationCounter: function(lines) {
@@ -189,9 +189,9 @@
           this.additions += additions.length;
         }
       },
-      _parseDiffToChunks: (function() {
+      _parseDiffToGroups: (function() {
         var ANYTHING = '(?:.|\n)+?';
-        // Diff chunks are separated by "diff --git" code blocks.
+        // Diff groups are separated by "diff --git" code blocks.
         // We therefore match up to the point that we encounter a new
         // "diff --git" by using a positive lookahead (?=).
         //
@@ -202,7 +202,7 @@
         // [0] = full match
         // [1] = from file name in format "--- a/FILE_NAME"
         // [2] = to file name in format "+++ a/FILE_NAME"
-        // [3] = full changes as chunks
+        // [3] = full changes as groups
         var DIFF_DELIMETER = 'diff --git';
         var DIFF_HEADER = DIFF_DELIMETER + ANYTHING;
         var DIFF_FILES = '\\-\\-\\- (a\\/(?:.+)|\\/dev\\/null)\n' +
@@ -215,15 +215,15 @@
         // for the same pattern.
         //
         // [0] = full match
-        // [1] = CHUNK_DELIMETER
+        // [1] = GROUP_DELIMETER
         // [2] - Start line number before the change is applied
         // [3] - Amount of lines before the change is applied
         // [4] - Start line number after the change is applied
         // [5] - Amount of lines after the change is applied
         // [6] = all changes matched by ANTYHING
-        var CHUNK_DELIMETER = '@@ \\-(\\d+),(\\d+) \\+(\\d+),(\\d+) @@';
-        var CHUNK_EXPRESSION = '(' + CHUNK_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=\n' + CHUNK_DELIMETER + ')|$)';
-        var CHUNK_REGEX = new RegExp(CHUNK_EXPRESSION, 'g');
+        var GROUP_DELIMETER = '@@ \\-(\\d+),(\\d+) \\+(\\d+),(\\d+) @@';
+        var GROUP_EXPRESSION = '(' + GROUP_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=\n' + GROUP_DELIMETER + ')|$)';
+        var GROUP_REGEX = new RegExp(GROUP_EXPRESSION, 'g');
 
         function getFileHeader(file, fromFile, toFile) {
           if (fromFile !== toFile) {
@@ -240,28 +240,28 @@
         }
 
         return function(diff) {
-          var chunks = [];
+          var groups = [];
           this.deletions = 0;
           this.additions = 0;
-          var file, chunk;
+          var file, group;
           while ((file = DIFF_REGEX.exec(diff)) !== null) {
-            while ((chunk = CHUNK_REGEX.exec(file[3])) !== null) {
-              this.incrementLineModificationCounter(chunk[6]);
+            while ((group = GROUP_REGEX.exec(file[3])) !== null) {
+              this.incrementLineModificationCounter(group[6]);
 
               var fileHeader = getFileHeader(file, file[1].substring(2), file[2].substring(2));
               var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileHeader;
 
-              chunks.push({
+              groups.push({
                 file: fileHeader,
                 fileUrl: fileUrl,
-                diffId: chunk[1],
-                changes: chunk[6],
-                linesChanged: {startLineBefore: chunk[2], rangeBefore: chunk[3],
-                               startLineAfter: chunk[4],  rangeAfter: chunk[5]}
+                diffId: group[1],
+                changes: group[6],
+                linesChanged: {startLineBefore: group[2], rangeBefore: group[3],
+                               startLineAfter: group[4],  rangeAfter: group[5]}
               });
             }
           }
-          this.set('chunks', chunks);
+          this.set('groups', groups);
         };
       })()
     });

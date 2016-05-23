@@ -6,7 +6,7 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="pull-request-diff.html">
-<link rel="import" href="pull-request-chunk.html">
+<link rel="import" href="pull-request-group.html">
 <link rel="import" href="pull-request-general-information.html">
 <link rel="import" href="pull-request-commits.html">
 
@@ -159,8 +159,8 @@
           observer: '_fetchDiff'
         }
       },
-      _addChunk: function() {
-        this.unshift('pr.chunks', {});
+      _addGroup: function() {
+        this.unshift('pr.groups', {});
       },
       _fetchDiff: function(pullRequest) {
         if (pullRequest) {
