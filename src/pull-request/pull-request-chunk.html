@@ -74,7 +74,7 @@
     <div class="content" hidden$="[[collapsed]]">
       <header>
         <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this chunk" value="{{title}}"></paper-input>
-        <h2>[[displayTitle]]</h2>
+        <h2 hidden$="[[editable]]">[[displayTitle]]</h2>
         <markdown-input
           hidden$="[[hideDescription]]"
           disabled="[[!editable]]"
@@ -179,8 +179,9 @@
       },
       _getDisplayTitle: function(title, chunk) {
         if (!this.title) {
-          return "Changes in: " + chunk.diff[0].file;
+          return "Unsorted changes";
         }
+        return title;
       },
       _diffMoved: function(e) {
         if (e.detail) {
