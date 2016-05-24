@@ -1,3 +1,5 @@
+
+
 <dom-module id="home-page">
   <template>
     <style>
@@ -42,11 +44,9 @@
       <img class="logo" src="https://blueseptember.org.au/wp-content/uploads/2015/07/Blue-square.jpg" />
     </div>
     <div class="button-container">
-      <a href="/projects" tabindex="-1">
-        <paper-button raised class="button">
-          <img height=30px src="https://assets-cdn.github.com/images/modules/logos_page/Octocat.png" /> Login with Github
-        </paper-button>
-      </a>
+      <paper-button raised class="button" on-tap="_loginWithGithub">
+        <img height=30px src="https://assets-cdn.github.com/images/modules/logos_page/Octocat.png" /> Login with Github
+      </paper-button>
       <a href="/projects" tabindex="-1">
         <paper-button raised class="button">
           <img height=30px src="https://pbs.twimg.com/profile_images/615675308243488768/_d8TRzzL.png" /> Login with Bitbucket
@@ -67,7 +67,10 @@
   </template>
   <script>
     Polymer({
-      is: 'home-page'
+      is: 'home-page',
+      _loginWithGithub: function() {
+        this.fire('go-login-github');
+      }
     });
   </script>
 </dom-module>

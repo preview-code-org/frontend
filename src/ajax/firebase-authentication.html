@@ -1,0 +1,68 @@
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+
+<dom-module id="firebase-authentication">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <firebase-app auth-domain="preview-code.firebaseapp.com"
+        database-url="https://preview-code.firebaseio.com/"
+        api-key="AIzaSyALQRHW7FvJXnjli-QSGgX8eI6FEhCJ3Bg">
+    </firebase-app>
+    <firebase-auth id="auth" user="{{user}}" provider="github">
+    </firebase-auth>
+  </template>
+  <script>
+    Polymer({
+      is: 'firebase-authentication',
+      properties: {
+        loading: {
+          type: Boolean,
+          notify: true
+        }
+      },
+      attached: function() {
+        this._parseSuccesfulResult = this._parseSuccesfulResult.bind(this);
+        this._checkResult();
+      },
+      signIn: function() {
+        this.$.auth.auth.getRedirectResult().then(function(result) {
+          if (!result.credential) {;
+            this.$.auth.signInWithRedirect();
+          } else {;
+            this._parseSuccesfulResult(result);
+          }
+        }.bind(this))
+      },
+      _parseSuccesfulResult: function(result) {
+        if (result.credential) {
+          // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+          var token = result.credential.accessToken;
+          this.fire('github-token', token);
+        }
+        // The signed-in user info.
+        var user = result.user;
+        this.loading = false;
+      },
+      _checkResult: function() {
+        this.loading = true;
+        this.$.auth.auth.getRedirectResult()
+            .then(this._parseSuccesfulResult)
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              // The email of the user's account used.
+              var email = error.email;
+              // The firebase.auth.AuthCredential type that was used.
+              var credential = error.credential;
+              // ...
+              this.loading = false;
+            });
+      }
+    });
+  </script>
+</dom-module>

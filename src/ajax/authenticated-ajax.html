@@ -5,7 +5,6 @@
   <template>
     <iron-ajax
       id="ajax"
-      auto="[[auto]]"
       url="[[refurl]]"
       params="[[params]]"
       method="[[method]]"
@@ -149,6 +148,10 @@
       attached: function() {
         shared.instances.push(function(shared) {
           this.shared = shared;
+          if (this._fireLater) {
+            this._fireLater = false;
+            this.$.ajax.generateRequest();
+          }
         }.bind(this));
       },
 
@@ -195,6 +198,10 @@
       },
       generateRequest: function() {
         this._updateIfNoneMatch(this.refurl);
+        if (!this.shared.accessToken) {
+          this._fireLater = true;
+          return;
+        }
         return this.$.ajax.generateRequest();
       },
       onRequest: function(e) {

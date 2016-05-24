@@ -1,13 +1,15 @@
+<link rel="import" href="ajax/firebase-authentication.html">
+
 <!-- Load these elements first to have fetch sub-pages as fast as possible -->
 <link rel="import" href="bower_components/iron-lazy-pages/iron-lazy-pages.html">
 <link rel="import" href="bower_components/carbon-route/carbon-location.html">
 <link rel="import" href="bower_components/carbon-route/carbon-route.html">
-<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/paper-styles/color.html">
 <link rel="import" href="bower_components/paper-card/paper-card.html">
 <link rel="import" href="bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="bower_components/prism-element/prism-highlighter.html">
 <link rel="import" href="bower_components/prism-element/prism-style-import.html">
 
@@ -31,6 +33,9 @@ Prism.languages.diff.deleted = /^[-<].*$/m
         height: 100%;
         font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         color:grey;
+      }
+      [hidden] {
+        display: none !important;
       }
       paper-tabs {
         --paper-tabs-selection-bar-color: var(--secondary-action-red);
@@ -75,16 +80,17 @@ Prism.languages.diff.deleted = /^[-<].*$/m
         flex: 1;
         display: flex;
       }
+      paper-spinner {
+        margin: auto;
+        height: 50px;
+        width: 50px;
+      }
     </style>
     <carbon-location route="{{route}}"></carbon-location>
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
 
-    <iron-ajax
-      auto
-      url="token.json"
-      handle-as="json"
-      on-response="storeAccessToken"></iron-ajax>
     <authenticated-ajax id="authenticatedAjax"></authenticated-ajax>
+    <firebase-authentication id="firebase" loading="{{firebaseLoading}}"></firebase-authentication>
 
     <prism-highlighter></prism-highlighter>
 
@@ -105,9 +111,12 @@ Prism.languages.diff.deleted = /^[-<].*$/m
         </template>
       </div>
 
+      <paper-spinner active="[[firebaseLoading]]" hidden$="[[!firebaseLoading]]"></paper-spinner>
+
       <iron-lazy-pages selected="[[page.page]]"
                   attr-for-selected="data-route"
-                  fallback-selection="404">
+                  fallback-selection="404"
+                  hidden$="[[firebaseLoading]]">
         <template is="iron-lazy-page" data-route=""
                   path="home-page.html">
           <home-page></home-page>
@@ -131,11 +140,27 @@ Prism.languages.diff.deleted = /^[-<].*$/m
   <script>
   Polymer({
     is: 'rite-app',
+    properties: {
+      firebaseLoading: Boolean
+    },
+    listeners: {
+      'github-token': '_setToken',
+      'go-login-github': '_signInWithGitHub'
+    },
+    ready: function() {
+      if (this.page.page) {
+        this._signInWithGitHub();
+      }
+    },
     _equals: function(one, other) {
       return one === other;
     },
-    storeAccessToken: function(e) {
-      this.$.authenticatedAjax.storeToken(e.detail.response);
+    _signInWithGitHub: function() {
+      this.$.firebase.signIn();
+    },
+    _setToken: function(e) {
+      this.$.authenticatedAjax.storeToken(e.detail);
+      this.set('page.page', 'projects');
     }
   });
   </script>
