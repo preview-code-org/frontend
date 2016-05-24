@@ -26,7 +26,7 @@
 
     setup(function() {
     branchSelector = fixture('branch-selector-fixture');
-    branchSelector.branches = ['test','testing'];
+    branchSelector.branches = ['test', 'testing'];
     });
 
     test('on focus show dropdown', function() {
@@ -42,7 +42,7 @@
 
     test('take selecting branch works', function() {
       Polymer.dom(branchSelector.root).querySelector('iron-selector').select('test');
-      assert.equal('test',branchSelector.selected);
+      assert.equal('test', branchSelector.selected);
     });
 
     test('selecting branch hide dropdown', function(done) {
@@ -59,7 +59,7 @@
     test('filtering branches sets value', function() {
       var input = Polymer.dom(branchSelector.root).querySelector('paper-input')
       input.value = 'ing';
-      assert.equal(input.value,branchSelector.filter);
+      assert.equal(input.value, branchSelector.filter);
     });
 
     test('filtering branches hides items', function(done) {
@@ -79,7 +79,7 @@
         MockInteractions.pressAndReleaseKeyOn(ironSelector, 9);
         MockInteractions.pressAndReleaseKeyOn(ironSelector, 9);
         MockInteractions.pressEnter(ironSelector);
-        assert.equal('test',branchSelector.selected);
+        assert.equal('test', branchSelector.selected);
       });
     });
   });
