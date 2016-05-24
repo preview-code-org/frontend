@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>marked-github-element tests</title>
+
+  <script src="../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/bower_components/web-component-tester/browser.js"></script>
+
+  <!-- Import the element to test -->
+  <link rel="import" href="../../src/util/marked-github-element.html">
+
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <marked-github-element></marked-github-element>
+    </template>
+  </test-fixture>
+  <script>
+    suite('Basic <marked-github-element>', function() {
+      var mdElem;
+      var project = {
+        owner: 'SomeRepoOwner',
+        name: 'SomeRepoName'
+      }
+
+      setup(function() {
+        mdElem = fixture('basic');
+      });
+
+      test('Passes project owner and name to substitutor', function(done) {
+        mdElem.createMarkdownSubstituter = function(p) {
+          assert.deepEqual(p, project);
+          done();
+        }
+        mdElem.project = project;
+      });
+
+      test('passes markdown to substitutor', function(done) {
+        var markdown = 'testMD'
+        mdElem.createMarkdownSubstituter = function(p) {
+          console.log('create');
+          return function(err, text) {
+            assert.include(text, markdown);
+            done();
+          };
+        }
+        mdElem.project = project;
+        mdElem.markdown = markdown;
+      })
+    });
+
+    suite('SubstituteRenderedGitHubMarkdownBehavior', function() {
+      var behavior;
+      var substitutor;
+      var project = {
+        owner: 'SomeRepoOwner',
+        name: 'SomeRepoName'
+      }
+      var issueReference = '#42';
+      var userReference = '@username';
+
+      setup(function() {
+        behavior = SubstituteRenderedGitHubMarkdownBehavior;
+        substitutor = behavior.createMarkdownSubstituter(project);
+      })
+
+      test('call to createMarkdownSubstituter returns a function', function() {
+        assert.isFunction(substitutor);
+      });
+
+      test("replaces issue references with anchor", function() {
+        var anchor = createElements(substitutor('', issueReference))[0];
+        assert.equal(anchor.tagName, 'A');
+      });
+
+      test("replaces issue ref with anchor with owner in href", function() {
+        var anchor = createElements(substitutor('', issueReference))[0];
+        assert.include(anchor.href, project.owner);
+      });
+
+      test("replaces issue ref with anchor with name in href", function() {
+        var anchor = createElements(substitutor('', issueReference))[0];
+        assert.include(anchor.href, project.name);
+      });
+
+      test("replaces issue ref with anchor with target ='_blank'", function() {
+        var anchor = createElements(substitutor('', issueReference))[0];
+        assert.equal(anchor.target, '_blank');
+      });
+
+      test("replaces issue ref with anchor with issue number in text", function() {
+        var anchor = createElements(substitutor('', issueReference))[0];
+        assert.equal(anchor.text, issueReference);
+      });
+
+      test("replaces user references with anchor", function() {
+        var anchor = createElements(substitutor('', userReference))[0];
+        assert.equal(anchor.tagName, 'A');
+      });
+
+      test("replaces user ref with anchor with target ='_blank'", function() {
+        var anchor = createElements(substitutor('', userReference))[0];
+        assert.equal(anchor.target, '_blank');
+      });
+
+      test("replaces user ref with anchor with username in text", function() {
+        var anchor = createElements(substitutor('', userReference))[0];
+        assert.equal(anchor.text, userReference);
+      });
+
+      test("replaces all issue refs with anchors", function() {
+        var anchors = createElements(substitutor('',
+        issueReference + ' ' + issueReference + ' ' + issueReference));
+        assert.equal(anchors.length, 3);
+        for (var i = 0; i < anchors.length; i++) {
+          assert.equal(anchors[i].tagName, 'A');
+        }
+      });
+
+      test("replaces all user refs with anchors", function() {
+        var anchors = createElements(substitutor('',
+        userReference + ' ' + userReference + ' ' + userReference));
+        assert.equal(anchors.length, 3);
+        for (var i = 0; i < anchors.length; i++) {
+          assert.equal(anchors[i].tagName, 'A');
+        }
+      });
+
+      test("replaces mixed issue and user references with anchors", function() {
+        var anchors = createElements(substitutor('',
+        userReference + ' ' + issueReference + ' ' + userReference  + ' ' +
+        issueReference + ' ' + userReference + ' ' + issueReference));
+        assert.equal(anchors.length, 6);
+        for (var i = 0; i < anchors.length; i++) {
+          assert.equal(anchors[i].tagName, 'A');
+        }
+      });
+
+      test("does not substitute normal text", function() {
+        var lorumIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt leo non nisl tempus, sit amet iaculis eros gravida. Cras et ligula quis purus posuere interdum vel et lorem. Curabitur a vulputate sem, in sagittis ante. Sed dignissim dolor leo, id venenatis sem porttitor eget. Aliquam sagittis, felis accumsan faucibus finibus, lorem mauris tincidunt enim, nec gravida nibh mauris sed nulla. Aenean eget dolor sit amet mauris gravida iaculis ut eget ipsum. Curabitur tellus nisi, commodo vitae lorem in, viverra dapibus ante. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean dictum congue lorem quis consequat.';
+        var substituted = substitutor('', lorumIpsum);
+        assert.equal(substituted, lorumIpsum);
+      });
+    });
+
+    function createElements(html) {
+      var elem = document.createElement('div');
+      elem.innerHTML = html
+      return elem.children;
+    }
+  </script>
+
+</body>
+</html>
