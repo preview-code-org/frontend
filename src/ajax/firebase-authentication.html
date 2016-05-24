@@ -9,11 +9,15 @@
       }
     </style>
     <firebase-app auth-domain="preview-code.firebaseapp.com"
+        name="preview-code"
         database-url="https://preview-code.firebaseio.com/"
         api-key="AIzaSyALQRHW7FvJXnjli-QSGgX8eI6FEhCJ3Bg">
     </firebase-app>
-    <firebase-auth id="auth" user="{{user}}" provider="github">
-    </firebase-auth>
+    <firebase-auth id="auth"
+        app-name="preview-code"
+        user="{{user}}" provider="github"
+        on-auth-changed="_checkResult"
+        ></firebase-auth>
   </template>
   <script>
     Polymer({
@@ -26,7 +30,9 @@
       },
       attached: function() {
         this._parseSuccesfulResult = this._parseSuccesfulResult.bind(this);
-        this._checkResult();
+        if (this.$.auth.auth) {
+          this._checkResult();
+        }
       },
       signIn: function() {
         this.$.auth.auth.getRedirectResult().then(function(result) {
@@ -35,7 +41,7 @@
           } else {;
             this._parseSuccesfulResult(result);
           }
-        }.bind(this))
+        }.bind(this));
       },
       _parseSuccesfulResult: function(result) {
         if (result.credential) {
