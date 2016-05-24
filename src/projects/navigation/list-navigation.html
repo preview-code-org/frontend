@@ -2,12 +2,16 @@
 <link rel="import" href="project-list-item.html">
 <link rel="import" href="search-behavior.html">
 <link rel="import" href="search-box.html">
+<link rel="import" href="../../list-items/list-tab.html">
 
 <dom-module id="list-navigation">
   <template>
     <style>
       :host {
         display: flex;
+      }
+      [hidden] {
+        display: none !important;
       }
       .project-list{
         z-index: 3;
@@ -144,8 +148,8 @@
         },
         pullrequests: Array
       },
-      listeners: [
-        '_resetSearch(activeProject)'
+      observers: [
+        '_resetSearch(project)'
       ],
       _calcListClass: function(showProjectsList, showPullList) {
         if (!showProjectsList && !showPullList) {
