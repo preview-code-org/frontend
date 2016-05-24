@@ -5,7 +5,6 @@
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="create-pull-request/create-pull-request.html">
-<link rel="import" href="project-pull-requests.html">
 <link rel="import" href="project-activity.html">
 
 <dom-module id="project-overview-page">
@@ -13,13 +12,6 @@
     <style>
       :host {
         display: block;
-      }
-      project-pull-requests {
-        flex: 1;
-      }
-      project-pull-requests {
-        overflow-y: auto;
-        overflow-x: hidden;
       }
       paper-dropdown-menu {
         --paper-input-container-input-color: var(--primary-text-color);
@@ -77,9 +69,6 @@
       iron-pages {
         width: 75%;
         margin: 0 auto;
-      }
-      project-pull-requests {
-        margin-bottom: 2em;
       }
     </style>
 
