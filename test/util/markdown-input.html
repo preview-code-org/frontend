@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>markdown-input tests</title>
+
+  <script src="../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/bower_components/web-component-tester/browser.js"></script>
+
+  <!-- Import the element to test -->
+  <link rel="import" href="../../src/util/markdown-input.html">
+
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <markdown-input></markdown-input>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="disabled">
+    <template>
+      <markdown-input disabled></markdown-input>
+    </template>
+  </test-fixture>
+
+  <script>
+
+    suite('Basic <markdown-input>', function() {
+      var mdInput;
+
+      setup(function() {
+        mdInput = fixture('basic');
+      });
+
+      test('Has default state is editable and enabled', function() {
+        assert.isFalse(mdInput.disabled);
+        assert.isTrue(mdInput._hidePreview);
+      });
+
+      test('Hides <marked-github-element> when preview is false', function() {
+        var githubElem = Polymer.dom(mdInput.root).querySelector('marked-github-element');
+        assert.isTrue(githubElem.hasAttribute('hidden'));
+      });
+
+      test('Does not hide <marked-github-element> when preview is true', function() {
+        mdInput._previewToggle = true;
+        var githubElem = Polymer.dom(mdInput.root).querySelector('marked-github-element');
+        assert.isFalse(githubElem.hasAttribute('hidden'));
+      });
+
+      test('Does not hide paper-textarea when preview is false', function() {
+        var paperText = Polymer.dom(mdInput.root).querySelector('paper-textarea');
+        assert.isFalse(paperText.hasAttribute('hidden'));
+      });
+
+      test('Hides paper-textarea when preview is true', function() {
+        mdInput._previewToggle = true;
+        var paperText = Polymer.dom(mdInput.root).querySelector('paper-textarea');
+        assert.isTrue(paperText.hasAttribute('hidden'));
+      });
+
+      test('Binds label to paper-textarea', function() {
+        var labelText = 'Hello World';
+        mdInput.setAttribute('label', labelText);
+        var paperText = Polymer.dom(mdInput.root).querySelector('paper-textarea');
+        assert.equal(paperText.label, labelText);
+      });
+
+      test('Binds markdown property to paper-textarea', function() {
+        var markdown = '`Here you go`';
+        mdInput.setAttribute('markdown', markdown);
+        var paperText = Polymer.dom(mdInput.root).querySelector('paper-textarea');
+        assert.equal(paperText.value, markdown);
+      });
+
+      test('Binds markdown property to marked-github-element', function() {
+        var markdown = '`Here you go`';
+        mdInput.setAttribute('markdown', markdown);
+        var markedGithubElem = Polymer.dom(mdInput.root).querySelector('marked-github-element');
+        assert.equal(markedGithubElem.markdown, markdown);
+      });
+    });
+
+    suite('Disabled <markdown-input>', function() {
+      var disabledInput;
+
+      setup(function() {
+        disabledInput = fixture('disabled');
+      });
+
+      test('Has default state is to preview and disabled', function() {
+        assert.isTrue(disabledInput.disabled);
+        assert.isFalse(disabledInput._hidePreview);
+      });
+
+      test('Does not hide <marked-github-element> when preview is false', function() {
+        var githubElem = Polymer.dom(disabledInput.root).querySelector('marked-github-element');
+        assert.isFalse(githubElem.hasAttribute('hidden'));
+      });
+
+      test('Does not hide <marked-github-element> when preview is true', function() {
+        disabledInput._previewToggle = true;
+        var githubElem = Polymer.dom(disabledInput.root).querySelector('marked-github-element');
+        assert.isFalse(githubElem.hasAttribute('hidden'));
+      });
+
+      test('Hides paper-textarea when preview is false', function() {
+        var paperText = Polymer.dom(disabledInput.root).querySelector('paper-textarea');
+        assert.isTrue(paperText.hasAttribute('hidden'));
+      });
+
+      test('Hides paper-textarea when preview is true', function() {
+        disabledInput._previewToggle = true;
+        var paperText = Polymer.dom(disabledInput.root).querySelector('paper-textarea');
+        assert.isTrue(paperText.hasAttribute('hidden'));
+      });
+    });
+  </script>
+
+</body>
+</html>

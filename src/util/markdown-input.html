@@ -1,4 +1,4 @@
-<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../util/marked-github-element.html">
 
@@ -35,11 +35,19 @@
         --paper-input-container-color: var(--secondary-background-color);
         --paper-input-container-focus-color: var(--anchor-color);
       }
-      paper-toggle-button {
+
+      paper-button {
+        transition:
+        font-size: 14px;
         margin-top: 1em;
-        --paper-toggle-button-checked-bar-color: var(--primary-action-green);
-        --paper-toggle-button-checked-button-color: var(--primary-action-green);
-        --paper-toggle-button-checked-ink-color: var(--primary-action-green);
+        background-color: var(--secondary-background-color);
+        color: var(--primary-text-color);
+        --paper-button-ink-color: var(--anchor-hover-color);
+      }
+      paper-button:hover,
+      paper-button[active] {
+        color: var(--primary-background-color);
+        background-color: var(--anchor-color);
       }
       marked-github-element {
         margin-top: 16px;
@@ -47,9 +55,9 @@
       }
     </style>
 
-    <paper-textarea hidden$="[[!hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
-    <marked-github-element hidden$="[[hidePreview]]" markdown="[[markdown]]" project="[[project]]"></marked-github-element>
-    <paper-toggle-button hidden$="[[disabled]]" active="{{previewToggle}}">Toggle Preview</paper-toggle-button>
+    <paper-textarea hidden$="[[!_hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
+    <marked-github-element hidden$="[[_hidePreview]]" markdown="[[markdown]]" project="[[project]]"></marked-github-element>
+    <paper-button toggles raised hidden$="[[disabled]]" active="{{_previewToggle}}">[[_toggleText]]</paper-button>
   </template>
   <script>
     Polymer({
@@ -65,16 +73,27 @@
           notify: true
         },
         label: String,
-        previewToggle: Boolean,
-        hidePreview: {
+        _previewToggle: Boolean,
+        _hidePreview: {
           type: Boolean,
-          computed: '_hidePreview(previewToggle, disabled)'
+          computed: '_getHidePreview(_previewToggle, disabled)'
+        },
+        _toggleText: {
+          type: String,
+          computed: '_getToggleText(_previewToggle)'
         }
       },
-      _hidePreview: function(previewToggle, disabled) {
+      _getHidePreview: function(previewToggle, disabled) {
         var shouldBeHidden = !disabled && !previewToggle;
         this.toggleClass('noPreview', shouldBeHidden);
         return shouldBeHidden;
+      },
+      _getToggleText: function(active) {
+        if (active) {
+          return 'Edit';
+        } else {
+          return 'Preview';
+        }
       }
     });
   </script>
