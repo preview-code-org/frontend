@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 <script>
 SearchBehavior = {
 
@@ -23,7 +24,6 @@ SearchBehavior = {
       else {
         searchWord = searchWord.toLowerCase();
         return list.filter(function(data) {
-          var count = 0;
           for(var i = 0; i < getFields(data).length; i++){
             if(getFields(data)[i].toLowerCase().indexOf(searchWord) > -1){
               return true;

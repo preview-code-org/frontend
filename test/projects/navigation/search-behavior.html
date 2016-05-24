@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>branch-selector-tests</title>
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/navigation/search-behavior.html'>
+
+</head>
+<body>
+
+<script>
+  Polymer({
+    is: 'test-search-behavior',
+    behaviors: [SearchBehavior]
+  });
+
+  suite('<search-behavior>', function() {
+    var SearchBehavior;
+    var items;
+
+    setup(function() {
+      SearchBehavior = document.createElement('test-search-behavior');
+      SearchBehavior.getFields = function(testData) {
+            return [testData.name, testData.owner];
+        },
+        items =  [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}]
+    });
+
+    test('Test if exact word can be found first property', function() {
+       var outcome = SearchBehavior.search(items,'hello');
+       assert.deepEqual([items[0]], outcome);
+    });
+
+    test('Test if exact word can be found second property', function() {
+       var outcome = SearchBehavior.search(items,'world');
+       assert.deepEqual([items[0]], outcome);
+    });
+
+    test('Test if part of word can be found', function() {
+       var outcome = SearchBehavior.search(items,'ye');
+       assert.deepEqual([items[1]], outcome);
+    });
+
+    test('Test if letter can be found', function() {
+       var outcome = SearchBehavior.search(items,'e');
+       assert.deepEqual(items, outcome);
+    });
+
+    test('Test if nothing can be found', function() {
+       var outcome = SearchBehavior.search(items,'nothing');
+       assert.deepEqual([], outcome);
+    });
+
+    test('Empty string displays all', function() {
+       var outcome = SearchBehavior.search(items,'');
+       assert.deepEqual(items, outcome);
+    });
+  })
+</script>
+
+</body>
+</html>
