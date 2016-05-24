@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../diff/diff.html">
 <link rel="import" href="pull-request-general-information.html">
 <link rel="import" href="pull-request-commits.html">
@@ -99,11 +100,11 @@
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"></authenticated-ajax>
 
-    <iron-ajax
-      id="ajaxOrdering"
-      url="./ordering.json"
-      handle-as="json"
-      last-response="{{ordering}}"></iron-ajax>
+    <firebase-document
+        app-name="preview-code"
+        path="[[orderingPath]]"
+        data="{{ordering}}"
+        ></firebase-document>
 
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
 
@@ -156,6 +157,10 @@
           type: Object,
           computed: '_getPR(pullrequests, prid)',
           observer: '_fetchDiff'
+        },
+        orderingPath: {
+          type: String,
+          computed: '_computeOrderingPath(project, prid)'
         }
       },
       _addGroup: function() {
@@ -164,8 +169,10 @@
       _fetchDiff: function(pullRequest) {
         if (pullRequest) {
           this.$.ajaxDiff.generateRequest();
-          this.$.ajaxOrdering.generateRequest();
         }
+      },
+      _computeOrderingPath: function(project, prid) {
+        return ('ordering/' + project.owner + '/' + project.name + '/' + prid).toLowerCase();
       },
       _getPR: function(pullrequests, prid) {
         return pullrequests.filter(function(pr) {
