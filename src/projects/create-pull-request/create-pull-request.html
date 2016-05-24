@@ -67,13 +67,11 @@
       <div class="selectBranches">
         <h2>Choose branches to create a pull request on</h2>
         Merge into
-        <branch-selector
-          tabindex="0" branches="[[branchNames]]"
+        <branch-selector branches="[[branchNames]]"
           selected="{{baseBranch}}" on-selected="_selectHeadBranch"
           ></branch-selector>
         from <branch-selector
-          id="headBranchSelector"
-          tabindex="0" branches="[[branchNames]]"
+          id="headBranchSelector" branches="[[branchNames]]"
           selected="{{headBranch}}"
           ></branch-selector>
       </div>
