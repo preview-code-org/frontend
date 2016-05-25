@@ -1,0 +1,14 @@
+{
+  "plugins": {
+    "istanbul": {
+      "dir": "./coverage",
+      "reporters": ["text-summary", "lcov"],
+      "include": [
+        "/src/**/*.html"
+      ],
+      "exclude": [
+        "/src/bower_components/**"
+      ]
+    }
+  }
+}
