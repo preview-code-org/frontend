@@ -1,0 +1,47 @@
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../../list-items/list-item-label.html">
+<dom-module id="pr-status">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      list-item-label{
+        white-space: normal;
+      }
+    </style>
+    <list-item-label type="box" title="status">[[status]]</list-item-label>
+    <paper-dropdown-menu label="Set status" value="{{status}}">
+      <paper-menu class="dropdown-content">
+        <template is="dom-repeat" items="[[statuses]]" index-as="index">
+          <paper-item>[[item]]</paper-item>
+        </template>
+      </paper-menu>
+    </paper-dropdown-menu>
+  </template>
+  <script>
+    Polymer({
+      is: 'pr-status',
+      properties: {
+        statuses:  {
+          type: Array,
+          value: function() {
+            return ['No reviewer assigned', 'Awaiting reviewer response', 'Awaiting contributor response']
+          }
+        },
+        status: {
+          type: String,
+          notify: true
+        },
+        pullRequest: Object
+      },
+      observers: ['_resetStatus(pullRequest)'],
+      _resetStatus: function() {
+        this.status = 'No reviewer assigned';
+      }
+    });
+  </script>
+</dom-module>
