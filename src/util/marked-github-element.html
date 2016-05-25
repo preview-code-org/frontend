@@ -9,7 +9,10 @@
   }
 
   SubstituteRenderedGitHubMarkdownBehavior = {
-    createMarkdownSubstituter: function(owner, name) {
+    createMarkdownSubstituter: function(project) {
+      var owner = project.owner;
+      var name = project.name;
+
       var replacers = [
         // Substitute issue references #1234
         {
@@ -73,7 +76,7 @@
         @apply(--commits);
       }
     </style>
-    <marked-element markdown="[[markdown]]" callback="[[createMarkdownSubstituter(project.owner, project.name)]]">
+    <marked-element markdown="[[markdown]]" callback="[[createMarkdownSubstituter(project)]]">
       <div class="markdown-html"></div>
     </marked-element>
   </template>
