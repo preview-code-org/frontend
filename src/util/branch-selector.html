@@ -1,6 +1,10 @@
 <link rel="import" href="branch-tag.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
+<!--
+Button which expands a dropdown with all possible branches.
+It includes a filter using a paper-input text-box.
+-->
 <dom-module id="branch-selector">
   <template>
     <style>
@@ -95,12 +99,29 @@
     Polymer({
       is: 'branch-selector',
       properties: {
+        /**
+         * The possible branches for this selector.
+         * @type {Array}
+         */
         branches: Array,
+        /**
+         * The selected branch. If you apply a filter and the item
+         * is visually hidden, this value is not altered.
+         * @type {String}
+         */
         selected: {
           type: String,
           notify: true
         },
+        /**
+         * The filter to apply to the branches in this selector.
+         * @type {String}
+         */
         filter: String,
+        /**
+         * Boolean to indicate the dropdown menu should be opened.
+         * @type {Boolean}
+         */
         hideSelectionMenu: {
           type: Boolean,
           value: true

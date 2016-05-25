@@ -2,12 +2,24 @@
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 
 <script>
+/**
+ * Behavior to fade in the host element by calling show().
+ * @type {Object}
+ */
 var FadeInBehaviorImpl = {
   properties: {
+    /**
+     * If the element is shown.
+     * @type {Boolean}
+     */
     shown: {
       type: Boolean,
       value: false
     },
+    /**
+     * Config to set fade-in-animation on the host element.
+     * @type {Object}
+     */
     animationConfig: {
       type: Object,
       value: function() {
@@ -20,6 +32,9 @@ var FadeInBehaviorImpl = {
       }
     }
   },
+  /**
+   * Start the fade in animation.
+   */
   show: function() {
     if (!this.shown) {
       this.shown = true;

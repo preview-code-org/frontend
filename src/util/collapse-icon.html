@@ -1,5 +1,8 @@
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 
+<!--
+Small arrow icon that can be toggled to (un-)collapse.
+-->
 <dom-module id="collapse-icon">
   <template>
     <style>
@@ -23,6 +26,10 @@
     Polymer({
       is: 'collapse-icon',
       properties: {
+        /**
+         * If the icon is collapsed or not.
+         * @type {Boolean}
+         */
         collapsed: {
           type: Boolean,
           notify: true

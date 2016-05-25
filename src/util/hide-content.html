@@ -1,5 +1,8 @@
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 
+<!--
+Hide or show the content by clicking on the arrow.
+-->
 <dom-module id="hide-content">
   <template>
     <style>
@@ -30,6 +33,10 @@
     Polymer({
       is: 'hide-content',
       properties: {
+        /**
+         * If the content should be hidden or not.
+         * @type {Boolean}
+         */
         showContent: {
           type: Boolean,
           value: true

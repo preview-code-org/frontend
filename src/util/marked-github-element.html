@@ -8,7 +8,20 @@
     return githublink + url + '" target="_blank">' + text + '</a>';
   }
 
+  /**
+   * Behavior to generate a regex substituter to turn GitHub flavored
+   * markdown into correctly rendered HTML.
+   *
+   * Examples include issue references (#1234) and user references (@TimvdLippe)
+   */
   SubstituteRenderedGitHubMarkdownBehavior = {
+    /**
+     * Create the substituter for the provided project.
+     * @param  {Object} project The project to generate the GitHub flavored
+     * markdown for.
+     * @return {function}         The function that transforms HTML text
+     * by applying regex substitutions.
+     */
     createMarkdownSubstituter: function(project) {
       var owner = project.owner;
       var name = project.name;
@@ -46,6 +59,9 @@
 })();
 </script>
 
+<!--
+Element that shows GitHub flavored markdown.
+-->
 <dom-module id="marked-github-element">
   <template>
     <style>
@@ -85,7 +101,15 @@
       is: 'marked-github-element',
       behaviors: [SubstituteRenderedGitHubMarkdownBehavior],
       properties: {
+        /**
+         * The project to generate GitHub flavored markdown for.
+         * @type {Object}
+         */
         project: Object,
+        /**
+         * The markdown to be transformed into rendered HTML.
+         * @type {String}
+         */
         markdown: String
       }
   });

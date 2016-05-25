@@ -1,4 +1,11 @@
 <script>
+/**
+ * Behavior to transform a UTC timestamp into human readable timestamps.
+ *
+ * All timestamps within 24 hours ago are transformed into hours.
+ * All timestamps more than 24 hours ago are transformed into days.
+ * @type {Object}
+ */
 ToDateStringBehavior = {
   toDateString: function(text) {
     var diff = new Date(new Date().getTime() - new Date(text).getTime());
