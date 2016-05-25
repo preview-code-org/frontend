@@ -13,6 +13,7 @@
 <link rel="import" href="pull-request-add-comments.html">
 <link rel="import" href="reviewers-list.html">
 <link rel="import" href="pull-request-comments.html">
+<link rel="import" href="pr-status.html">
 
 <dom-module id="pull-request-general-information">
   <template>
@@ -73,6 +74,9 @@
         border-left: solid 1px var(--secondary-background-color);
         max-width: 150px;
       }
+      pr-status{
+        display: block;
+      }
     </style>
     <authenticated-ajax
       id="ajaxComments"
@@ -101,6 +105,7 @@
           <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
         </div>
         <div class="sidebar">
+          <pr-status pull-request="[[pullRequest]]" status="{{status}}"></pr-status>
           <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewers-list>
           <tags-list>
             <template is="dom-repeat" items="[[issue.labels]]">
@@ -110,7 +115,7 @@
         </div>
       </section>
     </div>
-    <pull-request-comments comments={{comments}} project="[[project]]"></pull-request-comments>
+    <pull-request-comments comments="{{comments}}" project="[[project]]"></pull-request-comments>
   </template>
   <script>
     Polymer({
@@ -120,7 +125,11 @@
         comments: Array,
         issue: Object,
         pullRequest: Object,
-        project: Object
+        project: Object,
+        status: {
+          type: String,
+          value: "Awaiting reviewer feedback",
+        }
       },
       observers: [
         '_fireAjax(pullRequest)',
