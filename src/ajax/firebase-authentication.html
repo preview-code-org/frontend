@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 
@@ -16,8 +17,12 @@
     <firebase-auth id="auth"
         app-name="preview-code"
         user="{{user}}" provider="github"
-        on-auth-changed="_checkResult"
+        signed-in="{{signedIn}}"
         ></firebase-auth>
+    <iron-localstorage name="token-storage"
+        value="{{_tokens}}"
+        on-iron-localstorage-load-empty="_setEmptyTokens"
+      ></iron-localstorage>
   </template>
   <script>
     Polymer({
@@ -26,48 +31,48 @@
         loading: {
           type: Boolean,
           notify: true
-        }
+        },
+        _tokens: Object
       },
       attached: function() {
         this._parseSuccesfulResult = this._parseSuccesfulResult.bind(this);
         if (this.$.auth.auth) {
-          this._checkResult();
+          this.signIn();
         }
       },
       signIn: function() {
         this.$.auth.auth.getRedirectResult().then(function(result) {
-          if (!result.credential) {;
+          this.loading = false;
+          if (!result.credential) {
+            if (this.signedIn && this._tokens.GitHub) {
+              this.fire('github-token', this._tokens.GitHub);
+              return;
+            }
             this.$.auth.signInWithRedirect();
-          } else {;
+          } else {
             this._parseSuccesfulResult(result);
           }
-        }.bind(this));
+        }.bind(this)).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // The email of the user's account used.
+          var email = error.email;
+          // The firebase.auth.AuthCredential type that was used.
+          var credential = error.credential;
+          // ...
+          this.loading = false;
+        });
       },
       _parseSuccesfulResult: function(result) {
-        if (result.credential) {
-          // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-          var token = result.credential.accessToken;
-          this.fire('github-token', token);
-        }
-        // The signed-in user info.
-        var user = result.user;
-        this.loading = false;
+        var token = result.credential.accessToken;
+        this.set('_tokens.GitHub', token);
+        this.fire('github-token', token);
       },
-      _checkResult: function() {
-        this.loading = true;
-        this.$.auth.auth.getRedirectResult()
-            .then(this._parseSuccesfulResult)
-            .catch(function(error) {
-              // Handle Errors here.
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              // The email of the user's account used.
-              var email = error.email;
-              // The firebase.auth.AuthCredential type that was used.
-              var credential = error.credential;
-              // ...
-              this.loading = false;
-            });
+      _setEmptyTokens: function() {
+        this._tokens = {
+          GitHub: ''
+        };
       }
     });
   </script>
