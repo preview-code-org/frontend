@@ -29,7 +29,7 @@
         statuses:  {
           type: Array,
           value: function() {
-            return ["Awaiting reviewer feedback","Awaiting reviewer response", "Awaiting contributor response"]
+            return ['No reviewer assigned', 'Awaiting reviewer response', 'Awaiting contributor response']
           }
         },
         status: {
@@ -38,9 +38,9 @@
         },
         pullRequest: Object
       },
-      observers:['_resetStatus(pullRequest)'],
+      observers: ['_resetStatus(pullRequest)'],
       _resetStatus: function(){
-        this.status = "Awaiting reviewer feedback";
+        this.status = 'No reviewer assigned';
       }
     });
   </script>
