@@ -141,16 +141,14 @@ Prism.languages.diff.deleted = /^[-<].*$/m
   Polymer({
     is: 'rite-app',
     properties: {
-      firebaseLoading: Boolean
+      firebaseLoading: {
+        type: Boolean,
+        value: false
+      }
     },
     listeners: {
       'github-token': '_setToken',
       'go-login-github': '_signInWithGitHub'
-    },
-    ready: function() {
-      if (this.page.page) {
-        this._signInWithGitHub();
-      }
     },
     _equals: function(one, other) {
       return one === other;
