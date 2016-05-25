@@ -23,13 +23,13 @@
     "iron-lazy-pages": "^1.0.2",
     "Sortable": "TimvdLippe/Sortable#fix-es5-compilation",
     "marked-element": "TimvdLippe/marked-element#expose-callback",
-    "prism-element": "TimvdLippe/prism-element#fork",
+    "prism-element": "TimvdLippe/prism-element#prism-css-module",
     "polymerfire": "firebase/polymerfire#^0.9.2"
   },
   "resolutions": {
     "carbon-route": "reset-tail",
     "marked-element": "expose-callback",
-    "prism-element": "fork"
+    "prism-element": "prism-css-module"
   },
   "devDependencies": {
     "web-component-tester": "^4.2.2"
