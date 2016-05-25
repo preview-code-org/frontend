@@ -41,7 +41,6 @@
       test('passes markdown to substitutor', function(done) {
         var markdown = 'testMD'
         mdElem.createMarkdownSubstituter = function(p) {
-          console.log('create');
           return function(err, text) {
             assert.include(text, markdown);
             done();
@@ -76,14 +75,9 @@
         assert.equal(anchor.tagName, 'A');
       });
 
-      test("replaces issue ref with anchor with owner in href", function() {
+      test("replaces issue ref with anchor with owner and name in href", function() {
         var anchor = createElements(substitutor('', issueReference))[0];
-        assert.include(anchor.href, project.owner);
-      });
-
-      test("replaces issue ref with anchor with name in href", function() {
-        var anchor = createElements(substitutor('', issueReference))[0];
-        assert.include(anchor.href, project.name);
+        assert.include(anchor.href, project.owner + '/' + project.name);
       });
 
       test("replaces issue ref with anchor with target ='_blank'", function() {
