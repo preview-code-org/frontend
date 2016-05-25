@@ -1,5 +1,14 @@
 # rite-evaluation
 
+# Installation for testing
+
+Make sure you have `web-component-tester` installed globally as well as
+the plugin `web-component-tester-istanbul`:
+
+```
+sudo npm i -g web-component-tester web-component-tester-istanbul
+```
+
 # Installation for serviceWorker
 Service-worker requires you to run the website on `https`. Therefore you need
 to install a local self-signed certificate for `localhost:5200`.
