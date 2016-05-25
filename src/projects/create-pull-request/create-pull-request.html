@@ -7,7 +7,7 @@
 <link rel="import" href="../../util/marked-github-element.html">
 <link rel="import" href="../../util/branch-selector.html">
 <link rel="import" href="../../util/markdown-input.html">
-<link rel="import" href="../../ajax/authenticated-ajax.html">
+<link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../diff/diff.html">
 <link rel="import" href="create-pull-request-description.html">
 <link rel="import" href="create-pull-diff.html">
@@ -37,23 +37,23 @@
         margin: 10px auto;
       }
     </style>
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxBranches"
       refurl="https://api.github.com/repos/[[project.owner]]/[[project.name]]/branches"
       handle-as="json"
       per-page="250"
       last-response="{{branches}}"
-      ></authenticated-ajax>
+      ></github-authenticated-ajax>
 
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxCollaborators"
       refurl="https://api.github.com/repos/[[project.owner]]/[[project.name]]/contributors"
       handle-as="json"
       per-page="250"
       last-response="{{contributors}}"
-      ></authenticated-ajax>
+      ></github-authenticated-ajax>
 
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxDiff"
       refurl="https://api.github.com/repos/[[project.owner]]/[[project.name]]/compare/[[baseBranch]]...[[headBranch]]"
       handle-as="text"
@@ -61,7 +61,7 @@
       loading="{{loadingDiff}}"
       last-response="{{diff}}"
       on-response="_showPullRequestInformation"
-      ></authenticated-ajax>
+      ></github-authenticated-ajax>
 
     <div class="inputs">
       <div class="selectBranches">

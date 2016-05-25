@@ -6,7 +6,7 @@
 <link rel="import" href="../../util/marked-github-element.html">
 <link rel="import" href="../../util/a-user.html">
 <link rel="import" href="../../util/branch-tag.html">
-<link rel="import" href="../../ajax/authenticated-ajax.html">
+<link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../../list-items/tags-list.html">
 
 <link rel="import" href="pull-request-comment.html">
@@ -75,17 +75,17 @@
         max-width: 150px;
       }
     </style>
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxComments"
       refurl="[[pullRequest._links.comments.href]]"
       handle-as="json"
-      last-response="{{comments}}"></authenticated-ajax>
+      last-response="{{comments}}"></github-authenticated-ajax>
 
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxIssue"
       refurl="[[pullRequest._links.issue.href]]"
       handle-as="json"
-      last-response="{{issue}}"></authenticated-ajax>
+      last-response="{{issue}}"></github-authenticated-ajax>
 
     <div class="description">
       <header>

@@ -1,7 +1,7 @@
 <link rel="import" href="../bower_components/carbon-route/carbon-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<link rel="import" href="../ajax/authenticated-ajax.html">
+<link rel="import" href="../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../list-items/list-tab.html">
 <link rel="import" href="../list-items/preview-list.html">
 <link rel="import" href="navigation/list-navigation.html">
@@ -41,11 +41,11 @@
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
     <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{prTail}}" active="{{pullRequestSelected}}"></carbon-route>
 
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxPullRequest"
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls"
       handle-as="json"
-      last-response="{{pullrequests}}"></authenticated-ajax>
+      last-response="{{pullrequests}}"></github-authenticated-ajax>
 
     <list-navigation
         route="[[route]]" show-projects-list="{{showProjectsList}}"

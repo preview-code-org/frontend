@@ -5,7 +5,7 @@
 <link rel="import" href="../../list-items/column-list-item.html">
 <link rel="import" href="../../list-items/list-item-label.html">
 <link rel="import" href="../../list-items/tags-list.html">
-<link rel="import" href="../../ajax/authenticated-ajax.html">
+<link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../../util/to-date-string-behavior.html">
 
 <dom-module id="project-pull-request-list-item">
@@ -37,17 +37,17 @@
       }
     </style>
 
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxIssue"
       refurl="[[pr._links.issue.href]]"
       handle-as="json"
-      last-response="{{issue}}"></authenticated-ajax>
+      last-response="{{issue}}"></github-authenticated-ajax>
 
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxStatuses"
       refurl="[[pr._links.statuses.href]]"
       handle-as="json"
-      last-response="{{statuses}}"></authenticated-ajax>
+      last-response="{{statuses}}"></github-authenticated-ajax>
 
     <column-list-item selected="[[selected]]" focused="[[focused]]">
       <div class$="margin indicator [[pr.notification]]">
