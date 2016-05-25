@@ -221,7 +221,8 @@
         // [4] - Start line number after the change is applied
         // [5] - Amount of lines after the change is applied
         // [6] = all changes matched by ANTYHING
-        var GROUP_DELIMETER = '@@ \\-(\\d+),(\\d+) \\+(\\d+),(\\d+) @@';
+        var DIGITS = '(\\d+)(?:,(\\d+))?';
+        var GROUP_DELIMETER = '@@ \\-' + DIGITS + ' \\+' + DIGITS + ' @@';
         var GROUP_EXPRESSION = '(' + GROUP_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=\n' + GROUP_DELIMETER + ')|$)';
         var GROUP_REGEX = new RegExp(GROUP_EXPRESSION, 'g');
 
