@@ -2,6 +2,10 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 
+<!--
+Authentication endpoint for Firebase to handle login logic and storage
+of the GitHub oAuth token.
+-->
 <dom-module id="firebase-authentication">
   <template>
     <style>
@@ -28,6 +32,11 @@
     Polymer({
       is: 'firebase-authentication',
       properties: {
+        /**
+         * True if the firebase authentication result is being fetched
+         * and the redirect is happening.
+         * @type {Boolean}
+         */
         loading: {
           type: Boolean,
           notify: true
@@ -40,6 +49,13 @@
           this.signIn();
         }
       },
+      /**
+       * Sign in the user with Firebase. It checks if the redirect was succesful.
+       * If that is true, fire `github-token` event with the new token.
+       *
+       * Else it checks for local storage if the token existed and signed in
+       * with the Firebase session and fires `github-token` again.
+       */
       signIn: function() {
         this.$.auth.auth.getRedirectResult().then(function(result) {
           this.loading = false;

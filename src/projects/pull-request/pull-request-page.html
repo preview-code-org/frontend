@@ -93,12 +93,12 @@
       }
     </style>
 
-    <authenticated-ajax
+    <github-authenticated-ajax
       id="ajaxDiff"
       refurl="[[pr._links.self.href]]"
       handle-as="text"
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
-      last-response="{{diff}}"></authenticated-ajax>
+      last-response="{{diff}}"></github-authenticated-ajax>
 
     <firebase-document
         app-name="preview-code"

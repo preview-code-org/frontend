@@ -12,27 +12,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <html>
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <title>authenticated-ajax-tests</title>
+  <title>github-authenticated-ajax-tests</title>
 
   <script src="../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <script src="../../src/bower_components/web-component-tester/browser.js"></script>
 
   <!-- Import the element to test -->
-  <link rel="import" href="../../src/ajax/authenticated-ajax.html">
+  <link rel="import" href="../../src/ajax/github-authenticated-ajax.html">
 
 </head>
 <body>
 
   <test-fixture id="basic">
     <template>
-      <authenticated-ajax id="one" refurl="github.json"></authenticated-ajax>
-      <authenticated-ajax id="two"></authenticated-ajax>
+      <github-authenticated-ajax id="one" refurl="github.json"></github-authenticated-ajax>
+      <github-authenticated-ajax id="two"></github-authenticated-ajax>
     </template>
   </test-fixture>
 
   <script>
 
-    suite('<authenticated-ajax>', function() {
+    suite('<github-authenticated-ajax>', function() {
       var ajax, one, two, server;
       var token = 'token';
       var responseHeaders = {
@@ -73,7 +73,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('token shared between instances', function() {
         assert.equal(one.params.access_token, token);
         assert.equal(two.params.access_token, token);
-        var el = document.createElement('authenticated-ajax');
+        var el = document.createElement('github-authenticated-ajax');
         assert.equal(el.params.access_token, token);
       });
 
@@ -120,7 +120,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('new element fetches from headercache', function(done) {
-          var el = document.createElement('authenticated-ajax');
+          var el = document.createElement('github-authenticated-ajax');
           el.refurl = 'github.json';
           addEventListener(el, 'response', function(e) {
             assert.equal(etag, responseHeaders.ETag);
