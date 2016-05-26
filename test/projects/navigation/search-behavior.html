@@ -8,14 +8,17 @@
 
   <!-- Import the element to test -->
   <link rel='import' href='../../../src/projects/navigation/search-behavior.html'>
+  <link rel='import' href='../../../src/bower_components/polymer/polymer.html'>
 
 </head>
 <body>
 
 <script>
-  Polymer({
-    is: 'test-search-behavior',
-    behaviors: [SearchBehavior]
+  HTMLImports.whenReady(function () {
+    Polymer({
+      is: 'test-search-behavior',
+      behaviors: [SearchBehavior]
+    });
   });
 
   suite('<search-behavior>', function() {

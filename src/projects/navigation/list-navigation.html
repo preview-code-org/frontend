@@ -125,13 +125,14 @@
         },
         showProjectsList: {
           type: Boolean,
-          value: false,
+          value: true,
           notify: true
         },
         showPullList: {
           type: Boolean,
           notify: true
         },
+        pullRequestSelected: Boolean,
         prid: Number,
         getFields: {
           type: Function,
@@ -149,7 +150,9 @@
         pullrequests: Array
       },
       observers: [
-        '_resetSearch(project)'
+        '_resetSearch(project)',
+        '_resetListsOnProjectChange(projectSelected)',
+        '_resetListsOnPullChange(pullRequestSelected)'
       ],
       _calcListClass: function(showProjectsList, showPullList) {
         if (!showProjectsList && !showPullList) {
@@ -170,6 +173,13 @@
           this.set('route.path', e.model.project.owner + '/' + e.model.project.name + '/activity');
           this.fire('opened-project');
         }
+      },
+      _resetListsOnProjectChange: function(newValue) {
+        this.showProjectsList = true;
+        this.showPullList = newValue;
+      },
+      _resetListsOnPullChange: function(newValue) {
+        this.showProjectsList = this.showProjectsList && !newValue;
       }
     });
   </script>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>project-page-tests</title>
+
+  <script src='../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../src/projects/projects-page.html'>
+
+</head>
+<body>
+
+  <test-fixture id='projects-page-fixture'>
+    <template>
+      <projects-page></projects-page>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<projects-page>', function() {
+      var projectPage;
+
+      setup(function() {
+        projectPage = fixture('projects-page-fixture');
+      });
+
+      test('hide list when project clicked', function() {
+        projectPage.showProjectsList = true;
+        MockInteractions.tap(Polymer.dom(projectPage.root).querySelector('iron-pages'));
+        assert.isFalse(projectPage.showProjectsList);
+
+      });
+    });
+  </script>
+
+</body>
+</html>

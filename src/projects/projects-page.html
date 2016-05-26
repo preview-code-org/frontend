@@ -53,6 +53,7 @@
         name-tail="{{nameTail}}"
         project="[[projectTitle]]" project-selected="[[projectSelected]]"
         projects="[[projects]]" pullrequests="[[pullrequests]]"
+        pull-request-selected="[[pullRequestSelected]]"
         on-opened-project="_focusProject"></list-navigation>
     <div class="filler"></div>
     <iron-pages class="project"
@@ -122,9 +123,7 @@
         activeProject: Object
       },
       observers: [
-        'chooseProject(projectTitle.*)',
-        '_resetListsOnProjectChange(projectSelected)',
-        '_resetListsOnPullChange(pullRequestSelected)'
+        'chooseProject(projectTitle.*)'
       ],
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
@@ -153,16 +152,9 @@
         }
         return 'pr';
       },
-      _resetListsOnProjectChange: function(newValue) {
-        this.showProjectsList = true;
-        this.showPullList = newValue;
-      },
-      _resetListsOnPullChange: function(newValue) {
-        this.showProjectsList = this.showProjectsList && !newValue;
-      },
       _hideProjectList: function() {
-        this.showProjectsList = false;
-      }
+       this.showProjectsList = false;
+     }
     });
   </script>
 </dom-module>

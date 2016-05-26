@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>list-navigation-tests</title>
+
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/navigation/list-navigation.html'>
+
+</head>
+<body>
+
+  <test-fixture id='list-navigation-fixture'>
+    <template>
+      <list-navigation></list-navigation>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<list-navigation>', function() {
+      var listNavigation;
+
+      setup(function() {
+        listNavigation = fixture('list-navigation-fixture');
+      });
+
+      test('display the projectlist when no project is selected', function() {
+        listNavigation.projectSelected = false;
+        assert.isTrue(listNavigation.showProjectsList);
+      });
+
+      test('shows both lists when a project is selected' , function() {
+        listNavigation.projectSelected = true;
+        assert.isTrue(listNavigation.showProjectsList);
+        assert.isTrue(listNavigation.showPullList);
+      });
+
+      test('shows only pulllist when a pull request is selected' , function() {
+        listNavigation.projectSelected = true;
+        listNavigation.pullRequestSelected = true;
+        assert.isFalse(listNavigation.showProjectsList);
+        assert.isTrue(listNavigation.showPullList);
+      });
+    });
+  </script>
+
+</body>
+</html>

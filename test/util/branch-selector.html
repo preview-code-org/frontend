@@ -21,68 +21,58 @@
   </test-fixture>
 
   <script>
-  suite('<branch-selector>', function() {
-    var branchSelector;
+    suite('<branch-selector>', function() {
+      var branchSelector;
 
-    setup(function() {
-    branchSelector = fixture('branch-selector-fixture');
-    branchSelector.branches = ['test', 'testing'];
-    });
+      setup(function() {
+        branchSelector = fixture('branch-selector-fixture');
+        branchSelector.branches = ['test', 'testing'];
+      });
 
-    test('on focus show dropdown', function() {
-      MockInteractions.focus(branchSelector);
-      assert.isFalse(branchSelector.hideSelectionMenu);
-    });
+      test('on focus show dropdown', function() {
+        MockInteractions.focus(branchSelector);
+        assert.isFalse(branchSelector.hideSelectionMenu);
+      });
 
-    test('on blur hide dropdown', function() {
-      MockInteractions.focus(branchSelector);
-      MockInteractions.blur(branchSelector);
-      assert.isTrue(branchSelector.hideSelectionMenu);
-    });
-
-    test('take selecting branch works', function() {
-      Polymer.dom(branchSelector.root).querySelector('iron-selector').select('test');
-      assert.equal('test', branchSelector.selected);
-    });
-
-    test('selecting branch hide dropdown', function(done) {
-      MockInteractions.focus(branchSelector);
-      var ironSelector = Polymer.dom(branchSelector.root).querySelector('iron-selector');
-      ironSelector.select('test');
-      flush(function() {
-        MockInteractions.tap(ironSelector.selectedItem);
+      test('on blur hide dropdown', function() {
+        MockInteractions.focus(branchSelector);
+        MockInteractions.blur(branchSelector);
         assert.isTrue(branchSelector.hideSelectionMenu);
-        done();
       });
-    });
 
-    test('filtering branches sets value', function() {
-      var input = Polymer.dom(branchSelector.root).querySelector('paper-input')
-      input.value = 'ing';
-      assert.equal(input.value, branchSelector.filter);
-    });
-
-    test('filtering branches hides items', function(done) {
-      var input = Polymer.dom(branchSelector.root).querySelector('paper-input')
-      input.value = 'ing';
-      var ironSelector = Polymer.dom(branchSelector.root).querySelector('iron-selector');
-      flush(function() {
-        assert.isTrue(ironSelector.items[0].hidden);
-        assert.isFalse(ironSelector.items[1].hidden);
-        done();
-      });
-    });
-
-    test('tabbing can select item', function() {
-      var ironSelector = Polymer.dom(branchSelector.root).querySelector('iron-selector');
-      flush(function() {
-        MockInteractions.pressAndReleaseKeyOn(ironSelector, 9);
-        MockInteractions.pressAndReleaseKeyOn(ironSelector, 9);
-        MockInteractions.pressEnter(ironSelector);
+      test('take selecting branch works', function() {
+        Polymer.dom(branchSelector.root).querySelector('iron-selector').select('test');
         assert.equal('test', branchSelector.selected);
       });
+
+      test('selecting branch hide dropdown', function(done) {
+        MockInteractions.focus(branchSelector);
+        var ironSelector = Polymer.dom(branchSelector.root).querySelector('iron-selector');
+        ironSelector.select('test');
+        flush(function() {
+          MockInteractions.tap(ironSelector.selectedItem);
+          assert.isTrue(branchSelector.hideSelectionMenu);
+          done();
+        });
+      });
+
+      test('filtering branches sets value', function() {
+        var input = Polymer.dom(branchSelector.root).querySelector('paper-input')
+        input.value = 'ing';
+        assert.equal(input.value, branchSelector.filter);
+      });
+
+      test('filtering branches hides items', function(done) {
+        var input = Polymer.dom(branchSelector.root).querySelector('paper-input')
+        input.value = 'ing';
+        var ironSelector = Polymer.dom(branchSelector.root).querySelector('iron-selector');
+        flush(function() {
+          assert.isTrue(ironSelector.items[0].hidden);
+          assert.isFalse(ironSelector.items[1].hidden);
+          done();
+        });
+      });
     });
-  });
   </script>
 
 </body>
