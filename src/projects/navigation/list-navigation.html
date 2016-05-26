@@ -132,6 +132,7 @@
           type: Boolean,
           notify: true
         },
+        projects: Array,
         pullRequestSelected: Boolean,
         prid: Number,
         getFields: {
@@ -170,6 +171,7 @@
       },
       _maybeOpenProject: function(e) {
         if (e.keyCode === 13) {
+          this.activeProject = e.model.project;
           this.set('route.path', e.model.project.owner + '/' + e.model.project.name + '/activity');
           this.fire('opened-project');
         }

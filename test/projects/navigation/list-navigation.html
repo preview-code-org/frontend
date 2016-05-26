@@ -6,6 +6,7 @@
 
   <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
   <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
 
   <!-- Import the element to test -->
   <link rel='import' href='../../../src/projects/navigation/list-navigation.html'>
@@ -32,6 +33,12 @@
         assert.isTrue(listNavigation.showProjectsList);
       });
 
+      test('show project list when there is a project', function() {
+        listNavigation.projectSelected = false;
+        listNavigation.project = "project";
+        assert.isTrue(listNavigation.showProjectsList);
+      });
+
       test('shows both lists when a project is selected' , function() {
         listNavigation.projectSelected = true;
         assert.isTrue(listNavigation.showProjectsList);
@@ -44,6 +51,64 @@
         assert.isFalse(listNavigation.showProjectsList);
         assert.isTrue(listNavigation.showPullList);
       });
+
+      test('shows no list when both are deselected', function() {
+        listNavigation.showProjectsList = false;
+        listNavigation.showPullList = false;
+        assert.notEqual(getComputedStyle(listNavigation).left, 0);
+      });
+
+      test('reset search when enabeling project', function() {
+        listNavigation.projectSelected = false;
+        listNavigation.searchWord = 'search';
+        listNavigation.project = "project";
+        assert.equal('', listNavigation.searchWord);
+      });
+
+      test('filter list when searching', function(done) {
+        listNavigation.searchWord = 'hello';
+        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
+        flush(function(){
+          var outcome = Polymer.dom(listNavigation.root).querySelector('preview-list').children[2].items;
+          assert.deepEqual([listNavigation.projects[0]], outcome);
+          done();
+        });
+      });
+
+      test('show whole list when no searchword is chosen', function(done) {
+        listNavigation.searchWord = '';
+        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
+        flush(function(){
+          var outcome = Polymer.dom(listNavigation.root).querySelector('preview-list').children[3].items;
+          assert.deepEqual(listNavigation.projects, outcome);
+          done();
+        });
+      });
+
+      test('select project with enter', function(done) {
+        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
+        flush(function(){
+          var outcome = Polymer.dom(listNavigation.root).querySelector('project-list-item');
+          MockInteractions.pressEnter(outcome);
+          Polymer.Base.async(function() {
+            assert.deepEqual(listNavigation.projects[0], listNavigation.activeProject);
+            done();
+          });
+        });
+      });
+
+      test('select no project with pressing a random key', function(done) {
+        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
+        flush(function(){
+          var outcome = Polymer.dom(listNavigation.root).querySelector('project-list-item');
+          MockInteractions.pressSpace(outcome);
+          Polymer.Base.async(function() {
+            assert.isUndefined(listNavigation.activeProject);
+            done();
+          });
+        });
+      });
+
     });
   </script>
 
