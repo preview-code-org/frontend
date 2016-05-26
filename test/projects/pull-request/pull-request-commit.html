@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>pull-request-commit tests</title>
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/pull-request/pull-request-commit.html'>
+
+</head>
+<body>
+  <test-fixture id="basic">
+    <template>
+      <pull-request-commit></pull-request-commit>
+    </template>
+  </test-fixture>
+
+<script>
+  suite('<pull-request-add-comments>', function() {
+    var elem, container;
+
+    setup(function() {
+      elem = fixture('basic');
+      container = Polymer.dom(elem.root).querySelector('.container');
+    });
+
+    test('tap on container show whole message', function() {
+      MockInteractions.tap(container);
+      assert.equal(elem.showWholeMessage, true);
+    });
+
+    test('tap twice on container hides whole message again', function() {
+      MockInteractions.tap(container);
+      MockInteractions.tap(container);
+      assert.equal(elem.showWholeMessage, false);
+    });
+  });
+</script>
+
+</body>
+</html>
