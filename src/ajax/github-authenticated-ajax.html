@@ -1,6 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
+<!--
+Wrapper around iron-ajax to enable caching of ETags and proper handling
+of params with oAuth tokens.
+-->
 <dom-module id="github-authenticated-ajax">
   <template>
     <iron-ajax
@@ -22,11 +26,16 @@
       debounce-duration="[[debounceDuration]]"
       json-prefix="[[jsonPrefix]]"
       bubbles="[[bubbles]]"
-      on-request="onRequest"
-      on-response="onResponse"
-      on-error="onError"></iron-ajax>
+      on-request="_onRequest"
+      on-response="_onResponse"
+      on-error="_onError"></iron-ajax>
   </template>
   <script>
+  /**
+   * Shared state for new instances of this element and to share the token
+   * inserted by one element.
+   * @type {Object}
+   */
   var shared = {
     instances: [],
     accessToken: undefined,
@@ -38,85 +47,221 @@
     Polymer({
       is: 'github-authenticated-ajax',
       properties: {
+        /**
+         * Copy of the shared object above, to trigger data-bindings
+         * on Polymer
+         * @type {Object}
+         */
         shared: {
           type: Object,
           value: function() {
             return Object.create(shared);
           }
         },
+        /**
+         * GitHub url to perform the ajax request on.
+         * @type {String}
+         */
         refurl: String,
+        /**
+         * Parameters decorated with the oAuth token and the perPage property
+         * @type {Object}
+         */
         params: {
           type: Object,
           computed: '_generateParams(shared, perPage)',
           observer: '_maybeFire'
         },
+        /**
+         * How many results must be retrieved from GitHub, default 10.
+         * @type {Number}
+         */
         perPage: {
           type: Number,
           value: 10
         },
+        /**
+         * The HTTP method to use such as 'GET', 'POST', 'PUT', or 'DELETE'.
+         * Default is 'GET'.
+         * @type {String}
+         */
         method: {
           type: String,
           value: 'GET'
         },
+        /**
+         * HTTP request headers to send.
+         *
+         * Example:
+         *
+         *     <iron-ajax
+         *         auto
+         *         url="http://somesite.com"
+         *         headers='{"X-Requested-With": "XMLHttpRequest"}'
+         *         handle-as="json"></iron-ajax>
+         *
+         * Note: setting a `Content-Type` header here will override the value
+         * specified by the `contentType` property of this element.
+         * @type {Object}
+         */
         headers: {
           type: Object,
           value: function() {
             return {};
           }
         },
+        /**
+         * Content type to use when sending data. If the `contentType` property
+         * is set and a `Content-Type` header is specified in the `headers`
+         * property, the `headers` property value will take precedence.
+         *
+         * Varies the handling of the `body` param.
+         * @type {String}
+         */
         contentType: {
           type: String,
           value: null
         },
+        /**
+         * Body content to send with the request, typically used with "POST"
+         * requests.
+         *
+         * If body is a string it will be sent unmodified.
+         *
+         * If Content-Type is set to a value listed below, then
+         * the body will be encoded accordingly.
+         *
+         *    * `content-type="application/json"`
+         *      * body is encoded like `{"foo":"bar baz","x":1}`
+         *    * `content-type="application/x-www-form-urlencoded"`
+         *      * body is encoded like `foo=bar+baz&x=1`
+         *
+         * Otherwise the body will be passed to the browser unmodified, and it
+         * will handle any encoding (e.g. for FormData, Blob, ArrayBuffer).
+         *
+         * @type (ArrayBuffer|ArrayBufferView|Blob|Document|FormData|null|string|undefined|Object)
+         */
         body: {
           type: Object,
           value: null
         },
+        /**
+         * Toggle whether XHR is synchronous or asynchronous. Don't change this
+         * to true unless You Know What You Are Doing™.
+         * @type {Boolean}
+         */
         sync: {
           type: Boolean,
           value: false
         },
+        /**
+         * Specifies what data to store in the `response` property, and
+         * to deliver as `event.detail.response` in `response` events.
+         *
+         * One of:
+         *
+         *    `text`: uses `XHR.responseText`.
+         *
+         *    `xml`: uses `XHR.responseXML`.
+         *
+         *    `json`: uses `XHR.responseText` parsed as JSON.
+         *
+         *    `arraybuffer`: uses `XHR.response`.
+         *
+         *    `blob`: uses `XHR.response`.
+         *
+         *    `document`: uses `XHR.response`.
+         *
+         * @type {String}
+         */
         handleAs: {
           type: String,
           value: 'json'
         },
+        /**
+         * Set the withCredentials flag on the request.
+         * @type {Boolean}
+         */
         withCredentials: {
           type: Boolean,
           value: false
         },
+        /**
+         * Set the timeout flag on the request.
+         * @type {Number}
+         */
         timeout: {
           type: Number,
           value: 0
         },
+        /**
+         * If true, automatically performs an Ajax request when either `url` or
+         * `params` changes.
+         * @type {Boolean}
+         */
         auto: {
           type: Boolean,
           value: false,
           observer: '_maybeFire'
         },
+        /**
+         * If true, error messages will automatically be logged to the console.
+         * @type {Boolean}
+         */
         verbose: {
           type: Boolean,
           value: false
         },
+        /**
+         * The most recent request made by this iron-ajax element.
+         * @type {Object}
+         */
         lastRequest: {
           type: Object,
           notify: true,
           computed: '_is(last-request)'
         },
+        /**
+         * True while lastRequest is in flight.
+         * @type {Boolean}
+         */
         loading: {
           type: Boolean,
           notify: true,
           computed: '_is(iron-loading)'
         },
+        /**
+         * lastRequest's response.
+         *
+         * Note that lastResponse and lastError are set when lastRequest finishes,
+         * so if loading is true, then lastResponse and lastError will correspond
+         * to the result of the previous request.
+         *
+         * The type of the response is determined by the value of `handleAs` at
+         * the time that the request was generated.
+         *
+         * @type {Object}
+         */
         lastResponse: {
           type: Object,
           notify: true,
           readOnly: true
         },
+        /**
+         * lastRequest's error, if any.
+         *
+         * @type {Object}
+         */
         lastError: {
           type: Object,
           notify: true,
           computed: '_is(last-error)'
         },
+        /**
+         * An Array of all in-flight requests originating from this iron-ajax
+         * element.
+         * @type {Array}
+         */
         activeRequests: {
           type: Array,
           notify: true,
@@ -125,26 +270,43 @@
             return [];
           }
         },
+        /**
+         * Length of time in milliseconds to debounce multiple automatically generated requests.
+         * @type {Number}
+         */
         debounceDuration: {
           type: Number,
           value: 0,
           notify: true
         },
+        /**
+         * Prefix to be stripped from a JSON response before parsing it.
+         *
+         * In order to prevent an attack using CSRF with Array responses
+         * (http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx/)
+         * many backends will mitigate this by prefixing all JSON response bodies
+         * with a string that would be nonsensical to a JavaScript parser.
+         * @type {String}
+         */
         jsonPrefix: {
           type: String,
           value: ''
         },
+        /**
+         * By default, these events do not bubble largely because the `error` event has special
+         * meaning in the window object. Setting this attribute will cause iron-ajax's request,
+         * response, and error events to bubble to the window object.
+         * @type {Boolean}
+         */
         bubbles: {
           type: Boolean,
           value: false
         }
       },
-
       observers: [
         '_updateIfNoneMatch(refurl)',
         '_updateContentType(contentType)'
       ],
-
       attached: function() {
         shared.instances.push(function(shared) {
           this.shared = shared;
@@ -154,10 +316,14 @@
           }
         }.bind(this));
       },
-
       _is: function(obj) {
         return obj;
       },
+      /**
+       * Static function to insert the oAuth token and make sure all
+       * other instances of this element share the same token.
+       * @param  {String} token The oAuth token for the GitHub communication
+       */
       storeToken: function(token) {
         this.shared.accessToken = token;
         shared.accessToken = token;
@@ -196,6 +362,11 @@
           this.generateRequest();
         }
       },
+      /**
+       * Performs an AJAX request to the specified URL.
+       *
+       * @return {!IronRequestElement}
+       */
       generateRequest: function() {
         this._updateIfNoneMatch(this.refurl);
         if (!this.shared.accessToken) {
@@ -204,12 +375,12 @@
         }
         return this.$.ajax.generateRequest();
       },
-      onRequest: function(e) {
+      _onRequest: function(e) {
         this.fire('request', e.detail, {
           bubbles: this.bubbles
         });
       },
-      onResponse: function(e) {
+      _onResponse: function(e) {
         shared.headerCache[this.refurl] = e.detail.xhr.getResponseHeader('ETag');
         shared.responseCache[this.refurl] = e.detail.response;
         this._setLastResponse(shared.responseCache[this.refurl]);
@@ -217,7 +388,7 @@
           bubbles: this.bubbles
         });
       },
-      onError: function(e) {
+      _onError: function(e) {
         shared.headerCache[this.refurl] = e.detail.request.xhr.getResponseHeader('ETag');
         // Cache responses to save the rate limit of the GitHub api
         if (e.detail.request.status === 304) {

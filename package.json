@@ -7,6 +7,6 @@
     "gulp-load-plugins": "^1.2.2",
     "proxy-middleware": "^0.15.0",
     "url": "^0.11.0",
-    "web-component-tester-istanbul": "^0.10.0"
+    "web-component-tester-istanbul": "git://github.com/TimvdLippe/web-component-tester-istanbul.git#coverage-log-test-result-fix"
   }
 }
