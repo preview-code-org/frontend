@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../util/collapse-icon.html">
+<link rel="import" href="../../bower_components/prism-element/prism-style-import.html">
 
 <dom-module id='pull-request-diff-highlight'>
   <template>
@@ -90,10 +91,7 @@
           observer: '_render'
         },
         fileUrl: String,
-        collapsed: {
-          type: Boolean,
-          reflectToAttribute: true
-        },
+        collapsed: Boolean,
         file: String,
         linesChanged: Object
       },
@@ -101,7 +99,7 @@
         '_observeLinesChanged(linesChanged, code)'
       ],
       _observeLinesChanged: function(linesChanged, code) {
-        var lines = code.split('\n')
+        var lines = code.split('\n');
         // The first line is always empty and should be ignored.
         lines.shift();
         // The last line is only sometimes empty.
