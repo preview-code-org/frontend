@@ -12,12 +12,6 @@
 
 </head>
 <body>
-
-  <test-fixture id="basic">
-    <template>
-      <marked-github-element></marked-github-element>
-    </template>
-  </test-fixture>
   <script>
     suite('<to-date-string-behavior>', function() {
       var behavior;
@@ -33,7 +27,7 @@
 
       setup(function() {
         behavior = ToDateStringBehavior;
-      })
+      });
 
       test('shows less than 1 minute when less than 45 seconds ago', function() {
         assertText(42 / (60 * 60), '<1mi');
