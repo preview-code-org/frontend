@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>to-date-string-behavior tests</title>
+
+  <script src="../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/bower_components/web-component-tester/browser.js"></script>
+
+  <!-- Import the element to test -->
+  <link rel="import" href="../../src/util/to-date-string-behavior.html">
+
+</head>
+<body>
+  <script>
+    suite('<to-date-string-behavior>', function() {
+      var behavior;
+
+      function ISOtimeAgo(hours) {
+        return new Date(new Date().getTime() - hours * 60 * 60 * 1000).toISOString();
+      }
+
+      function assertText(hours, expected) {
+        var output = behavior.toDateString(ISOtimeAgo(hours));
+        assert.equal(output, expected);
+      }
+
+      setup(function() {
+        behavior = ToDateStringBehavior;
+      });
+
+      test('shows less than 1 minute when less than 45 seconds ago', function() {
+        assertText(42 / (60 * 60), '<1mi');
+      });
+
+      test('shows 1 minute when less than 90 seconds ago', function() {
+        assertText(85 / (60 * 60), '1mi');
+      });
+
+      test('shows minutes when less than 45 minutes ago', function() {
+        assertText(40 / 60, '40mi');
+      });
+
+      test('shows 1 hour when less than 90 minutes ago', function() {
+        assertText(85 / 60, '1h');
+      });
+
+      test('shows hours when less than 22 hours ago', function() {
+        assertText(3.5, '4h');
+      });
+
+      test('shows 1 day when less than 36 hours ago', function() {
+        assertText(30, '1d');
+      });
+
+      test('shows days when less than 25 days ago', function() {
+        assertText(20 * 24, '20d');
+      });
+
+      test('shows 1 month when less than 45 days ago', function() {
+        assertText(40 * 24, '1mo');
+      });
+
+      test('shows months when less than 345 days ago', function() {
+        assertText(9 * 31 * 24, '9mo');
+      });
+
+      test('shows 1 year when less than 545 days ago', function() {
+        assertText(13 * 31 * 24, '1y');
+      });
+
+      test('shows year when more than 545 days ago', function() {
+        assertText(15.5 * 12 * 31 * 24, '16y');
+      });
+    });
+  </script>
+
+</body>
+</html>

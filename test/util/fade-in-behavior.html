@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>fade-in-behavior tests</title>
+
+  <script src="../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../src/bower_components/web-component-tester/browser.js"></script>
+
+  <!-- Import the element to test -->
+  <link rel="import" href="../../src/util/fade-in-behavior.html">
+
+</head>
+<body>
+  <script>
+    HTMLImports.whenReady(function () {
+      Polymer({
+        is: 'test-fade-in-behavior',
+        behaviors: [FadeInBehavior]
+      });
+    });
+
+    suite('<fade-in-behavior>', function() {
+      var behavior;
+
+      setup(function() {
+        behavior = document.createElement('test-fade-in-behavior');
+        document.body.appendChild(behavior);
+      });
+
+      teardown(function() {
+        document.body.removeChild(behavior);
+      });
+
+      test('fades in when show invoked', function() {
+        behavior.show();
+        assert.equal(getComputedStyle(behavior).display, 'block');
+      });
+
+      test('sets shown to true when show invoked', function() {
+        behavior.show();
+        assert.equal(behavior.shown, true);
+      });
+
+      test('plays animation when show invoked', function(done) {
+        behavior.show();
+        assert.equal(getComputedStyle(behavior).opacity, 0);
+        behavior.addEventListener('neon-animation-finish', function(event) {
+          assert.equal(getComputedStyle(behavior).opacity, 1);
+          done();
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

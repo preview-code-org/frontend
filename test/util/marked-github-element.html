@@ -64,7 +64,7 @@
       setup(function() {
         behavior = SubstituteRenderedGitHubMarkdownBehavior;
         substitutor = behavior.createMarkdownSubstituter(project);
-      })
+      });
 
       test('call to createMarkdownSubstituter returns a function', function() {
         assert.isFunction(substitutor);
@@ -137,6 +137,12 @@
         var lorumIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt leo non nisl tempus, sit amet iaculis eros gravida. Cras et ligula quis purus posuere interdum vel et lorem. Curabitur a vulputate sem, in sagittis ante. Sed dignissim dolor leo, id venenatis sem porttitor eget. Aliquam sagittis, felis accumsan faucibus finibus, lorem mauris tincidunt enim, nec gravida nibh mauris sed nulla. Aenean eget dolor sit amet mauris gravida iaculis ut eget ipsum. Curabitur tellus nisi, commodo vitae lorem in, viverra dapibus ante. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean dictum congue lorem quis consequat.';
         var substituted = substitutor('', lorumIpsum);
         assert.equal(substituted, lorumIpsum);
+      });
+
+      test('does not substitute escaped character', function() {
+        var escaped = '&#50;';
+        var substituted = substitutor('', escaped);
+        assert.equal(substituted, escaped);
       });
     });
 

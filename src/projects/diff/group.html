@@ -155,6 +155,9 @@
       observers: [
         '_toggleEditable(editable)'
       ],
+      // When there was only one group and it was a dummy diff,
+      // replace that diff with the dragged in diff by upgrading
+      // this group.
       _diffAdded: function(e) {
         if (e.detail) {
           var invertedIndex = (e.detail.newIndex) ? 0 : 1;
