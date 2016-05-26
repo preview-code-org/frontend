@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>reviewers-list tests</title>
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/pull-request/reviewers-list.html'>
+
+</head>
+<body>
+  <test-fixture id="basic">
+    <template>
+      <reviewers-list></reviewers-list>
+    </template>
+  </test-fixture>
+
+<script>
+  suite('<reviewers-list>', function() {
+    var elem;
+
+    setup(function() {
+      elem = fixture('basic');
+    });
+
+    function getReviewers() {
+      return Polymer.dom(elem.root).querySelectorAll('.reviewer');
+    }
+
+    test('reviewers urls are resolved correctly', function(done) {
+      elem.reviewers = [{lgtm: true, avatar_url: 'resources/one.jpg'}, {lgtm: false, avatar_url: 'resources/two.jpg'}];
+      flush(function() {
+        var reviewers = getReviewers();
+        assert.include(getComputedStyle(reviewers[0])['background-image'], 'resources/one.jpg');
+        assert.include(getComputedStyle(reviewers[1])['background-image'], 'resources/two.jpg');
+        done();
+      });
+    });
+
+    test('reviewers are sorted by lgtm', function(done) {
+      elem.reviewers = [{lgtm: false, avatar_url: 'resources/two.jpg'}, {lgtm: true, avatar_url: 'resources/one.jpg'}];
+      flush(function() {
+        var reviewers = getReviewers();
+        assert.include(getComputedStyle(reviewers[0])['background-image'], 'resources/one.jpg');
+        assert.include(getComputedStyle(reviewers[1])['background-image'], 'resources/two.jpg');
+        done();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
