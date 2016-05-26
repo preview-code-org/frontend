@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>pull-request-add-comments tests</title>
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/pull-request/pull-request-add-comments.html'>
+
+</head>
+<body>
+  <test-fixture id="basic">
+    <template>
+      <pull-request-add-comments></pull-request-add-comments>
+    </template>
+  </test-fixture>
+
+<script>
+  suite('<pull-request-add-comments>', function() {
+    var elem,button;
+
+    setup(function() {
+      elem = fixture('basic');
+      elem.comments = [];
+      elem.newtext = 'New comment!';
+      button = Polymer.dom(elem.root).querySelector('paper-button');
+    });
+
+    test('adds comment with correct body when clicking on button', function() {
+      MockInteractions.tap(button);
+      assert.equal(elem.comments[0].body, 'New comment!');
+    });
+
+    test('resets new text after posting comment', function() {
+      MockInteractions.tap(button);
+      assert.equal(elem.newtext, '');
+    });
+
+    test('does not add empty comment to list', function() {
+      elem.newtext = '';
+      MockInteractions.tap(button);
+      assert.equal(elem.comments.length, 0);
+    });
+
+    test('does not add comment with only whitespace to list', function() {
+      elem.newtext = '   ';
+      MockInteractions.tap(button);
+      assert.equal(elem.comments.length, 0);
+    });
+  })
+</script>
+
+</body>
+</html>
