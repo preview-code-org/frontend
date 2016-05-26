@@ -1,5 +1,9 @@
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../list-items/list-item-label.html">
+
+<!--
+Small button for a branch which can be selected by setting selectable to true.
+-->
 <dom-module id="branch-tag">
   <template>
     <style>
@@ -9,7 +13,6 @@
         font-weight: 300;
         --tag-color: var(--anchor-color);
       }
-
       span.selectable.true::after {
         content: "";
         vertical-align: middle;
@@ -29,7 +32,15 @@
     Polymer({
       is: 'branch-tag',
       properties: {
+        /**
+         * The branch name of this button.
+         * @type {String}
+         */
         branch: String,
+        /**
+         * If the branch should be selected (styled).
+         * @type {Boolean}
+         */
         selectable: {
           type: Boolean,
           value: false

@@ -2,6 +2,10 @@
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../util/marked-github-element.html">
 
+<!--
+Element to parse markdown input from an input field and
+after toggling the preview showing the rendered markdown in real-time.
+-->
 <dom-module id="markdown-input">
   <template>
     <style>
@@ -63,15 +67,31 @@
     Polymer({
       is: 'markdown-input',
       properties: {
+        /**
+         * The project required to generate GitHub Markdown.
+         * @type {Object}
+         */
         project: Object,
+        /**
+         * If the toggle button should be hidden.
+         * @type {Boolean}
+         */
         disabled: {
           type: Boolean,
           value: false
         },
+        /**
+         * The markdown from the input field to be rendered to markdown HTML.
+         * @type {String}
+         */
         markdown: {
           type: String,
           notify: true
         },
+        /**
+         * The label for the text input field.
+         * @type {String}
+         */
         label: String,
         _previewToggle: Boolean,
         _hidePreview: {
