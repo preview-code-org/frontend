@@ -83,20 +83,17 @@
           project="[[project]]"
         ></markdown-input>
       </header>
-      <sortable-js class="diffs" group="group" draggable="pull-request-diff-highlight"
-          disabled="[[!editable]]" on-remove="_diffRemoved"
-          on-update="_diffMoved"
-          on-add="_diffAdded">
-        <template is="dom-repeat" id="repeat" items="[[group.diff]]" on-dom-change="_addGroupToSortableGroup">
-          <pull-request-diff-highlight code="[[item.changes]]" lines-changed="[[item.linesChanged]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
+      <sortable-js class="diffs" disabled="[[!editable]]">
+        <template is="dom-repeat" id="repeat" items="[[group.diff]]">
+          <pull-request-diff-highlight class="diff" code="[[item.changes]]" lines-changed="[[item.linesChanged]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
         </template>
       </sortable-js>
 
     <p class="toggle-comments" hidden$="[[editable]]">
       <span>comments</span>
-      <collapse-icon collapsed="{{showComments}}"></collapse-icon>
+      <collapse-icon collapsed="{{collapseComments}}"></collapse-icon>
     </p>
-    <div class="group-comment" hidden$="[[showComments]]">
+    <div class="group-comment" hidden$="[[hideComments]]">
       <template is="dom-repeat" items="[[group.comments]]" as="comment">
         <pull-request-comment
             text="[[comment.body]]" author="[[comment.user]]"
@@ -117,15 +114,19 @@
         title: String,
         displayTitle: {
           type: String,
-          computed: '_getDisplayTitle(title, group)'
+          computed: '_getDisplayTitle(title)'
         },
         description: {
           type: String,
           value: ''
         },
-        hideComments: {
+        collapseComments: {
           type: Boolean,
           value: true
+        },
+        hideComments: {
+          type: Boolean,
+          computed: '_shouldHideComments(collapseComments, editable)'
         },
         hideDescription: Boolean,
         collapsed: {
@@ -135,26 +136,20 @@
         },
         project: Object
       },
-      _addGroupToSortableGroup: function() {
+      attached: function() {
+        if (!(this.editable && this.description)) {
+          this.hideDescription = true;
+        }
         if (this.editable) {
-          var diffs = this.$$('sortable-js').getElementsByClassName('diff');
-          for (var i = 0, l = diffs.length; i < l; i++) {
-            if (!diffs[i].__added) {
-              Sortable.create(diffs[i], {
-                group: 'group'
-              });
-              diffs[i].__added = true;
-            }
-          }
-        } else {
-          if (!this.description) {
-            this.hideDescription = true;
-          }
+          Sortable.create(this.$$('sortable-js'), {
+            group: 'group',
+            draggable: 'pull-request-diff-highlight'
+          });
+          var self = this;
+          this.$$('sortable-js').addEventListener('add', this._diffAdded.bind(self));
+          this.$$('sortable-js').addEventListener('remove', this._diffRemoved.bind(self));
         }
       },
-      observers: [
-        '_toggleEditable(editable)'
-      ],
       // When there was only one group and it was a dummy diff,
       // replace that diff with the dragged in diff by upgrading
       // this group.
@@ -180,24 +175,20 @@
           }
         }
       },
-      _getDisplayTitle: function(title, group) {
+      _getDisplayTitle: function(title) {
         if (!this.title) {
           return "Unsorted changes";
         }
         return title;
       },
-      _diffMoved: function(e) {
-        if (e.detail) {
-          console.log('Moved from %d to %d', e.detail.newIndex, e.detail.oldIndex);
-        }
-      },
       _diffRemoved: function(e) {
+        console.log('rem');
         if (!this.group.diff.length) {
           this.fire('empty');
         }
       },
-      _toggleEditable: function(editable) {
-        this.hideComments = this.hideComments && !editable
+      _shouldHideComments: function(collapsed, editable) {
+        return collapsed || editable;
       }
     });
   </script>
