@@ -145,14 +145,6 @@
           this.set('route.path', '/pulls/' + e.model.pr.number + '/overview');
         }
       },
-      _has: function() {
-        return Array.prototype.slice.call(arguments).reduce(function(prev, current) {
-          return prev && !!current;
-        }, true);
-      },
-      _resetButton: function() {
-        this.projectButtonClicked = false;
-      },
       _resetSearch: function(){
         this.searchWord = '';
       }

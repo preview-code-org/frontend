@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>project-pull-requests tests</title>
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/navigation/project-pull-requests.html'>
+
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <project-pull-requests></project-pull-requests>
+    </template>
+  </test-fixture>
+<script>
+  suite('<project-pull-requests>', function() {
+    var elem;
+    var pr1 = {
+      title: 'First PR',
+      status: 'Under review',
+      user: {
+        login: 'User1'
+      },
+      number: 1
+    };
+    var pr2 = {
+      title: 'Second PR',
+      status: 'Waiting for contributor',
+      user: {
+        login: 'User2'
+      },
+      number: 2,
+      labels: [
+        {
+          name: 'CL Accepted'
+        },
+        {
+          name: 'Work In Progress'
+        }
+      ]
+    };
+
+    setup(function() {
+      elem = fixture('basic');
+      elem.pullrequests = [pr1, pr2];
+      elem.route = {};
+    });
+
+    test('set status filters list of projects', function(done) {
+      elem.status = 'Under review';
+      flush(function() {
+        var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
+        assert.equal(prs.length, 1);
+        assert.equal(prs[0].pr, pr1);
+        done();
+      });
+    });
+
+    test('set searchWord filters list of projects on title', function(done) {
+      elem.searchWord = 'First';
+      flush(function() {
+        var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
+        assert.equal(prs.length, 1);
+        assert.equal(prs[0].pr, pr1);
+        done();
+      });
+    });
+
+    test('set searchWord filters list of projects on username', function(done) {
+      elem.searchWord = 'User2';
+      flush(function() {
+        var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
+        assert.equal(prs.length, 1);
+        assert.equal(prs[0].pr, pr2);
+        done();
+      });
+    });
+
+    test('set searchWord filters list of projects on pr labels', function(done) {
+      elem.searchWord = 'work';
+      flush(function() {
+        var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
+        assert.equal(prs.length, 1);
+        assert.equal(prs[0].pr, pr2);
+        done();
+      });
+    });
+
+    test('selecting pr resets search', function() {
+      elem.searchWord = 'User1';
+      elem.pridSelected = 2;
+      assert.equal(elem.searchWord, '');
+    });
+
+    test('pressing enter on project loads project', function(done) {
+      flush(function() {
+        var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
+        MockInteractions.pressEnter(prs[0]);
+        Polymer.Base.async(function() {
+          assert.equal(elem.route.path, '/pulls/1/overview');
+          done();
+        });
+      });
+    });
+
+    test('pressing space on project does not load project', function(done) {
+      flush(function() {
+        var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
+        MockInteractions.pressSpace(prs[0]);
+        Polymer.Base.async(function() {
+          assert.equal(elem.route.path, undefined);
+          done();
+        });
+      });
+    });
+  })
+</script>
+
+</body>
+</html>
