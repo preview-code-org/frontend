@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>pull-request-group-tests</title>
+
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/diff/group.html'>
+
+</head>
+<body>
+
+  <test-fixture id='basic'>
+    <template>
+      <pull-request-group></pull-request-group>
+    </template>
+  </test-fixture>
+
+  <script>
+  suite('<pull-request-group> unit', function() {
+    var groupElem;
+
+    setup(function() {
+      /*
+       * Stubbing multiple elements currently does not work in wct.
+       * A PR with a fix is ready on the wct repo, but it's not merged yet.
+       * https://github.com/Polymer/web-component-tester/pull/310
+       */
+      // stub('markdown-input');
+      // stub('pull-request-comment');
+      // stub('pull-request-add-comments');
+      // stub('pull-request-diff-highlight');
+      // stub('collapse-icon');
+      groupElem = fixture('basic');
+    });
+
+    test('disables sorting when group is not editable', function() {
+      groupElem.editable = false;
+      var sortable = getSortable();
+      assert.isTrue(sortable.disabled);
+    });
+
+    test('hides comments when group is editable', function() {
+      groupElem.editable = true;
+      var display = getComputedStyle(get('.toggle-comments')).display;
+      assert.equal(display, 'none');
+    });
+
+    test('hides comments by default', function() {
+      var display = getComputedStyle(get('.group-comment')).display;
+      assert.equal(display, 'none');
+    });
+
+    test('hides comments when group is editable', function() {
+      groupElem.editable = true;
+      var groupComment = getComputedStyle(get('.group-comment'));
+      assert.equal(groupComment.display, 'none');
+    });
+
+    test('shows comments when collapseComments is false', function() {
+      groupElem.collapseComments = false;
+      var display = getComputedStyle(get('.group-comment')).display;
+      assert.notEqual(display, 'none');
+    });
+
+    test('hides diffs when collapsed', function() {
+      groupElem.collapsed = true;
+      var display = getComputedStyle(get('.content')).display;
+      assert.equal(display, 'none');
+    });
+
+    test('hides description when no descripion was provided', function() {
+      var display = getComputedStyle(get('markdown-input')).display;
+      assert.equal(display, 'none');
+    });
+
+    test('shows default title when no title was provided', function() {
+      var title = get('h2');
+      assert.equal(title.innerHTML, 'Unsorted changes');
+    });
+
+    test('shows title when collapsed', function() {
+      groupElem.title = "someTitle";
+      groupElem.collapsed = true;
+      var title = get('h2');
+      assert.equal(title.innerHTML, 'someTitle');
+    });
+
+    test('fires `empty` event when all diffs are removed', function(done) {
+      groupElem.group = { diff: [], comments: [] };
+
+      addEventListener(groupElem, 'empty', function() {
+        done();
+      });
+      groupElem._diffRemoved();
+    });
+
+
+    var addEventListener = function(element, name, func) {
+      var inner = function(e) {
+        func(e);
+        element.removeEventListener(name, inner);
+      };
+      element.addEventListener(name, inner);
+    }
+
+    var get = function(elem) {
+      return Polymer.dom(groupElem.root).querySelector(elem);
+    }
+
+    var getSortable = function() {
+      return get('sortable-js');
+    }
+
+    var stub = function(elem) {
+      replace(elem).with('stub-' + elem);
+    }
+  });
+
+  </script>
+
+</body>
+</html>
