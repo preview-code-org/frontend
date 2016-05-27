@@ -97,22 +97,20 @@
         }
       },
       observers: [
-        '_fireAjax(pr)','_setStatus(pr, issue)'
+        '_fireAjax(pr)',
+        '_setStatus(pr, issue)'
       ],
       _hasLabels: function(showStatus, issue) {
         return !showStatus || !issue.labels.length;
       },
       _getLabelNames: function(labels) {
-        if (!labels) {
-          return '';
-        }
         return labels.map(function(label) {
           return label.name;
         });
       },
       _getCIStatus: function(statuses) {
         var ci = statuses.filter(function(status) {
-          return status.context === 'continuous-integration/travis-ci/pr';
+          return status.context.includes('continuous-integration');
         });
         var latestci = ci.reduce(function(prev, next) {
           if (!prev || prev.id < next.id) {
