@@ -86,7 +86,7 @@
       <template is="dom-repeat" items="[[_filter(pullrequests, status, searchWord)]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
-                show-status="[[_equals('All', status)]]" selected="[[_equals(pridSelected, pr.number)]]"
+                show-status="[[_equals('All', status)]]" selected="[[_equals(selectedPull.number, pr.number)]]"
                 on-keydown="maybeSelectPR"></project-pull-request-list-item>
         </a>
       </template>
@@ -99,7 +99,7 @@
       properties: {
         project: Object,
         route: Object,
-        pridSelected: Number,
+        selectedPull: Object,
         searchWord: {
           type: String,
           value: '',
@@ -127,7 +127,7 @@
         }
       },
       observers: [
-        '_resetSearch(pridSelected)'
+        '_resetSearch(selectedPull)'
       ],
       _filter: function(pullrequests, status, searchWord) {
         if (status !== 'All') {

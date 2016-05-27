@@ -95,7 +95,7 @@
 
     <github-authenticated-ajax
       id="ajaxDiff"
-      refurl="[[pr._links.self.href]]"
+      refurl="[[selectedPull._links.self.href]]"
       handle-as="text"
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"></github-authenticated-ajax>
@@ -111,8 +111,8 @@
     <div class="info-area">
       <div class="content">
         <header>
-          <h1>[[pr.title]]</h1>
-          <h2><img src$="[[pr.user.avatar_url]]" width="24px" height="24px" alt$="[[pr.user.login]]"/>[[pr.user.login]]</h2>
+          <h1>[[selectedPull.title]]</h1>
+          <h2><img src$="[[selectedPull.user.avatar_url]]" width="24px" height="24px" alt$="[[selectedPull.user.login]]"/>[[selectedPull.user.login]]</h2>
         </header>
       </div>
 
@@ -133,10 +133,10 @@
                 attr-for-selected="data-route"
                 fallback-selection="404">
       <pull-request-general-information data-route="overview" class="overview"
-        pull-request="[[pr]]" project="[[project]]"></pull-request-general-information>
+        pull-request="[[selectedPull]]" project="[[project]]"></pull-request-general-information>
       <pull-request-diff data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
-          base-url="[[pr.head.repo.html_url]]" sha="[[pr.head.sha]]"></pull-request-diff>
-      <pull-request-commits data-route="commits" pull-request="[[pr]]" project="[[project]]"></pull-request-commits>
+          base-url="[[selectedPull.head.repo.html_url]]" sha="[[selectedPull.head.sha]]"></pull-request-diff>
+      <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
 
       <span data-route="404">
         Oops you hit a 404!
@@ -150,34 +150,23 @@
       properties: {
         route: Object,
         project: Object,
-        prid: Number,
         diff: String,
-        pullrequests: Array,
-        pr: {
+        selectedPull: {
           type: Object,
-          computed: '_getPR(pullrequests, prid)',
           observer: '_fetchDiff'
         },
         orderingPath: {
           type: String,
-          computed: '_computeOrderingPath(project, prid)'
+          computed: '_computeOrderingPath(project, selectedPull)'
         }
-      },
-      _addGroup: function() {
-        this.unshift('pr.groups', {});
       },
       _fetchDiff: function(pullRequest) {
         if (pullRequest) {
           this.$.ajaxDiff.generateRequest();
         }
       },
-      _computeOrderingPath: function(project, prid) {
-        return ('ordering/' + project.owner + '/' + project.name + '/' + prid).toLowerCase();
-      },
-      _getPR: function(pullrequests, prid) {
-        return pullrequests.filter(function(pr) {
-          return pr.number === prid;
-        })[0];
+      _computeOrderingPath: function(project, selectedPull) {
+        return ('ordering/' + project.owner + '/' + project.name + '/' + selectedPull.number).toLowerCase();
       }
     });
   </script>

@@ -49,7 +49,7 @@
 
     <list-navigation
         route="[[route]]" show-projects-list="{{showProjectsList}}"
-        show-pull-list="{{showPullList}}" prid="[[prid]]"
+        show-pull-list="{{showPullList}}" selected-pull="[[selectedPull]]"
         name-tail="{{nameTail}}"
         project="[[projectTitle]]" project-selected="[[projectSelected]]"
         projects="[[projects]]" pullrequests="[[pullrequests]]"
@@ -63,8 +63,7 @@
         <no-project-selected data-route="no-selected"></no-project-selected>
         <project-overview-page data-route="overview" tabindex="0"
             project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
-        <pull-request-page data-route="pr" prid="[[prid]]" route="{{prTail}}" pullrequests="[[pullrequests]]"
-                           project="[[projectTitle]]"></pull-request-page>
+        <pull-request-page data-route="pr" selected-pull="[[selectedPull]]" route="{{prTail}}" project="[[projectTitle]]"></pull-request-page>
     </iron-pages>
   </template>
   <script>
@@ -77,9 +76,9 @@
         },
         showProjectsList: Boolean,
         showPullList: Boolean,
-        prid: {
-          type: Number,
-          computed: '_parseInt(pr.pr)'
+        selectedPull: {
+          type: Object,
+          computed: '_getPullFromId(pullrequests, pr.pr)'
         },
         projects: {
           type: Array,
@@ -131,7 +130,7 @@
         if (!owner || !name) {
           return;
         }
-        
+
         this.activeProject = this.projects.filter(function(p) {
           return p.owner === owner && p.name === name;
         })[0];
@@ -141,8 +140,10 @@
       _focusProject: function(e) {
         this.$$('project-overview-page').focus();
       },
-      _parseInt: function(num) {
-        return parseInt(num);
+      _getPullFromId: function(pullrequests, id) {
+        return pullrequests.filter(function(pr) {
+          return pr.number === parseInt(id);
+        })[0];
       },
       _getCurrentView: function(projectSelected, pullRequestSelected) {
         if (!projectSelected) {
