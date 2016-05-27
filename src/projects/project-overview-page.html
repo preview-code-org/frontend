@@ -13,16 +13,6 @@
       :host {
         display: block;
       }
-      paper-dropdown-menu {
-        --paper-input-container-input-color: var(--primary-text-color);
-        --paper-input-container-underline-focus: {
-          background-color: var(--primary-action-red);
-        }
-
-        --paper-input-container-label: {
-          color: var(--primary-text-color);
-        }
-      }
       .info-area  {
         padding-top: 2em;
         color: var(--primary-text-color);
@@ -72,14 +62,12 @@
       }
     </style>
 
-    <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
-
-    <iron-media-query query="(max-width: 1250px)" query-matches="{{small}}"></iron-media-query>
+    <carbon-route route="{{route}}" pattern="/:page" data="{{page}}"></carbon-route>
 
     <div class="info-area">
       <div class="content">
         <header>
-          <h1 hidden$="[[small]]">[[project.owner]]</h1>
+          <h1>[[project.owner]]</h1>
           <span>/</span>
           <h2>[[project.name]]</h2>
         </header>
@@ -119,10 +107,7 @@
       properties: {
         project: Object,
         route: Object,
-        pullrequests: Array
-      },
-      _shouldBeAtTop: function(small) {
-        return small ? 'bottom' : 'top';
+        page: Object
       }
     });
   </script>
