@@ -21,7 +21,6 @@
 
   <script>
     suite('<pull-request-diff-highlight>', function() {
-      var i = 0;
       actualDiffs.forEach(function(diff) {
         suite('Actual diff ' + diff.file, function() {
           var diffElem;
@@ -37,10 +36,6 @@
           setup(function() {
             diffElem = fixture('basic');
             diffElem.diff = diff.diff;
-          });
-
-          teardown(function() {
-            i++;
           });
 
           test('has correct line changes', function() {
