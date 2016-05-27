@@ -29,12 +29,34 @@
         projectPage = fixture('projects-page-fixture');
       });
 
-      test('hide list when project clicked', function() {
+      test('hide list when a project is clicked', function() {
         projectPage.showProjectsList = true;
         MockInteractions.tap(Polymer.dom(projectPage.root).querySelector('iron-pages'));
         assert.isFalse(projectPage.showProjectsList);
-
       });
+
+      test('sets activeProject when project title is set', function() {
+        projectPage.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}, {name:"rite-evaluation",owner:"preview-code"}];
+        projectPage.projectTitle = {name:"rite-evaluation", owner:"preview-code"};
+        assert.deepEqual(projectPage.projectTitle, projectPage.activeProject);
+      });
+
+      test('shows no project selected page when no project selected', function() {
+        projectPage.projectSelected = false;
+        assert.equal('no-selected', Polymer.dom(projectPage.root).querySelector('iron-pages').selected);
+      });
+
+      test('shows overview page when a project is selected', function() {
+        projectPage.projectSelected = true;
+        assert.equal('overview', Polymer.dom(projectPage.root).querySelector('iron-pages').selected);
+      });
+
+      test('shows pull request page when a pull request is selected', function() {
+        projectPage.projectSelected = true;
+        projectPage.pullRequestSelected = true;
+        assert.equal('pr', Polymer.dom(projectPage.root).querySelector('iron-pages').selected);
+      });
+
     });
   </script>
 

@@ -131,7 +131,7 @@
         if (!owner || !name) {
           return;
         }
-
+        
         this.activeProject = this.projects.filter(function(p) {
           return p.owner === owner && p.name === name;
         })[0];

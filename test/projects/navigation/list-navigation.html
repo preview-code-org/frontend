@@ -26,6 +26,7 @@
 
       setup(function() {
         listNavigation = fixture('list-navigation-fixture');
+        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
       });
 
       test('display the projectlist when no project is selected', function() {
@@ -67,7 +68,6 @@
 
       test('filter list when searching', function(done) {
         listNavigation.searchWord = 'hello';
-        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
         flush(function(){
           var outcome = Polymer.dom(listNavigation.root).querySelector('preview-list').children[2].items;
           assert.deepEqual([listNavigation.projects[0]], outcome);
@@ -77,7 +77,6 @@
 
       test('show whole list when no searchword is chosen', function(done) {
         listNavigation.searchWord = '';
-        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
         flush(function(){
           var outcome = Polymer.dom(listNavigation.root).querySelector('preview-list').children[3].items;
           assert.deepEqual(listNavigation.projects, outcome);
@@ -86,7 +85,6 @@
       });
 
       test('select project with enter', function(done) {
-        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
         flush(function(){
           var outcome = Polymer.dom(listNavigation.root).querySelector('project-list-item');
           MockInteractions.pressEnter(outcome);
@@ -98,7 +96,6 @@
       });
 
       test('select no project with pressing a random key', function(done) {
-        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
         flush(function(){
           var outcome = Polymer.dom(listNavigation.root).querySelector('project-list-item');
           MockInteractions.pressSpace(outcome);
