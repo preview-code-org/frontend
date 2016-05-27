@@ -1,3 +1,5 @@
+'use strict';
+
 var gulp = require('gulp');
 var load = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
@@ -5,6 +7,7 @@ var reload = browserSync.reload;
 var url = require('url');
 var proxy = require('proxy-middleware');
 var historyApiFallback = require('connect-history-api-fallback');
+var eslint = require('gulp-eslint');
 
 var serve = function(baseDir) {
   var proxyOptions = url.parse('http://localhost:9000/api/');
@@ -41,4 +44,11 @@ gulp.task('serve', function () {
   gulp.watch(['src/styles/**/*.css'], [reload]);
   gulp.watch(['src/**/*.js'], [reload]);
   gulp.watch(['app/images/**/*'], reload);
+});
+
+gulp.task('lint', function() {
+  return gulp.src(['src/**/*.html', '!src/bower_components/**/*.html', 'test/**/*.html'])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
 });

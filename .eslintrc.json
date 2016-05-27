@@ -1,0 +1,30 @@
+{
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-console": 0
+  },
+  "env": {
+    "browser": true
+  },
+  "plugins": [
+    "html"
+  ],
+  "globals": {
+    "CustomElements": false,
+    "HTMLImports": false,
+    "Polymer": false,
+    "WeakMap": false,
+    "test": false,
+    "assert": false,
+    "MockInteractions": false,
+    "suite": false,
+    "fixture": false,
+    "flush": false,
+    "setup": false,
+    "stub": false,
+    "teardown": false,
+    "sinon": false,
+    "WCT": false,
+    "replace": false
+  }
+}
