@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>pull-request-page tests</title>
+
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/pull-request/pull-request-page.html'>
+
+</head>
+<body>
+
+  <test-fixture id='basic'>
+    <template>
+      <pull-request-page></pull-request-page>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<pull-request-page>', function() {
+      var examplePull = {
+        number: 1,
+        body: 'Hello *markdown*',
+        state: 'open',
+        user: { html_url: 'https://example.com/',
+                login: 'txsmith' },
+        head: { label: 'txsmith:pull-branch' },
+        base: { label: 'preview-app:master' },
+        created_at: "2016-05-25T00:31:28Z",
+        assignee: { html_url: 'https://example.com/',
+                    login: 'reviewer' }
+      };
+
+      var elem;
+
+      setup(function() {
+        elem = fixture('basic');
+      });
+
+      test('triggers ajax for diff when PR changes', function(done) {
+        stub('github-authenticated-ajax', {
+          generateRequest: function() {
+            if (this.id == 'ajaxDiff') {
+              done();
+            }
+          }
+        });
+
+        elem.selectedPull = examplePull;
+      });
+
+      test('has pull-request-general-information', function() {
+        assert.isOk(get('pull-request-general-information'));
+      });
+
+      test('has pull-request-diff', function() {
+        assert.isOk(get('pull-request-diff'));
+      });
+
+      test('has pull-request-commits', function() {
+        assert.isOk(get('pull-request-commits'));
+      });
+
+      test('computes correct orderingPath', function() {
+        elem.project = {owner: 'preview-code', name: 'preview-frontend' };
+        elem.selectedPull = examplePull;
+        assert.equal(elem.orderingPath, 'ordering/preview-code/preview-frontend/' + examplePull.number);
+      });
+
+      var get = function(selector) {
+        return Polymer.dom(elem.root).querySelector(selector);
+      }
+    });
+  </script>
+
+</body>
+</html>

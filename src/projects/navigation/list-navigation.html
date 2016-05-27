@@ -107,7 +107,7 @@
 
       <project-pull-requests class$="pull-list [[showPullList]]" route="{{nameTail}}" tabindex="0"
                            project="[[project]]" pullrequests="[[pullrequests]]"
-                           prid-selected="[[prid]]"></project-pull-requests>
+                           selected-pull="[[selectedPull]]"></project-pull-requests>
     </div>
   </template>
   <script>
@@ -134,7 +134,7 @@
         },
         projects: Array,
         pullRequestSelected: Boolean,
-        prid: Number,
+        selectedPull: Object,
         getFields: {
           type: Function,
           value: function() {
