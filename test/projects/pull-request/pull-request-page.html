@@ -35,10 +35,10 @@
                     login: 'reviewer' }
       };
 
-      var elem;
+      var prPageElem;
 
       setup(function() {
-        elem = fixture('basic');
+        prPageElem = fixture('basic');
       });
 
       test('triggers ajax for diff when PR changes', function(done) {
@@ -50,7 +50,7 @@
           }
         });
 
-        elem.selectedPull = examplePull;
+        prPageElem.selectedPull = examplePull;
       });
 
       test('has pull-request-general-information', function() {
@@ -66,13 +66,13 @@
       });
 
       test('computes correct orderingPath', function() {
-        elem.project = {owner: 'preview-code', name: 'preview-frontend' };
-        elem.selectedPull = examplePull;
-        assert.equal(elem.orderingPath, 'ordering/preview-code/preview-frontend/' + examplePull.number);
+        prPageElem.project = {owner: 'preview-code', name: 'preview-frontend' };
+        prPageElem.selectedPull = examplePull;
+        assert.equal(prPageElem.orderingPath, 'ordering/preview-code/preview-frontend/' + examplePull.number);
       });
 
       var get = function(selector) {
-        return Polymer.dom(elem.root).querySelector(selector);
+        return Polymer.dom(prPageElem.root).querySelector(selector);
       }
     });
   </script>
