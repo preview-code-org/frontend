@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>collapse-icon-tests</title>
+
+  <script src='../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../src/util/collapse-icon.html'>
+
+</head>
+<body>
+  <test-fixture id='basic'>
+    <template>
+      <collapse-icon></collapse-icon>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<collapse-icon>', function() {
+      var elem;
+
+      setup(function() {
+        elem = fixture('basic');
+      });
+
+      test('tapping icon collapses', function() {
+        var icon = Polymer.dom(elem.root).querySelector('.collapse-icon');
+        MockInteractions.tap(icon);
+        assert.equal(elem.collapsed, true);
+      });
+
+      test('tapping icon twice uncollapses', function() {
+        var icon = Polymer.dom(elem.root).querySelector('.collapse-icon');
+        MockInteractions.tap(icon);
+        MockInteractions.tap(icon);
+        assert.equal(elem.collapsed, false);
+      });
+    });
+  </script>
+
+</body>
+</html>
