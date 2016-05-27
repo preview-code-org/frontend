@@ -5,6 +5,7 @@
   <title>diff-highlight-tests</title>
   <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
   <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='test-diffs.js'></script>
 
   <!-- Import the element to test -->
   <link rel='import' href='../../../src/projects/diff/highlight.html'>
@@ -19,180 +20,6 @@
   </test-fixture>
 
   <script>
-    var testDiffs = [
-      {
-        file: '1',
-        diffId: '@@ -0,0 +1 @@',
-        fileUrl: 'a',
-        changes: "\n+one line",
-        linesChanged: { startLineBefore: 0, rangeBefore: 0,
-          startLineAfter: 1,  rangeAfter: 1 }
-      },
-      {
-        file: '2',
-        diffId: '@@ -1 +1,2 @@',
-        fileUrl: 'a',
-        changes: "\none line\n" +
-        "+line two\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 1,
-          startLineAfter: 1,  rangeAfter: 2 }
-      },
-      {
-        file: '3',
-        diffId: '@@ -1,2 +1,3 @@',
-        fileUrl: 'a',
-        changes: "\n one line\n" +
-        "+line inbetween\n" +
-        " line two\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 2,
-          startLineAfter: 1,  rangeAfter: 3 }
-      },
-      {
-        file: '4',
-        diffId: '@@ -1,3 +1,5 @@',
-        fileUrl: 'a',
-        changes: "\n one line\n" +
-        " line inbetween\n" +
-        "+another line\n" +
-        "+hello world\n" +
-        " line two\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 3,
-          startLineAfter: 1,  rangeAfter: 5 }
-      },
-      {
-        file: '5',
-        diffId: '@@ -1,5 +1,5 @@',
-        fileUrl: 'a',
-        changes: "\n one line\n" +
-        " line inbetween\n" +
-        " another line\n" +
-        "-hello world\n" +
-        "+replace a line\n" +
-        " line two\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 5,
-          startLineAfter: 1,  rangeAfter: 5 }
-      },
-      {
-        file: '6',
-        diffId: '@@ -1,5 +1,5 @@',
-        fileUrl: 'a',
-        changes: "\n one line\n" +
-        " line inbetween\n" +
-        "-another line\n" +
-        " replace a line\n" +
-        "+another line\n" +
-        " line two\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 5,
-          startLineAfter: 1,  rangeAfter: 5 }
-      },
-      {
-        file: '7',
-        diffId: '@@ -1,5 +1,4 @@',
-        fileUrl: 'a',
-        changes: "\n one line\n" +
-        " line inbetween\n" +
-        "-replace a line\n" +
-        " another line\n" +
-        " line two\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 5,
-          startLineAfter: 1,  rangeAfter: 4 }
-      },
-      {
-        file: '8',
-        diffId: '@@ -1,4 +1,3 @@',
-        fileUrl: 'a',
-        changes: "\n one line\n" +
-        " line inbetween\n" +
-        " another line\n" +
-        "-line two\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 4,
-          startLineAfter: 1,  rangeAfter: 3 }
-      },
-      {
-        file: '9',
-        diffId: '@@ -1,3 +1,3 @@',
-        fileUrl: 'a',
-        changes: "\n-one line\n" +
-        " line inbetween\n" +
-        " another line\n" +
-        "+add last line\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 3,
-          startLineAfter: 1,  rangeAfter: 3 }
-      },
-      {
-        file: '10',
-        diffId: '@@ -1,3 +1,2 @@',
-        fileUrl: 'a',
-        changes: "\n-line inbetween\n" +
-        " another line\n" +
-        " add last line\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 3,
-          startLineAfter: 1,  rangeAfter: 2 }
-      },
-      {
-        file: '11',
-        diffId: '@@ -1,2 +0,0 @@',
-        fileUrl: 'a',
-        changes: "\n-another line\n" +
-        "-add last line\n",
-        linesChanged: { startLineBefore: 1, rangeBefore: 2,
-          startLineAfter: 0,  rangeAfter: 0 }
-      },
-      {
-        file: '12',
-        diffId: '@@ -3,8 +3,6 @@',
-        fileUrl: 'a',
-        changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
-        " Maecenas sit amet turpis condimentum enim volutpat imperdiet.\n" +
-        " Vestibulum at sem convallis, congue erat porttitor, mattis dui.\n" +
-        "-Donec scelerisque massa in dignissim egestas.\n" +
-        "-Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n" +
-        " Integer non turpis eu quam bibendum pulvinar vel non ante.\n" +
-        " Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n" +
-        " Nulla ac justo non tellus convallis suscipit.\n",
-        linesChanged: { startLineBefore: 3, rangeBefore: 8,
-          startLineAfter: 3,  rangeAfter: 6 }
-      },
-      {
-        file: '13',
-        diffId: '@@ -340,6 +338,8 @@',
-        fileUrl: 'a',
-        changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
-        " Maecenas sit amet turpis condimentum enim volutpat imperdiet.\n" +
-        " Vestibulum at sem convallis, congue erat porttitor, mattis dui.\n" +
-        "+Donec scelerisque massa in dignissim egestas.\n" +
-        "+Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n" +
-        " Integer non turpis eu quam bibendum pulvinar vel non ante.\n" +
-        " Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n" +
-        " Nulla ac justo non tellus convallis suscipit.\n",
-        linesChanged: { startLineBefore: 340, rangeBefore: 6,
-          startLineAfter: 338,  rangeAfter: 8 }
-      },
-      {
-        file: '14',
-        diffId: '@@ -343,3 +341,5 @@',
-        fileUrl: 'a',
-        changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
-        " Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n" +
-        " Integer non turpis eu quam bibendum pulvinar vel non ante.\n" +
-        "+Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n" +
-        "+Nulla ac justo non tellus convallis suscipit.\n",
-        linesChanged: { startLineBefore: 343, rangeBefore: 3,
-          startLineAfter: 341,  rangeAfter: 5 }
-      },
-      {
-        file: '15',
-        diffId: '@@ -341,5 +343,3 @@',
-        fileUrl: 'a',
-        changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
-        " Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n" +
-        " Integer non turpis eu quam bibendum pulvinar vel non ante.\n" +
-        "-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n" +
-        "-Nulla ac justo non tellus convallis suscipit.\n",
-        linesChanged: { startLineBefore: 341, rangeBefore: 5,
-          startLineAfter: 343,  rangeAfter: 3 }
-      }];
-
     suite('<pull-request-diff-highlight>', function() {
       var diffElem;
       setup(function() {
@@ -218,7 +45,7 @@
 
 
     testDiffs.forEach(function(diff) {
-      suite("diff: " + diff.file, function() {
+      suite("diff: " + diff.index, function() {
         var diffElem;
 
         setup(function() {

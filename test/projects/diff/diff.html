@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>diff tests</title>
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='test-diffs.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/diff/diff.html'>
+
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <pull-request-diff base-url="base" sha="sha"></pull-request-diff>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<pull-request-diff-highlight>', function() {
+      actualDiffs.forEach(function(diff) {
+        suite('Actual diff ' + diff.file, function() {
+          var diffElem;
+
+          function assertForEachGroup(field) {
+            var groups = diffElem.groups;
+            for (var j=0,l=groups.length;j<l;j++) {
+              var expectedIndex = diff.expected ? diff.expected[j] : actualDiffs.indexOf(diff);
+              assert.deepEqual(groups[j][field], testDiffs[expectedIndex][field]);
+            }
+          }
+
+          setup(function() {
+            diffElem = fixture('basic');
+            diffElem.diff = diff.diff;
+          });
+
+          test('has correct line changes', function() {
+            assertForEachGroup('linesChanged');
+          });
+
+          test('has correct file name', function() {
+            assertForEachGroup('file');
+          });
+
+          test('has correct file url', function() {
+            assertForEachGroup('fileUrl');
+          });
+
+          test('has correct diffId', function() {
+            assertForEachGroup('diffId');
+          });
+
+          test('has correct changes', function() {
+            assertForEachGroup('changes');
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>

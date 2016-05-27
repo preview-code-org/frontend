@@ -223,7 +223,7 @@
         // [6] = all changes matched by ANTYHING
         var DIGITS = '(\\d+)(?:,(\\d+))?';
         var GROUP_DELIMETER = '@@ \\-' + DIGITS + ' \\+' + DIGITS + ' @@';
-        var GROUP_EXPRESSION = '(' + GROUP_DELIMETER  + ')(' + ANYTHING + ')' + '(?:(?=\n' + GROUP_DELIMETER + ')|$)';
+        var GROUP_EXPRESSION = '(' + GROUP_DELIMETER  + ').*(' + ANYTHING + ')' + '(?:(?=\n' + GROUP_DELIMETER + ')|$)';
         var GROUP_REGEX = new RegExp(GROUP_EXPRESSION, 'g');
 
         function getFileHeader(file, fromFile, toFile) {
@@ -252,14 +252,20 @@
               var fileHeader = getFileHeader(file, file[1].substring(2), file[2].substring(2));
               var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileHeader;
 
+              // Default range fields to 1 when they are not present in the hunk.
+              var linesChanged = {
+                startLineBefore: parseInt(group[2]),
+                rangeBefore: parseInt(group[3] || 1),
+                startLineAfter: parseInt(group[4]),
+                rangeAfter: parseInt(group[5] || 1)
+              };
+
               groups.push({
                 file: fileHeader,
                 fileUrl: fileUrl,
                 diffId: group[1],
                 changes: group[6],
-                // Default range fields to 1 when they are not present in the hunk.
-                linesChanged: {startLineBefore: group[2], rangeBefore: group[3] | 1,
-                               startLineAfter: group[4],  rangeAfter: group[5] | 1}
+                linesChanged: linesChanged
               });
             }
           }
