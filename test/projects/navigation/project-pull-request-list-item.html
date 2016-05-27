@@ -72,7 +72,7 @@
     });
 
     test('shows latest success ci status', function() {
-      var passed = Polymer.dom(elem.root).querySelector('[title="CI passed"]');
+      var passed = Polymer.dom(elem.root).querySelector('.icon-passed');
       assert.include(passed.className, 'success');
     });
 
@@ -85,9 +85,9 @@
           "context": "CLA",
         }
       ]
-      var passed = Polymer.dom(elem.root).querySelector('[title="CI passed"]');
+      var passed = Polymer.dom(elem.root).querySelector('.icon-passed');
       assert.notInclude(passed.className, 'success');
-      var failed = Polymer.dom(elem.root).querySelector('[title="CI failed"]');
+      var failed = Polymer.dom(elem.root).querySelector('.icon-failed');
       assert.notInclude(failed.className, 'failure');
     });
 
@@ -98,7 +98,7 @@
         "id": 4,
         "context": "continuous-integration/jenkins",
       }]);
-      var failed = Polymer.dom(elem.root).querySelector('[title="CI failed"]');
+      var failed = Polymer.dom(elem.root).querySelector('.icon-failed');
       assert.include(failed.className, 'failure');
     });
   })
