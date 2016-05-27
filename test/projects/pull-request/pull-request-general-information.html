@@ -82,13 +82,11 @@
 
       test('has head branch element', function() {
         var headElem = get('.head');
-        assert.isOk(headElem);
         assert.equal(headElem.tagName, 'BRANCH-TAG')
       });
 
       test('has base branch element', function() {
         baseElem = get('.base')
-        assert.isOk(baseElem);
         assert.equal(baseElem.tagName, 'BRANCH-TAG')
       });
 
