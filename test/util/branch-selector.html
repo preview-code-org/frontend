@@ -13,7 +13,6 @@
 
 </head>
 <body>
-
   <test-fixture id='branch-selector-fixture'>
     <template>
       <branch-selector></branch-selector>
@@ -69,6 +68,27 @@
         flush(function() {
           assert.isTrue(ironSelector.items[0].hidden);
           assert.isFalse(ironSelector.items[1].hidden);
+          done();
+        });
+      });
+
+      test('pressing enter on branch selects it', function(done) {
+        MockInteractions.focus(branchSelector);
+        flush(function() {
+          var ironSelector = Polymer.dom(branchSelector.root).querySelector('iron-selector');
+          MockInteractions.pressEnter(ironSelector.items[0]);
+          assert.equal(branchSelector.selected, 'test');
+          assert.equal(branchSelector.hideSelectionMenu, true);
+          done();
+        });
+      });
+
+      test('pressing space on branch does not select it', function(done) {
+        MockInteractions.focus(branchSelector);
+        flush(function() {
+          var ironSelector = Polymer.dom(branchSelector.root).querySelector('iron-selector');
+          MockInteractions.pressSpace(ironSelector.items[0]);
+          assert.equal(branchSelector.selected, undefined);
           done();
         });
       });
