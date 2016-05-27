@@ -84,7 +84,7 @@ It includes a filter using a paper-input text-box.
     <div class="popup-menu" hidden$="[[hideSelectionMenu]]">
       <header>
         <h1>Select a branch</h1>
-        <paper-input class=".search" tabindex="0" label="Filter by name" value="{{filter}}"></paper-input>
+        <paper-input class=".search" label="Filter by name" value="{{filter}}"></paper-input>
       </header>
       <iron-selector attr-for-selected="branch" selected="{{selected}}">
         <template is="dom-repeat" items="[[branches]]" as="branch">
@@ -117,7 +117,10 @@ It includes a filter using a paper-input text-box.
          * The filter to apply to the branches in this selector.
          * @type {String}
          */
-        filter: String,
+        filter: {
+          type: String,
+          value: ''
+        },
         /**
          * Boolean to indicate the dropdown menu should be opened.
          * @type {Boolean}
