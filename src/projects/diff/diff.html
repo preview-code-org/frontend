@@ -112,9 +112,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         diff: {
           type: String,
-          observer: '_parseDiffToGroups'
+          observer: '_parseDiffToHunks'
         },
-        groups: {
+        hunks: {
           type: Array,
           value: function() {
             return [];
@@ -122,7 +122,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         orderedGroups: {
           type: Array,
-          computed: '_orderGroups(groups.*, ordering)'
+          computed: '_orderGroups(hunks.*, ordering)'
         },
         ordering: {
           type: Array,
@@ -133,10 +133,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       _updateGroups: function() {
-        this.groups.forEach(function(e) {
+        this.hunks.forEach(function(e) {
           delete e._index;
         });
-        // this.notifyPath('groups', this.groups);
+        // this.notifyPath('hunks', this.hunks);
       },
       _addGroup: (function() {
         var newGroup = {
@@ -150,7 +150,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               newGroup
             ]);
           }
-          this.unshift('groups', {
+          this.unshift('hunks', {
             file: 'New file',
             fileUrl: '',
             diffId: 'new-group',
@@ -162,29 +162,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       })(),
       _removeDummyGroup: function(e) {
         this.ordering[0].splice(0, 1, e.detail);
-        this.notifyPath('groups', this.groups);
-      },
-      _removeGroup: function() {
-        // this.splice('groups', e.model.group.originalIndex, 1);
+        this.notifyPath('hunks', this.hunks);
       },
       _orderGroups: (function() {
-        function findGroup(groups, properties) {
-          for (var i=0, l=groups.length;i<l;i++) {
-            if (groups[i].file === properties.file
-                && groups[i].diffId === properties.diffId) {
-              groups[i].__index = i;
-              return groups[i];
+        function findGroup(hunks, properties) {
+          for (var i=0,l=hunks.length;i<l;i++) {
+            if (hunks[i].file === properties.file
+                && hunks[i].diffId === properties.diffId) {
+              hunks[i].__index = i;
+              return hunks[i];
             }
           }
         }
 
-        return function(groupsSplices, ordering) {
-          var groups = groupsSplices.base;
+        return function(hunksSplices, ordering) {
+          var hunks = hunksSplices.base;
           var orderedGroups = [];
           var i, l;
           for (i=0, l=ordering.length; i<l; i++) {
             for (var j=0, d=ordering[i].length;j<d;j++) {
-              var c = findGroup(groups, ordering[i][j]);
+              var c = findGroup(hunks, ordering[i][j]);
               if (c) {
                 orderedGroups[i] = orderedGroups[i] || {
                   diff: [],
@@ -198,9 +195,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             diff: [],
             comments: []
           };
-          for (i=0, l=groups.length;i<l;i++) {
-            if (groups[i].__index === undefined) {
-              unSortedGroup.diff.push(groups[i]);
+          for (i=0, l=hunks.length;i<l;i++) {
+            if (hunks[i].__index === undefined) {
+              unSortedGroup.diff.push(hunks[i]);
             }
           }
           return orderedGroups;
@@ -216,9 +213,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.additions += additions.length;
         }
       },
-      _parseDiffToGroups: (function() {
+      _parseDiffToHunks: (function() {
         var ANYTHING = '(?:.|\n)+?';
-        // Diff groups are separated by "diff --git" code blocks.
+        // Diff hunks are separated by "diff --git" code blocks.
         // We therefore match up to the point that we encounter a new
         // "diff --git" by using a positive lookahead (?=).
         //
@@ -229,7 +226,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         // [0] = full match
         // [1] = from file name in format "--- a/FILE_NAME"
         // [2] = to file name in format "+++ a/FILE_NAME"
-        // [3] = full changes as groups
+        // [3] = full changes as hunks
         var DIFF_DELIMETER = 'diff --git';
         var DIFF_HEADER = DIFF_DELIMETER + ANYTHING;
         var DIFF_FILES = '\\-\\-\\- (a\\/(?:.+)|\\/dev\\/null)\n' +
@@ -268,7 +265,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
 
         return function(diff) {
-          var groups = [];
+          var hunks = [];
           this.deletions = 0;
           this.additions = 0;
           var file, group;
@@ -287,7 +284,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 rangeAfter: parseInt(group[5] || 1)
               };
 
-              groups.push({
+              hunks.push({
                 file: fileHeader,
                 fileUrl: fileUrl,
                 diffId: group[1],
@@ -296,7 +293,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               });
             }
           }
-          this.set('groups', groups);
+          this.set('hunks', hunks);
         };
       })()
     });
