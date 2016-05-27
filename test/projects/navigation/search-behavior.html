@@ -22,45 +22,51 @@
   });
 
   suite('<search-behavior>', function() {
-    var SearchBehavior;
+    var searchBehavior;
     var items;
 
     setup(function() {
-      SearchBehavior = document.createElement('test-search-behavior');
-      SearchBehavior.getFields = function(testData) {
+      searchBehavior = document.createElement('test-search-behavior');
+      searchBehavior.getFields = function(testData) {
             return [testData.name, testData.owner];
         },
         items =  [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}]
     });
 
-    test('Test if exact word can be found first property', function() {
-       var outcome = SearchBehavior.search(items,'hello');
-       assert.deepEqual([items[0]], outcome);
+    test('matches on exact word on first field', function() {
+      var outcome = searchBehavior.search(items,'hello');
+      assert.deepEqual([items[0]], outcome);
     });
 
-    test('Test if exact word can be found second property', function() {
-       var outcome = SearchBehavior.search(items,'world');
-       assert.deepEqual([items[0]], outcome);
+    test('matches on exact word on second field', function() {
+      var outcome = searchBehavior.search(items,'world');
+      assert.deepEqual([items[0]], outcome);
     });
 
-    test('Test if part of word can be found', function() {
-       var outcome = SearchBehavior.search(items,'ye');
-       assert.deepEqual([items[1]], outcome);
+    test('matches on part of word', function() {
+      var outcome = searchBehavior.search(items,'ye');
+      assert.deepEqual([items[1]], outcome);
     });
 
-    test('Test if letter can be found', function() {
-       var outcome = SearchBehavior.search(items,'e');
-       assert.deepEqual(items, outcome);
+    test('matches on letter', function() {
+      var outcome = searchBehavior.search(items,'e');
+      assert.deepEqual(items, outcome);
     });
 
-    test('Test if nothing can be found', function() {
-       var outcome = SearchBehavior.search(items,'nothing');
-       assert.deepEqual([], outcome);
+    test('does not match if it is not a substring of any value', function() {
+      var outcome = searchBehavior.search(items,'nothing');
+      assert.deepEqual([], outcome);
     });
 
-    test('Empty string displays all', function() {
-       var outcome = SearchBehavior.search(items,'');
-       assert.deepEqual(items, outcome);
+    test('shows all items with empty string search', function() {
+      var outcome = searchBehavior.search(items,'');
+      assert.deepEqual(items, outcome);
+    });
+
+    test('has default search function if getFields is not defined', function() {
+      var elem = document.createElement('test-search-behavior');
+      var outcome = elem.search(items, 'nothing');
+      assert.deepEqual(items, outcome);
     });
   })
 </script>
