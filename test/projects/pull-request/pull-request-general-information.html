@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>pull-request-general-information tests</title>
+
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/pull-request/pull-request-general-information.html'>
+
+</head>
+<body>
+
+  <test-fixture id='basic'>
+    <template>
+      <pull-request-general-information></pull-request-general-information>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<pull-request-general-information>', function() {
+      var examplePull = {
+        body: 'Hello *markdown*',
+        state: 'open',
+        user: { html_url: 'https://example.com/',
+                login: 'txsmith' },
+        head: { label: 'txsmith:pull-branch' },
+        base: { label: 'preview-app:master' },
+        created_at: "2016-05-25T00:31:28Z",
+        assignee: { html_url: 'https://example.com/',
+                    login: 'reviewer' }
+      };
+      var elem;
+
+      setup(function() {
+        elem = fixture('basic');
+        elem.pullRequest = examplePull;
+      });
+
+      test('triggers ajax for comments when PR changes', function(done) {
+        stub('github-authenticated-ajax', {
+          generateRequest: function() {
+            if (this.id == 'ajaxComments') {
+              done();
+            }
+          }
+        });
+
+        elem.pullRequest = {};
+      });
+
+      test('triggers ajax for issues when PR changes', function(done) {
+        stub('github-authenticated-ajax', {
+          generateRequest: function() {
+            if (this.id == 'ajaxIssue') {
+              done();
+            }
+          }
+        });
+
+        elem.pullRequest = {};
+      });
+
+      test('has comments section', function() {
+        assert.isOk(get('pull-request-comments'));
+      });
+
+      test('has add comments buttom', function() {
+        assert.isOk(get('pull-request-add-comments'));
+      });
+
+      test('has markdown description element', function() {
+        assert.isOk(get('marked-github-element'));
+      });
+
+      test('has user element', function() {
+        assert.isOk(get('a-user'));
+      });
+
+      test('has head branch element', function() {
+        var headElem = get('.head');
+        assert.equal(headElem.tagName, 'BRANCH-TAG')
+      });
+
+      test('has base branch element', function() {
+        baseElem = get('.base')
+        assert.equal(baseElem.tagName, 'BRANCH-TAG')
+      });
+
+      test('has reviewers list element', function() {
+        assert.isOk(get('reviewers-list'));
+      });
+
+      test('has tags list element', function() {
+        assert.isOk(get('tags-list'));
+      });
+
+      test('has status element', function() {
+        assert.isOk(get('pr-status'));
+      });
+
+      test('sets description to markdown element', function() {
+        var mdElem = get('marked-github-element');
+        assert.equal(mdElem.markdown, examplePull.body);
+      });
+
+      test('sets user Object to <a-user> element', function() {
+        var userElem = get('a-user');
+        assert.deepEqual(userElem.user, examplePull.user);
+      });
+
+      test('sets base branch to <branch-tag> element', function() {
+        var baseElem = get('.base');
+        assert.deepEqual(baseElem.branch, examplePull.base.label);
+      });
+
+      test('sets base branch to <branch-tag> element', function() {
+        var headElem = get('.head');
+        assert.deepEqual(headElem.branch, examplePull.head.label);
+      });
+
+      var get = function(selector) {
+        return Polymer.dom(elem.root).querySelector(selector);
+      }
+    });
+  </script>
+
+</body>
+</html>

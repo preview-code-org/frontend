@@ -54,7 +54,7 @@
       .state.open {
         --tag-color: var(--primary-action-green);
       }
-      .head, .time-open {
+      .base, .time-open {
         margin-right: 1em;
       }
       .line-stats {
@@ -91,9 +91,9 @@
       <header>
         <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
         <span><a-user user=[[pullRequest.user]]></a-user> wants to merge</span>
-        <branch-tag branch="[[pullRequest.head.label]]"></branch-tag>
+        <branch-tag class="head" branch="[[pullRequest.head.label]]"></branch-tag>
         <span>into</span>
-        <branch-tag class="head" branch="[[pullRequest.base.label]]"></branch-tag>
+        <branch-tag class="base" branch="[[pullRequest.base.label]]"></branch-tag>
         <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
       </header>
       <section>
@@ -143,9 +143,6 @@
         }
         assignee.lgtm = Math.random() > 0.5 ? 'true' : 'false';
         return [assignee, assignee];
-      },
-      _equals: function(one, other) {
-        return one === other;
       }
     });
   </script>
