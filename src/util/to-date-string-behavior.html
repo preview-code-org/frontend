@@ -8,7 +8,7 @@
  */
 ToDateStringBehavior = {
   toDateString: function(text) {
-    var diff = new Date(new Date().getTime() - new Date(text).getTime());
+    var diff = new Date(this._getCurrentTime() - new Date(text).getTime());
     var seconds = Math.ceil(diff / 1000);
     if (seconds < 45) {
       return '<1mi';
@@ -49,6 +49,9 @@ ToDateStringBehavior = {
       return '1y';
     }
     return Math.ceil(days / 365) + 'y';
+  },
+  _getCurrentTime: function() {
+    return new Date().getTime();
   }
 };
 </script>

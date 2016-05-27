@@ -15,9 +15,13 @@
   <script>
     suite('<to-date-string-behavior>', function() {
       var behavior;
+      // Deterministic point in time
+      // To prevent tests from failing due to timing differences
+      //  when using Date().getTime();
+      var now = 1464342890215;
 
       function ISOtimeAgo(hours) {
-        return new Date(new Date().getTime() - hours * 60 * 60 * 1000).toISOString();
+        return new Date(now - hours * 60 * 60 * 1000).toISOString();
       }
 
       function assertText(hours, expected) {
@@ -27,6 +31,9 @@
 
       setup(function() {
         behavior = ToDateStringBehavior;
+        behavior._getCurrentTime = function() {
+          return now;
+        }
       });
 
       test('shows less than 1 minute when less than 45 seconds ago', function() {
