@@ -68,7 +68,7 @@
         <h2>Choose branches to create a pull request on</h2>
         Merge into
         <branch-selector branches="[[branchNames]]"
-          selected="{{baseBranch}}" on-selected="_selectHeadBranch"
+          selected="{{baseBranch}}" on-selected="_focusHeadBranch"
           ></branch-selector>
         from <branch-selector
           id="headBranchSelector" branches="[[branchNames]]"
@@ -133,7 +133,7 @@
           return b.name;
         });
       },
-      _selectHeadBranch: function() {
+      _focusHeadBranch: function() {
         this.$.headBranchSelector.focus();
       },
       _showPullRequestInformation: function() {
