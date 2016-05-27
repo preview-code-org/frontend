@@ -76,6 +76,21 @@
       assert.include(passed.className, 'success');
     });
 
+    test('shows nothing when there is no ci status', function() {
+      elem.statuses = [
+        {
+          "state": "Accepted",
+          "target_url": "https://cla.google.com",
+          "id": 1,
+          "context": "CLA",
+        }
+      ]
+      var passed = Polymer.dom(elem.root).querySelector('[title="CI passed"]');
+      assert.notInclude(passed.className, 'success');
+      var failed = Polymer.dom(elem.root).querySelector('[title="CI failed"]');
+      assert.notInclude(failed.className, 'failure');
+    });
+
     test('shows latest failure ci status', function() {
       elem.statuses = elem.statuses.concat([{
         "state": "failure",
