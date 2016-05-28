@@ -101,7 +101,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
     <div class="content" hidden$="[[collapsed]]">
       <header>
-        <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this group" value="{{title}}"></paper-input>
+        <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this group" value="{{group.title}}"></paper-input>
         <h2 hidden$="[[editable]]">[[displayTitle]]</h2>
         <markdown-input
           hidden$="[[hideDescription]]"
@@ -139,10 +139,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: false
         },
         group: Object,
-        title: String,
         displayTitle: {
           type: String,
-          computed: '_getDisplayTitle(title)'
+          computed: '_getDisplayTitle(group)',
+          value: 'Unsorted changes'
         },
         description: {
           type: String,
@@ -196,18 +196,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 linesChanged: changes.linesChanged
               }]
             });
-            this.fire('upgraded', {
-              file: changes.file,
-              diffId: changes.diffId
-            });
+            // this.fire('upgraded', {
+            //   file: changes.file,
+            //   diffId: changes.diffId
+            // });
           }
         }
       },
-      _getDisplayTitle: function(title) {
-        if (!this.title) {
+      _getDisplayTitle: function(group) {
+        if (!group || !group.title || group.title == '') {
           return 'Unsorted changes';
         }
-        return title;
+        return group.title;
       },
       _diffRemoved: function() {
         if (!this.group.diff.length) {

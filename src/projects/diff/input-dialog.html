@@ -1,0 +1,80 @@
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+
+<dom-module id="input-dialog">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-input {
+        --paper-input-container: {
+          padding: 0 0 1em 0;
+        };
+        --paper-input-container-input: {
+          font-size: 1.5em;
+        };
+        --paper-input-container-label: {
+          font-size: 1.5em;
+          color: var(--secondary-text-color);
+        };
+        --paper-input-container-label-floating: {
+          font-size: 1em;
+        }
+        --paper-input-container-color: var(--secondary-background-color);
+        --paper-input-container-focus-color: var(--anchor-color);
+      }
+      paper-button {
+        color: var(--anchor-color);
+      }
+      paper-icon-button {
+        border-radius: 20px;
+        background-color: var(--primary-action-green);
+      }
+    </style>
+
+    <paper-icon-button
+      icon="add"
+      on-tap="_openAddGroupDialog"
+      title$="[[actionTitle]]"></paper-icon-button>
+    <paper-dialog id="addGroupDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+      <paper-input id="titleInput" label="[[label]]"></paper-input>
+      <div class="buttons">
+        <paper-button autofocus dialog-confirm>OK</paper-button>
+        <paper-button dialog-dismiss>Cancel</paper-button>
+      </div>
+    </paper-dialog>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'input-dialog',
+      properties: {
+        actionTitle: String,
+        label: String
+      },
+      listeners: {
+        'iron-overlay-opened': '_focusNewGroupInput',
+        'iron-overlay-closed': '_dialogClosed'
+      },
+      _openAddGroupDialog: function() {
+        this.$.titleInput.value = '';
+        this.$.addGroupDialog.open();
+      },
+      _focusNewGroupInput: function() {
+        this.$.titleInput.focus();
+      },
+      _dialogClosed: function(e) {
+        var title = this.$.titleInput.value
+        if (e.detail.confirmed && !e.detail.canceled && title != '') {
+          this.fire('confirm', title);
+        } else {
+          this.fire('cancel');
+        }
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,119 @@
+<dom-module id="hunk-sorter">
+  <template>
+    <!--
+    Pull the ordering from firebase.
+    It should get group objects like this into an array:
+     {
+       title: 'Some group',
+       hunks: ['hunkId1', 'hunkId2']
+     }
+    -->
+  </template>
+  <script>
+    Polymer({
+      is: 'hunk-sorter',
+      properties: {
+        rawHunks: {
+          type: Array,
+          value: []
+        },
+        ordering: {
+          type: Array,
+          value: []
+        },
+        groups: {
+          type: Array,
+          value: [],
+          computed: '_sortHunks(_unsortedHunkMap, _groupMap)',
+          notify: true
+        },
+        _unsortedHunkMap: {
+          type: Object,
+          computed: '_onNewHunks(rawHunks)'
+        },
+        _groupMap: {
+          type: Map,
+          // Temp solution until firebase gets wired up
+          value: function() {
+            return {
+              'Amazing stuff': {
+                hunks: ['src/lib/base.html,138,9,139,9']
+              }
+            };
+          }
+        }
+      },
+      addGroup: function(groupTitle) {
+        console.log('Adding group: ', groupTitle);
+        this.unshift('groups', {
+          title: groupTitle,
+          diff: [],
+          comments: []
+        });
+      },
+      _onNewHunks: function(hunks) {
+        var allHunks = {};
+        hunks.forEach(function(hunk) {
+          allHunks[this._getHunkId(hunk)] = hunk;
+        }.bind(this));
+        return allHunks;
+      },
+      _sortHunks: function(unsortedHunks, groupMap) {
+        if (unsortedHunks.size == 0) {
+          return;
+        }
+        var allGroups = [];
+        var group, hunks;
+        for (title in groupMap) {
+          group = this._reconstructGroup(groupMap[title], unsortedHunks);
+          if (group) {
+            allGroups.push(group);
+          }
+        }
+
+        unsortedGroup = this._createGroup('Unsorted changes', []);
+        var remainingHunk;
+        for (remainingHunkId in unsortedHunks) {
+          remainingHunk = unsortedHunks[remainingHunkId];
+          unsortedGroup.diff.push(remainingHunk);
+        }
+        allGroups.push(unsortedGroup);
+        return allGroups;
+      },
+      _reconstructGroup: function(group, unsortedHunks) {
+        hunks = this._findHunksInGroup(group, unsortedHunks);
+        hunks = hunks.filter(function(hunk) {
+          return !!hunk;
+        });
+        if (hunks.length > 0) {
+          return this._createGroup(title, hunks);
+        }
+      },
+      _findHunksInGroup: function(group, unsortedHunks) {
+        return group.hunks.map(function(hunkId) {
+          var hunk = unsortedHunks[hunkId];
+          delete unsortedHunks[hunkId];
+          if (hunk) {
+            return hunk;
+          } else {
+            // ?? hunk is in our ordering but does not exist anymore
+          }
+        }.bind(this));
+      },
+      _getHunkId: function(hunk) {
+        return hunk.file + ',' +
+          hunk.linesChanged.startLineBefore + ',' +
+          hunk.linesChanged.rangeBefore + ',' +
+          hunk.linesChanged.startLineAfter + ',' +
+          hunk.linesChanged.rangeAfter;
+      },
+      _createGroup: function(title, diff) {
+        return {
+          title: title,
+          diff: diff,
+          comments: []
+        }
+      }
+    });
+  </script>
+</dom-module>
