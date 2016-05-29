@@ -25,13 +25,21 @@
       var examplePull = {
         body: 'Hello *markdown*',
         state: 'open',
-        user: { html_url: 'https://example.com/',
-                login: 'txsmith' },
-        head: { label: 'txsmith:pull-branch' },
-        base: { label: 'preview-app:master' },
+        user: {
+          html_url: 'https://example.com/',
+          login: 'txsmith'
+        },
+        head: {
+          label: 'txsmith:pull-branch'
+        },
+        base: {
+          label: 'preview-app:master'
+        },
         created_at: "2016-05-25T00:31:28Z",
-        assignee: { html_url: 'https://example.com/',
-                    login: 'reviewer' }
+        assignee: {
+          html_url: 'https://example.com/',
+          login: 'reviewer'
+        }
       };
       var elem;
 
@@ -43,7 +51,7 @@
       test('triggers ajax for comments when PR changes', function(done) {
         stub('github-authenticated-ajax', {
           generateRequest: function() {
-            if (this.id == 'ajaxComments') {
+            if (this.id === 'ajaxComments') {
               done();
             }
           }
@@ -55,7 +63,7 @@
       test('triggers ajax for issues when PR changes', function(done) {
         stub('github-authenticated-ajax', {
           generateRequest: function() {
-            if (this.id == 'ajaxIssue') {
+            if (this.id === 'ajaxIssue') {
               done();
             }
           }

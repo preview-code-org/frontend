@@ -7,7 +7,7 @@ var actualDiffs = [
           '--- /dev/null\n' +
           '+++ b/a\n' +
           '@@ -0,0 +1 @@\n' +
-          '+one line',
+          '+one line'
   },
 
   {
@@ -18,7 +18,7 @@ var actualDiffs = [
           '+++ b/a\n' +
           '@@ -1 +1,2 @@\n' +
           ' one line\n' +
-          '+line two',
+          '+line two'
   },
 
   {
@@ -30,7 +30,7 @@ var actualDiffs = [
           '@@ -1,2 +1,3 @@\n' +
           ' one line\n' +
           '+line inbetween\n' +
-          ' line two',
+          ' line two'
   },
 
   {
@@ -44,7 +44,7 @@ var actualDiffs = [
           ' line inbetween\n' +
           '+another line\n' +
           '+hello world\n' +
-          ' line two',
+          ' line two'
   },
 
   {
@@ -59,7 +59,7 @@ var actualDiffs = [
           ' another line\n' +
           '-hello world\n' +
           '+replace a line\n' +
-          ' line two',
+          ' line two'
   },
 
   {
@@ -74,7 +74,7 @@ var actualDiffs = [
           '-another line\n' +
           ' replace a line\n' +
           '+another line\n' +
-          ' line two',
+          ' line two'
   },
 
   {
@@ -88,7 +88,7 @@ var actualDiffs = [
           ' line inbetween\n' +
           '-replace a line\n' +
           ' another line\n' +
-          ' line two',
+          ' line two'
   },
 
   {
@@ -101,7 +101,7 @@ var actualDiffs = [
           ' one line\n' +
           ' line inbetween\n' +
           ' another line\n' +
-          '-line two',
+          '-line two'
   },
 
   {
@@ -114,7 +114,7 @@ var actualDiffs = [
           '-one line\n' +
           ' line inbetween\n' +
           ' another line\n' +
-          '+add last',
+          '+add last'
   },
 
   {
@@ -126,7 +126,7 @@ var actualDiffs = [
           '@@ -1,3 +1,2 @@\n' +
           '-line inbetween\n' +
           ' another line\n' +
-          ' add last',
+          ' add last'
   },
 
   {
@@ -137,7 +137,7 @@ var actualDiffs = [
           '+++ b/a\n' +
           '@@ -1,2 +0,0 @@\n' +
           '-another line\n' +
-          '-add last',
+          '-add last'
   },
 
   {
@@ -164,7 +164,7 @@ var actualDiffs = [
           '+Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
           ' Cras aliquet lacus eget urna sagittis hendrerit.\n' +
           ' Curabitur suscipit ipsum non mollis vestibulum.\n' +
-          ' Suspendisse tempus purus ac tellus pharetra fringilla.',
+          ' Suspendisse tempus purus ac tellus pharetra fringilla.'
   },
 
   {
@@ -194,7 +194,7 @@ var actualDiffs = [
     ' Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
     ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
     '-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
-    '-Nulla ac justo non tellus convallis suscipit.',
+    '-Nulla ac justo non tellus convallis suscipit.'
   }
 ]
 

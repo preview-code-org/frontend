@@ -31,37 +31,37 @@
       elem.getFields = function(testData) {
         return [testData.name, testData.owner];
       }
-      items =  [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}]
+      items =  [{name: 'hello', owner: 'world'}, {name: 'hi', owner: 'bye'}]
     });
 
     test('matches on exact word on first field', function() {
       console.log(elem);
-      var outcome = elem.search(items,'hello');
+      var outcome = elem.search(items, 'hello');
       assert.deepEqual([items[0]], outcome);
     });
 
     test('matches on exact word on second field', function() {
-      var outcome = elem.search(items,'world');
+      var outcome = elem.search(items, 'world');
       assert.deepEqual([items[0]], outcome);
     });
 
     test('matches on part of word', function() {
-      var outcome = elem.search(items,'ye');
+      var outcome = elem.search(items, 'ye');
       assert.deepEqual([items[1]], outcome);
     });
 
     test('matches on letter', function() {
-      var outcome = elem.search(items,'e');
+      var outcome = elem.search(items, 'e');
       assert.deepEqual(items, outcome);
     });
 
     test('does not match if it is not a substring of any value', function() {
-      var outcome = elem.search(items,'nothing');
+      var outcome = elem.search(items, 'nothing');
       assert.deepEqual([], outcome);
     });
 
     test('shows all items with empty string search', function() {
-      var outcome = elem.search(items,'');
+      var outcome = elem.search(items, '');
       assert.deepEqual(items, outcome);
     });
 

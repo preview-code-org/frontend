@@ -31,13 +31,13 @@
       });
 
       test('branchNames array is set when branches are made', function() {
-        assert.deepEqual(['branch1','branch2'], createPullRequest.branchNames);
+        assert.deepEqual(['branch1', 'branch2'], createPullRequest.branchNames);
       });
 
-      test('switch to head branch when selecting base branch' , function() {
+      test('switch to head branch when selecting base branch', function() {
         var branchSelector = Polymer.dom(createPullRequest.root).querySelectorAll('branch-selector');
         branchSelector[0].fire('selected');
-        assert.deepEqual(['branch1','branch2'], branchSelector[1].branches)
+        assert.deepEqual(['branch1', 'branch2'], branchSelector[1].branches)
       });
 
       test('description is shown when ajax is called', function(done) {

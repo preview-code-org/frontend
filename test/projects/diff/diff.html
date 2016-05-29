@@ -28,7 +28,7 @@
 
           function assertForEachGroup(field) {
             var groups = diffElem.groups;
-            for (var j=0,l=groups.length;j<l;j++) {
+            for (var j=0, l=groups.length;j<l;j++) {
               var expectedIndex = diff.expected ? diff.expected[j] : actualDiffs.indexOf(diff);
               assert.deepEqual(groups[j][field], testDiffs[expectedIndex][field]);
             }

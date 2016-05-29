@@ -80,7 +80,10 @@
     });
 
     test('fires `empty` event when all diffs are removed', function(done) {
-      groupElem.group = { diff: [], comments: [] };
+      groupElem.group = {
+        diff: [],
+        comments: []
+      };
 
       addEventListener(groupElem, 'empty', function() {
         done();

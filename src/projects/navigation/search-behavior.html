@@ -11,7 +11,7 @@ var SearchBehavior = {
     search: {
       type: Function,
       value: function() {
-        return function(list, searchWord) {
+        return function(list) {
           return list;
         }
       }
@@ -24,19 +24,17 @@ var SearchBehavior = {
   observers: ['_setSearch(getFields)'],
   _setSearch: function(getFields) {
     this.search = function(list, searchWord) {
-      if (searchWord === ''){
+      if (searchWord === '') {
         return list;
       }
-      else {
-        searchWord = searchWord.toLowerCase();
-        return list.filter(function(data) {
-          for(var i = 0; i < getFields(data).length; i++){
-            if(getFields(data)[i].toLowerCase().indexOf(searchWord) > -1){
-              return true;
-            }
+      searchWord = searchWord.toLowerCase();
+      return list.filter(function(data) {
+        for(var i = 0; i < getFields(data).length; i++) {
+          if(getFields(data)[i].toLowerCase().indexOf(searchWord) > -1) {
+            return true;
           }
-        });
-      }
+        }
+      });
     }
   }
 };

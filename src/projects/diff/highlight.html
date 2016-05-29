@@ -103,7 +103,7 @@
         // The first line is always empty and should be ignored.
         lines.shift();
         // The last line is only sometimes empty.
-        if (code.charAt(code.length-1) == '\n') {
+        if (code.charAt(code.length-1) === '\n') {
           lines.pop();
         }
 
