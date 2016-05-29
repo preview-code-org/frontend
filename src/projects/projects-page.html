@@ -44,14 +44,14 @@
 
     <github-authenticated-ajax
       id="ajaxPullRequest"
-      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls"
+      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls?state=[[getPRState]]"
       handle-as="json"
       last-response="{{pullrequests}}"></github-authenticated-ajax>
 
     <list-navigation
         route="[[route]]" show-projects-list="{{showProjectsList}}"
         show-pull-list="{{showPullList}}" selected-pull="[[selectedPull]]"
-        name-tail="{{nameTail}}"
+        name-tail="{{nameTail}}" get-p-r-state="{{getPRState}}"
         project="[[projectTitle]]" project-selected="[[projectSelected]]"
         projects="[[projects]]" pullrequests="[[pullrequests]]"
         pull-request-selected="[[pullRequestSelected]]"
@@ -120,10 +120,15 @@
             ];
           }
         },
-        activeProject: Object
+        activeProject: Object,
+        getPRState: {
+          type: String,
+          value: 'open'
+        }
       },
       observers: [
-        'chooseProject(projectTitle.*)'
+        'chooseProject(projectTitle.*)',
+        '_changePulls(getPRState)'
       ],
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
@@ -156,6 +161,9 @@
       },
       _hideProjectList: function() {
        this.showProjectsList = false;
+     },
+     _changePulls: function() {
+       this.$.ajaxPullRequest.generateRequest();
      }
     });
   </script>

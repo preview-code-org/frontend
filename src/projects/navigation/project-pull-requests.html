@@ -1,8 +1,8 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 
 <link rel="import" href="../../list-items/preview-list.html">
@@ -68,10 +68,14 @@
         margin-left: auto;
         margin-right: auto;
       }
+      .co-switch{
+        margin-left:75%;
+      }
     </style>
     <preview-list>
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
-      <div class="header">
+      <paper-toggle-button class="co-switch" on-tap="_getPRState" checked>[[getPRState]]</paper-toggle-button>
+      <div class= "header">
         <search-box value="{{searchWord}}"></search-box>
         <div class=dropdown>
           <paper-dropdown-menu label="Pull request status" value="{{status}}">
@@ -107,6 +111,11 @@
         status: {
           type: String,
           value: 'All'
+        },
+        getPRState: {
+          type: String,
+          value: 'open',
+          notify: true
         },
         getFields: {
           type: Function,
@@ -144,6 +153,14 @@
       },
       _resetSearch: function() {
         this.searchWord = '';
+      },
+      _getPRState: function(){
+        if(this.getPRState === 'closed'){
+          this.getPRState = 'open'
+        }
+        else{
+          this.getPRState = 'closed'
+        }
       }
     });
   </script>
