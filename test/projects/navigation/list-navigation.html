@@ -36,7 +36,7 @@
 
       test('show project list when there is a project', function() {
         listNavigation.projectSelected = false;
-        listNavigation.project = "project";
+        listNavigation.project = 'project';
         assert.isTrue(listNavigation.showProjectsList);
       });
 
@@ -62,7 +62,7 @@
       test('reset search when enabeling project', function() {
         listNavigation.projectSelected = false;
         listNavigation.searchWord = 'search';
-        listNavigation.project = "project";
+        listNavigation.project = 'project';
         assert.equal('', listNavigation.searchWord);
       });
 

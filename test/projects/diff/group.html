@@ -73,7 +73,7 @@
     });
 
     test('shows title when collapsed', function() {
-      groupElem.title = "someTitle";
+      groupElem.title = 'someTitle';
       groupElem.collapsed = true;
       var title = get('h2');
       assert.equal(title.innerHTML, 'someTitle');

@@ -40,13 +40,13 @@
         diffElem._render = function() {
           done();
         }
-        diffElem.code = "+ insert!";
+        diffElem.code = '+ insert!';
       });
     });
 
 
     testDiffs.forEach(function(diff) {
-      suite("diff: " + diff.index, function() {
+      suite('diff: ' + diff.index, function() {
         var diffElem;
 
         setup(function() {
