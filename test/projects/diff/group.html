@@ -24,16 +24,6 @@
     var groupElem;
 
     setup(function() {
-      /*
-       * Stubbing multiple elements currently does not work in wct.
-       * A PR with a fix is ready on the wct repo, but it's not merged yet.
-       * https://github.com/Polymer/web-component-tester/pull/310
-       */
-      // stub('markdown-input');
-      // stub('pull-request-comment');
-      // stub('pull-request-add-comments');
-      // stub('pull-request-diff-highlight');
-      // stub('collapse-icon');
       groupElem = fixture('basic');
     });
 
@@ -113,10 +103,6 @@
 
     var getSortable = function() {
       return get('sortable-js');
-    }
-
-    var stub = function(elem) {
-      replace(elem).with('stub-' + elem);
     }
   });
 

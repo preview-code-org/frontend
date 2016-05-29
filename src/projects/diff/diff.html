@@ -136,7 +136,7 @@
         this.ordering[0].splice(0, 1, e.detail);
         this.notifyPath('groups', this.groups);
       },
-      _removeGroup: function(e) {
+      _removeGroup: function() {
         // this.splice('groups', e.model.group.originalIndex, 1);
       },
       _orderGroups: (function() {
@@ -153,7 +153,8 @@
         return function(groupsSplices, ordering) {
           var groups = groupsSplices.base;
           var orderedGroups = [];
-          for (var i=0,l=ordering.length; i<l; i++) {
+          var i,l;
+          for (i=0,l=ordering.length; i<l; i++) {
             for (var j=0,d=ordering[i].length;j<d;j++) {
               var c = findGroup(groups, ordering[i][j]);
               if (c) {
@@ -169,7 +170,7 @@
             diff: [],
             comments: []
           };
-          for (var i=0,l=groups.length;i<l;i++) {
+          for (i=0,l=groups.length;i<l;i++) {
             if (groups[i].__index === undefined) {
               unSortedGroup.diff.push(groups[i]);
             }

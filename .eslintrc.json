@@ -25,6 +25,7 @@
     "teardown": false,
     "sinon": false,
     "WCT": false,
-    "replace": false
+    "replace": false,
+    "Sortable": false
   }
 }

@@ -181,8 +181,7 @@
         }
         return title;
       },
-      _diffRemoved: function(e) {
-        console.log('rem');
+      _diffRemoved: function() {
         if (!this.group.diff.length) {
           this.fire('empty');
         }

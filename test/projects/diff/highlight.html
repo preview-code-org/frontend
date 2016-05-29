@@ -20,6 +20,7 @@
   </test-fixture>
 
   <script>
+  /*global testDiffs*/
     suite('<pull-request-diff-highlight>', function() {
       var diffElem;
       setup(function() {
@@ -93,7 +94,7 @@
           });
         }
 
-        var filterNonEmpty = function(elems, id) {
+        var filterNonEmpty = function(elems) {
           return elems.filter(function(e) {
             return e.innerHTML == '';
           });

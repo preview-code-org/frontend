@@ -19,6 +19,7 @@
     </template>
   </test-fixture>
   <script>
+  /*global SubstituteRenderedGitHubMarkdownBehavior*/
     suite('Basic <marked-github-element>', function() {
       var mdElem;
       var project = {
@@ -40,7 +41,7 @@
 
       test('passes markdown to substitutor', function(done) {
         var markdown = 'testMD'
-        mdElem.createMarkdownSubstituter = function(p) {
+        mdElem.createMarkdownSubstituter = function() {
           return function(err, text) {
             assert.include(text, markdown);
             done();

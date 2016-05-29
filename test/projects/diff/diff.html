@@ -20,6 +20,7 @@
   </test-fixture>
 
   <script>
+  /*global actualDiffs,testDiffs*/
     suite('<pull-request-diff-highlight>', function() {
       actualDiffs.forEach(function(diff) {
         suite('Actual diff ' + diff.file, function() {

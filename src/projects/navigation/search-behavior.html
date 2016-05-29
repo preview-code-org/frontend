@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <script>
-SearchBehavior = {
+/*exported SearchBehavior*/
+var SearchBehavior = {
 
   properties: {
     getFields: {
@@ -14,12 +15,16 @@ SearchBehavior = {
           return list;
         }
       }
+    },
+    searchWord: {
+      type: String,
+      value: ''
     }
   },
   observers: ['_setSearch(getFields)'],
   _setSearch: function(getFields) {
     this.search = function(list, searchWord) {
-      if (this.searchWord === ''){
+      if (searchWord === ''){
         return list;
       }
       else {
