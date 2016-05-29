@@ -26,13 +26,21 @@
         number: 1,
         body: 'Hello *markdown*',
         state: 'open',
-        user: { html_url: 'https://example.com/',
-                login: 'txsmith' },
-        head: { label: 'txsmith:pull-branch' },
-        base: { label: 'preview-app:master' },
-        created_at: "2016-05-25T00:31:28Z",
-        assignee: { html_url: 'https://example.com/',
-                    login: 'reviewer' }
+        user: {
+          html_url: 'https://example.com/',
+          login: 'txsmith'
+        },
+        head: {
+          label: 'txsmith:pull-branch'
+        },
+        base: {
+          label: 'preview-app:master'
+        },
+        created_at: '2016-05-25T00:31:28Z',
+        assignee: {
+          html_url: 'https://example.com/',
+          login: 'reviewer'
+        }
       };
 
       var prPageElem;
@@ -44,7 +52,7 @@
       test('triggers ajax for diff when PR changes', function(done) {
         stub('github-authenticated-ajax', {
           generateRequest: function() {
-            if (this.id == 'ajaxDiff') {
+            if (this.id === 'ajaxDiff') {
               done();
             }
           }
@@ -66,7 +74,9 @@
       });
 
       test('computes correct orderingPath', function() {
-        prPageElem.project = {owner: 'preview-code', name: 'preview-frontend' };
+        prPageElem.project = {
+          owner: 'preview-code', name: 'preview-frontend'
+        };
         prPageElem.selectedPull = examplePull;
         assert.equal(prPageElem.orderingPath, 'ordering/preview-code/preview-frontend/' + examplePull.number);
       });

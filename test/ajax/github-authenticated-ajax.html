@@ -122,7 +122,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('new element fetches from headercache', function(done) {
           var el = document.createElement('github-authenticated-ajax');
           el.refurl = 'github.json';
-          addEventListener(el, 'response', function(e) {
+          addEventListener(el, 'response', function() {
             assert.equal(etag, responseHeaders.ETag);
             done();
           });

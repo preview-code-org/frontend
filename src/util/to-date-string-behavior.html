@@ -6,7 +6,8 @@
  * @see http://momentjs.com/docs/#/displaying/fromnow/
  * @type {Object}
  */
-ToDateStringBehavior = {
+/*exported ToDateStringBehavior*/
+var ToDateStringBehavior = {
   toDateString: function(text) {
     var diff = new Date(this._getCurrentTime() - new Date(text).getTime());
     var seconds = Math.ceil(diff / 1000);

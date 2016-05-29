@@ -20,6 +20,7 @@
   </test-fixture>
 
   <script>
+  /*global testDiffs*/
     suite('<pull-request-diff-highlight>', function() {
       var diffElem;
       setup(function() {
@@ -39,13 +40,13 @@
         diffElem._render = function() {
           done();
         }
-        diffElem.code = "+ insert!";
+        diffElem.code = '+ insert!';
       });
     });
 
 
     testDiffs.forEach(function(diff) {
-      suite("diff: " + diff.index, function() {
+      suite('diff: ' + diff.index, function() {
         var diffElem;
 
         setup(function() {
@@ -93,9 +94,9 @@
           });
         }
 
-        var filterNonEmpty = function(elems, id) {
+        var filterNonEmpty = function(elems) {
           return elems.filter(function(e) {
-            return e.innerHTML == '';
+            return e.innerHTML === '';
           });
         }
       });

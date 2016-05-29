@@ -26,7 +26,7 @@
 
       setup(function() {
         listNavigation = fixture('list-navigation-fixture');
-        listNavigation.projects = [{name:'hello',owner:'world'}, {name:'hi', owner:'bye'}];
+        listNavigation.projects = [{name: 'hello', owner: 'world'}, {name: 'hi', owner: 'bye'}];
       });
 
       test('display the projectlist when no project is selected', function() {
@@ -36,17 +36,17 @@
 
       test('show project list when there is a project', function() {
         listNavigation.projectSelected = false;
-        listNavigation.project = "project";
+        listNavigation.project = 'project';
         assert.isTrue(listNavigation.showProjectsList);
       });
 
-      test('shows both lists when a project is selected' , function() {
+      test('shows both lists when a project is selected', function() {
         listNavigation.projectSelected = true;
         assert.isTrue(listNavigation.showProjectsList);
         assert.isTrue(listNavigation.showPullList);
       });
 
-      test('shows only pulllist when a pull request is selected' , function() {
+      test('shows only pulllist when a pull request is selected', function() {
         listNavigation.projectSelected = true;
         listNavigation.pullRequestSelected = true;
         assert.isFalse(listNavigation.showProjectsList);
@@ -62,13 +62,13 @@
       test('reset search when enabeling project', function() {
         listNavigation.projectSelected = false;
         listNavigation.searchWord = 'search';
-        listNavigation.project = "project";
+        listNavigation.project = 'project';
         assert.equal('', listNavigation.searchWord);
       });
 
       test('filter list when searching', function(done) {
         listNavigation.searchWord = 'hello';
-        flush(function(){
+        flush(function() {
           var outcome = Polymer.dom(listNavigation.root).querySelector('preview-list').children[2].items;
           assert.deepEqual([listNavigation.projects[0]], outcome);
           done();
@@ -77,7 +77,7 @@
 
       test('show whole list when no searchword is chosen', function(done) {
         listNavigation.searchWord = '';
-        flush(function(){
+        flush(function() {
           var outcome = Polymer.dom(listNavigation.root).querySelector('preview-list').children[3].items;
           assert.deepEqual(listNavigation.projects, outcome);
           done();
@@ -85,7 +85,7 @@
       });
 
       test('select project with enter', function(done) {
-        flush(function(){
+        flush(function() {
           var outcome = Polymer.dom(listNavigation.root).querySelector('project-list-item');
           MockInteractions.pressEnter(outcome);
           Polymer.Base.async(function() {
@@ -96,7 +96,7 @@
       });
 
       test('select no project with pressing a random key', function(done) {
-        flush(function(){
+        flush(function() {
           var outcome = Polymer.dom(listNavigation.root).querySelector('project-list-item');
           MockInteractions.pressSpace(outcome);
           Polymer.Base.async(function() {

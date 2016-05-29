@@ -93,6 +93,7 @@
     </preview-list>
   </template>
   <script>
+  /*global SearchBehavior*/
     Polymer({
       is: 'project-pull-requests',
       behaviors: [SearchBehavior],
@@ -100,10 +101,6 @@
         project: Object,
         route: Object,
         selectedPull: Object,
-        searchWord: {
-          type: String,
-          value: '',
-        },
         pullrequests: {
           type: Array
         },
@@ -145,7 +142,7 @@
           this.set('route.path', '/pulls/' + e.model.pr.number + '/overview');
         }
       },
-      _resetSearch: function(){
+      _resetSearch: function() {
         this.searchWord = '';
       }
     });

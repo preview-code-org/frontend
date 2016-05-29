@@ -51,7 +51,7 @@
           computed: '_sortReviewers(reviewers)'
         }
       },
-      _sortReviewers(rs) {
+      _sortReviewers: function(rs) {
         return rs.sort(function(r1, r2) {
           return r2.lgtm - r1.lgtm;
         });

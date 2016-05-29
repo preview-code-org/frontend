@@ -13,6 +13,7 @@
 </head>
 <body>
   <script>
+  /*global FadeInBehavior*/
     HTMLImports.whenReady(function () {
       Polymer({
         is: 'test-fade-in-behavior',
@@ -45,7 +46,7 @@
       test('plays animation when show invoked', function(done) {
         behavior.show();
         assert.equal(getComputedStyle(behavior).opacity, 0);
-        behavior.addEventListener('neon-animation-finish', function(event) {
+        behavior.addEventListener('neon-animation-finish', function() {
           assert.equal(getComputedStyle(behavior).opacity, 1);
           done();
         });

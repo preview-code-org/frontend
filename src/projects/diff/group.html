@@ -177,12 +177,11 @@
       },
       _getDisplayTitle: function(title) {
         if (!this.title) {
-          return "Unsorted changes";
+          return 'Unsorted changes';
         }
         return title;
       },
-      _diffRemoved: function(e) {
-        console.log('rem');
+      _diffRemoved: function() {
         if (!this.group.diff.length) {
           this.fire('empty');
         }

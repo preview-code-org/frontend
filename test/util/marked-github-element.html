@@ -19,6 +19,7 @@
     </template>
   </test-fixture>
   <script>
+  /*global SubstituteRenderedGitHubMarkdownBehavior*/
     suite('Basic <marked-github-element>', function() {
       var mdElem;
       var project = {
@@ -40,7 +41,7 @@
 
       test('passes markdown to substitutor', function(done) {
         var markdown = 'testMD'
-        mdElem.createMarkdownSubstituter = function(p) {
+        mdElem.createMarkdownSubstituter = function() {
           return function(err, text) {
             assert.include(text, markdown);
             done();
@@ -70,42 +71,42 @@
         assert.isFunction(substitutor);
       });
 
-      test("replaces issue references with anchor", function() {
+      test('replaces issue references with anchor', function() {
         var anchor = createElements(substitutor('', issueReference))[0];
         assert.equal(anchor.tagName, 'A');
       });
 
-      test("replaces issue ref with anchor with owner and name in href", function() {
+      test('replaces issue ref with anchor with owner and name in href', function() {
         var anchor = createElements(substitutor('', issueReference))[0];
         assert.include(anchor.href, project.owner + '/' + project.name);
       });
 
-      test("replaces issue ref with anchor with target ='_blank'", function() {
+      test('replaces issue ref with anchor with target="_blank"', function() {
         var anchor = createElements(substitutor('', issueReference))[0];
         assert.equal(anchor.target, '_blank');
       });
 
-      test("replaces issue ref with anchor with issue number in text", function() {
+      test('replaces issue ref with anchor with issue number in text', function() {
         var anchor = createElements(substitutor('', issueReference))[0];
         assert.equal(anchor.text, issueReference);
       });
 
-      test("replaces user references with anchor", function() {
+      test('replaces user references with anchor', function() {
         var anchor = createElements(substitutor('', userReference))[0];
         assert.equal(anchor.tagName, 'A');
       });
 
-      test("replaces user ref with anchor with target ='_blank'", function() {
+      test('replaces user ref with anchor with target="_blank"', function() {
         var anchor = createElements(substitutor('', userReference))[0];
         assert.equal(anchor.target, '_blank');
       });
 
-      test("replaces user ref with anchor with username in text", function() {
+      test('replaces user ref with anchor with username in text', function() {
         var anchor = createElements(substitutor('', userReference))[0];
         assert.equal(anchor.text, userReference);
       });
 
-      test("replaces all issue refs with anchors", function() {
+      test('replaces all issue refs with anchors', function() {
         var anchors = createElements(substitutor('',
         issueReference + ' ' + issueReference + ' ' + issueReference));
         assert.equal(anchors.length, 3);
@@ -114,7 +115,7 @@
         }
       });
 
-      test("replaces all user refs with anchors", function() {
+      test('replaces all user refs with anchors', function() {
         var anchors = createElements(substitutor('',
         userReference + ' ' + userReference + ' ' + userReference));
         assert.equal(anchors.length, 3);
@@ -123,7 +124,7 @@
         }
       });
 
-      test("replaces mixed issue and user references with anchors", function() {
+      test('replaces mixed issue and user references with anchors', function() {
         var anchors = createElements(substitutor('',
         userReference + ' ' + issueReference + ' ' + userReference  + ' ' +
         issueReference + ' ' + userReference + ' ' + issueReference));
@@ -133,7 +134,7 @@
         }
       });
 
-      test("does not substitute normal text", function() {
+      test('does not substitute normal text', function() {
         var lorumIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tincidunt leo non nisl tempus, sit amet iaculis eros gravida. Cras et ligula quis purus posuere interdum vel et lorem. Curabitur a vulputate sem, in sagittis ante. Sed dignissim dolor leo, id venenatis sem porttitor eget. Aliquam sagittis, felis accumsan faucibus finibus, lorem mauris tincidunt enim, nec gravida nibh mauris sed nulla. Aenean eget dolor sit amet mauris gravida iaculis ut eget ipsum. Curabitur tellus nisi, commodo vitae lorem in, viverra dapibus ante. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean dictum congue lorem quis consequat.';
         var substituted = substitutor('', lorumIpsum);
         assert.equal(substituted, lorumIpsum);

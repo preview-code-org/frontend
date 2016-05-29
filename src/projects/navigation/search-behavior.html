@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <script>
-SearchBehavior = {
+/*exported SearchBehavior*/
+var SearchBehavior = {
 
   properties: {
     getFields: {
@@ -10,28 +11,30 @@ SearchBehavior = {
     search: {
       type: Function,
       value: function() {
-        return function(list, searchWord) {
+        return function(list) {
           return list;
         }
       }
+    },
+    searchWord: {
+      type: String,
+      value: ''
     }
   },
   observers: ['_setSearch(getFields)'],
   _setSearch: function(getFields) {
     this.search = function(list, searchWord) {
-      if (this.searchWord === ''){
+      if (searchWord === '') {
         return list;
       }
-      else {
-        searchWord = searchWord.toLowerCase();
-        return list.filter(function(data) {
-          for(var i = 0; i < getFields(data).length; i++){
-            if(getFields(data)[i].toLowerCase().indexOf(searchWord) > -1){
-              return true;
-            }
+      searchWord = searchWord.toLowerCase();
+      return list.filter(function(data) {
+        for(var i = 0; i < getFields(data).length; i++) {
+          if(getFields(data)[i].toLowerCase().indexOf(searchWord) > -1) {
+            return true;
           }
-        });
-      }
+        }
+      });
     }
   }
 };

@@ -111,6 +111,7 @@
     </div>
   </template>
   <script>
+  /*global SearchBehavior*/
     Polymer({
       is: 'list-navigation',
       behaviors: [SearchBehavior],
@@ -119,10 +120,6 @@
         project: Object,
         projectSelected: Boolean,
         nameTail: Object,
-        searchWord: {
-          type: String,
-          value: ''
-        },
         showProjectsList: {
           type: Boolean,
           value: true,

@@ -24,16 +24,6 @@
     var groupElem;
 
     setup(function() {
-      /*
-       * Stubbing multiple elements currently does not work in wct.
-       * A PR with a fix is ready on the wct repo, but it's not merged yet.
-       * https://github.com/Polymer/web-component-tester/pull/310
-       */
-      // stub('markdown-input');
-      // stub('pull-request-comment');
-      // stub('pull-request-add-comments');
-      // stub('pull-request-diff-highlight');
-      // stub('collapse-icon');
       groupElem = fixture('basic');
     });
 
@@ -83,14 +73,17 @@
     });
 
     test('shows title when collapsed', function() {
-      groupElem.title = "someTitle";
+      groupElem.title = 'someTitle';
       groupElem.collapsed = true;
       var title = get('h2');
       assert.equal(title.innerHTML, 'someTitle');
     });
 
     test('fires `empty` event when all diffs are removed', function(done) {
-      groupElem.group = { diff: [], comments: [] };
+      groupElem.group = {
+        diff: [],
+        comments: []
+      };
 
       addEventListener(groupElem, 'empty', function() {
         done();
@@ -113,10 +106,6 @@
 
     var getSortable = function() {
       return get('sortable-js');
-    }
-
-    var stub = function(elem) {
-      replace(elem).with('stub-' + elem);
     }
   });
 

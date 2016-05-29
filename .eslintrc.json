@@ -1,0 +1,43 @@
+{
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-console": 0,
+    "eqeqeq": 1,
+    "no-else-return": 1,
+    "array-bracket-spacing": 1,
+    "brace-style": 1,
+    "comma-spacing": 1,
+    "eol-last": 1,
+    "key-spacing": 1,
+    "object-curly-spacing": 1,
+    "space-before-blocks": 1,
+    "quotes": [2, "single", {
+      "avoidEscape": true
+    }]
+  },
+  "env": {
+    "browser": true
+  },
+  "plugins": [
+    "html"
+  ],
+  "globals": {
+    "CustomElements": false,
+    "HTMLImports": false,
+    "Polymer": false,
+    "WeakMap": false,
+    "test": false,
+    "assert": false,
+    "MockInteractions": false,
+    "suite": false,
+    "fixture": false,
+    "flush": false,
+    "setup": false,
+    "stub": false,
+    "teardown": false,
+    "sinon": false,
+    "WCT": false,
+    "replace": false,
+    "Sortable": false
+  }
+}
