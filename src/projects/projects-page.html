@@ -44,7 +44,7 @@
 
     <github-authenticated-ajax
       id="ajaxPullRequest"
-      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls?state=[[prState]]"
+      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls?state=[[prStateFilter]]"
       handle-as="json"
       last-response="{{pullrequests}}"></github-authenticated-ajax>
 
@@ -121,7 +121,7 @@
           }
         },
         activeProject: Object,
-        prState: {
+        prStateFilter: {
           type: String,
           value: 'open'
         }
@@ -130,7 +130,7 @@
         'chooseProject(projectTitle.*)'
       ],
       listeners: {
-        'getPRState': '_changePulls',
+        'getPRStateFilter': '_ChangePRStateFilter'
       },
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
@@ -164,12 +164,11 @@
       _hideProjectList: function() {
        this.showProjectsList = false;
      },
-     _changePulls: function(e) {
-       if(this.prState === 'closed'){
-         this.prState = 'open';
-       }
-       else{
-         this.prState = 'closed';
+     _ChangePRStateFilter: function() {
+       if(this.prStateFilter === 'closed') {
+         this.prStateFilter = 'open';
+       } else{
+         this.prStateFilter = 'closed';
        }
        this.$.ajaxPullRequest.generateRequest();
      }
