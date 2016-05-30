@@ -29,8 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 
 <link rel="import" href="../../list-items/preview-list.html">
@@ -96,10 +96,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         margin-left: auto;
         margin-right: auto;
       }
+      .pr-state-switch {
+        margin-left:75%;
+      }
     </style>
     <preview-list>
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
-      <div class="header">
+      <paper-toggle-button class="pr-state-switch" on-tap="_setPRStateFilter" checked>[[prStateFilter]]</paper-toggle-button>
+      <div class= "header">
         <search-box value="{{searchWord}}"></search-box>
         <div class=dropdown>
           <paper-dropdown-menu label="Pull request status" value="{{status}}">
@@ -135,6 +139,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         status: {
           type: String,
           value: 'All'
+        },
+        prStateFilter: {
+          type: String,
+          value: 'open'
         },
         getFields: {
           type: Function,
@@ -172,6 +180,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _resetSearch: function() {
         this.searchWord = '';
+      },
+      _setPRStateFilter: function() {
+        if(this.prStateFilter === 'closed') {
+          this.prStateFilter = 'open'
+        } else{
+          this.prStateFilter = 'closed'
+        }
+        this.fire('PRStateFilter-updated', this.prStateFilter);
       }
     });
   </script>

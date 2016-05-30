@@ -147,6 +147,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         });
       });
     });
+
+    test('shows closed prs when toggle button', function() {
+      var toggle = Polymer.dom(elem.root).querySelector('paper-toggle-button');
+      MockInteractions.tap(toggle);
+      assert.equal('closed', elem.prStateFilter);
+    });
+
+    test('shows open prs when toggle button twice', function() {
+      var toggle = Polymer.dom(elem.root).querySelector('paper-toggle-button');
+      MockInteractions.tap(toggle);
+      MockInteractions.tap(toggle);
+      assert.equal('open', elem.prStateFilter);
+    });
   })
 </script>
 

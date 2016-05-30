@@ -72,7 +72,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <github-authenticated-ajax
       id="ajaxPullRequest"
-      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls"
+      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls?state=[[prStateFilter]]"
       handle-as="json"
       last-response="{{pullrequests}}"></github-authenticated-ajax>
 
@@ -148,11 +148,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             ];
           }
         },
-        activeProject: Object
+        activeProject: Object,
+        prStateFilter: {
+          type: String,
+          value: 'open'
+        }
       },
       observers: [
         'chooseProject(projectTitle.*)'
       ],
+      listeners: {
+        'PRStateFilter-updated': '_changePRStateFilter'
+      },
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
         var name = projectTitle.value.name;
@@ -184,6 +191,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _hideProjectList: function() {
        this.showProjectsList = false;
+     },
+     _changePRStateFilter: function(e) {
+       this.prStateFilter = e.detail;
+       this.$.ajaxPullRequest.generateRequest();
      }
     });
   </script>

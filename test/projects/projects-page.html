@@ -85,6 +85,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         assert.equal('pr', Polymer.dom(projectPage.root).querySelector('iron-pages').selected);
       });
 
+      test('shows closed prs when event is fired with closed', function() {
+        projectPage.fire('PRStateFilter-updated', 'closed');
+        assert.equal('closed', projectPage.prStateFilter);
+      });
+
+      test('shows open prs when event is fired with open', function() {
+        projectPage.fire('PRStateFilter-updated', 'open');
+        assert.equal('open', projectPage.prStateFilter);
+      });
     });
   </script>
 
