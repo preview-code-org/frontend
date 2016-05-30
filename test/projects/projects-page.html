@@ -57,6 +57,21 @@
         assert.equal('pr', Polymer.dom(projectPage.root).querySelector('iron-pages').selected);
       });
 
+      test('shows closed prs when event is fired with closed', function(done) {
+        projectPage._changePRStateFilter({'detail': 'closed'});
+        flush(function() {
+          assert.equal('closed', projectPage.prStateFilter);
+          done();
+        });
+      });
+
+      test('shows open prs when event is fired with open', function(done) {
+        projectPage._changePRStateFilter({'detail': 'open'});
+        flush(function() {
+          assert.equal('open', projectPage.prStateFilter);
+          done();
+        });
+      });
     });
   </script>
 
