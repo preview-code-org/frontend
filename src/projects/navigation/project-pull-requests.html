@@ -74,7 +74,7 @@
     </style>
     <preview-list>
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
-      <paper-toggle-button class="pr-state-switch" on-tap="setPRStateFilter" checked>[[prStateFilter]]</paper-toggle-button>
+      <paper-toggle-button class="pr-state-switch" on-tap="_setPRStateFilter" checked>[[prStateFilter]]</paper-toggle-button>
       <div class= "header">
         <search-box value="{{searchWord}}"></search-box>
         <div class=dropdown>
@@ -153,13 +153,13 @@
       _resetSearch: function() {
         this.searchWord = '';
       },
-      setPRStateFilter: function() {
+      _setPRStateFilter: function() {
         if(this.prStateFilter === 'closed') {
           this.prStateFilter = 'open'
         } else{
           this.prStateFilter = 'closed'
         }
-        this.fire('getPRStateFilter');
+        this.fire('PRStateFilter-updated', this.prStateFilter);
       }
     });
   </script>
