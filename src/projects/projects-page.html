@@ -76,6 +76,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       handle-as="json"
       last-response="{{pullrequests}}"></github-authenticated-ajax>
 
+    <github-authenticated-ajax
+      id="ajaxCustomPullRequest"
+      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls/[[pr.pr]]"
+      handle-as="json"
+      last-response="{{newPullrequest}}"></github-authenticated-ajax>
+
     <list-navigation
         route="[[route]]" show-projects-list="{{showProjectsList}}"
         show-pull-list="{{showPullList}}" selected-pull="[[selectedPull]]"
@@ -109,6 +115,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: Object,
           computed: '_getPullFromId(pullrequests, pr.pr)'
         },
+        newPullrequest: Object,
         projects: {
           type: Array,
           value: function() {
@@ -155,7 +162,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       observers: [
-        'chooseProject(projectTitle.*)'
+        'chooseProject(projectTitle.*)',
+        '_showPullRequest(newPullrequest)'
       ],
       listeners: {
         'PRStateFilter-updated': '_changePRStateFilter'
@@ -177,9 +185,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$$('project-overview-page').focus();
       },
       _getPullFromId: function(pullrequests, id) {
-        return pullrequests.filter(function(pr) {
+        var list = pullrequests.filter(function(pr) {
           return pr.number === parseInt(id);
-        })[0];
+        });
+        if(list.length > 0) {
+          return list[0];
+        } else {
+          this.$.ajaxCustomPullRequest.generateRequest();
+        }
       },
       _getCurrentView: function(projectSelected, pullRequestSelected) {
         if (!projectSelected) {
@@ -195,6 +208,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      _changePRStateFilter: function(e) {
        this.prStateFilter = e.detail;
        this.$.ajaxPullRequest.generateRequest();
+     },
+     _showPullRequest: function(newPullrequest) {
+      this.pullrequests = this.pullrequests.concat([newPullrequest]);
      }
     });
   </script>
