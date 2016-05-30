@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../diff/diff.html">
 <link rel="import" href="pull-request-general-information.html">
 <link rel="import" href="pull-request-commits.html">
+<link rel="import" href="pull-request-space.html">
 
 <dom-module id="pull-request-page">
   <template>
@@ -158,6 +159,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <paper-tab data-route="diff">
           <a href$="[[route.prefix]]/diff">Changes</a>
         </paper-tab>
+        <paper-tab data-route="space">
+          <a href$="[[route.prefix]]/space">Space</a>
+        </paper-tab>
       </paper-tabs>
     </div>
 
@@ -166,9 +170,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 fallback-selection="404">
       <pull-request-general-information data-route="overview" class="overview"
         pull-request="[[selectedPull]]" project="[[project]]"></pull-request-general-information>
+      <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
       <pull-request-diff data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
           base-url="[[selectedPull.head.repo.html_url]]" sha="[[selectedPull.head.sha]]"></pull-request-diff>
-      <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
+      <pull-request-space data-route="space"></pull-request-space>
 
       <span data-route="404">
         Oops you hit a 404!

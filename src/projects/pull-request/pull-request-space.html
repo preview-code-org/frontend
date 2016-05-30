@@ -1,0 +1,228 @@
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<dom-module id="pull-request-space">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      paper-card {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      #container {
+        border: black 1px solid;
+        width: 1000px;
+        height: 400px;
+      }
+      canvas {
+        position: absolute;
+      }
+    </style>
+    <canvas id="canvas" width="1000" height="400"></canvas>
+    <div id="container">
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-space',
+      get canvas() {
+        return this.$.canvas;
+      },
+      get ctx() {
+        return this.canvas.getContext('2d');
+      },
+      get containerRect() {
+        return this.$.container.getBoundingClientRect();
+      },
+      listeners: {
+        'track': '_handlCardTracking'
+      },
+      attached: function() {
+        this._blocks = [];
+        for (var i=0;i<10;i++) {
+          var elem = document.createElement('paper-card');
+          elem.innerHTML = 'value';
+          elem.style.right = (i * 100) + 'px';
+          this.$.container.appendChild(elem);
+          this._blocks.push(elem);
+        }
+
+        this.$.canvas.width = 1000;
+        this.$.canvas.height = 400;
+
+        setInterval(this._recalcCanvas.bind(this), 1000 / 60);
+      },
+      _recalcCanvas: (function() {
+        function calculateAnchorPoints(rectangleLeft, rectangleRight, dx, dy, containerRect) {
+          var points = {};
+
+          // Rectangle on the right is always anchored to the left boundary
+          points.rightX = rectangleRight.left - containerRect.left;
+          points.rightY = rectangleRight.top + (rectangleRight.height / 2) - containerRect.top
+
+          // Rectangle on the left is bounded to top/right/bottom
+          // default is top
+          points.leftX = rectangleLeft.left - containerRect.left;
+          points.leftY = rectangleLeft.top - containerRect.top;
+
+          if (dy < dx) {
+            // From right to left
+            points.leftX += rectangleLeft.width;
+            points.leftY += (rectangleLeft.height / 2);
+          } else {
+            points.leftX += (rectangleLeft.width / 2);
+
+            if (rectangleLeft.top < rectangleRight.top) {
+              // From bottom to left
+              points.leftY += rectangleLeft.height;
+            }
+          }
+
+          return points;
+        }
+
+        /**
+         * Determine which rectangle is left from the other and based on that
+         * calculate the anchorpoints for the arrow
+         * @param  {BoundingClientRect} containerRect The rectangle of the surrounding containerRect
+         * @param  {Object} fromRect      The rectangle of the start point of the arrow
+         * @param  {Object} toRect        The rectangle of the end point of the arrow
+         * @return {Object}               From and to anchor points for the corresponding rectangles
+         */
+        function calculateCoordinates(containerRect, fromRect, toRect) {
+          var dy = Math.abs(toRect.top - fromRect.top);
+          var dx = Math.abs(toRect.left - fromRect.left);
+          var anchorFrom, anchorTo;
+
+          var fromX, fromY, toX, toY;
+
+          // Arrow points to the right
+          if (fromRect.left < toRect.left) {
+            var points = calculateAnchorPoints(fromRect, toRect, dx, dy, containerRect);
+
+            return {
+              fromX: points.leftX,
+              fromY: points.leftY,
+              toX: points.rightX,
+              toY: points.rightY
+            };
+            // Arrow points to the left, so swap the values to make sure the Arrow
+            // points in the correct direction
+          } else {
+            var points = calculateAnchorPoints(toRect, fromRect, dx, dy, containerRect);
+
+            return {
+              fromX: points.rightX,
+              fromY: points.rightY,
+              toX: points.leftX,
+              toY: points.leftY
+            };
+          }
+        }
+
+        function drawArrow(ctx, fromX, fromY, toX, toY) {
+          ctx.beginPath();
+          ctx.moveTo(fromX, fromY);
+          ctx.lineTo(toX, toY);
+
+          // Draw the arrow point
+          // http://stackoverflow.com/a/6333775/2761676
+          var angle = Math.atan2(toY - fromY, toX - fromX);
+          ctx.moveTo(toX, toY);
+          ctx.lineTo(toX - 10 * Math.cos(angle - Math.PI / 6), toY - 10 * Math.sin(angle - Math.PI / 6));
+          ctx.moveTo(toX, toY);
+          ctx.lineTo(toX - 10 * Math.cos(angle + Math.PI / 6), toY - 10 * Math.sin(angle + Math.PI / 6));
+
+          ctx.closePath();
+          ctx.stroke();
+        }
+
+        // Recalc the canvas if we are currently dragging
+        return function() {
+          if (this.dragging) {
+            this.ctx.clearRect(0, 0, 1000, 400);
+            var containerRect = this.containerRect;
+
+            for (var i=0, l=this._blocks.length;i<l;i++) {
+              var fromRect = this._blocks[i].getBoundingClientRect();
+
+              for (var j=i + 1; j<l;j++) {
+                var toRect = this._blocks[j].getBoundingClientRect();
+
+                var coordinates = calculateCoordinates(containerRect, fromRect, toRect);
+
+                drawArrow(this.ctx, coordinates.fromX, coordinates.fromY, coordinates.toX, coordinates.toY);
+              }
+            }
+          }
+        }
+      })(),
+      _handlCardTracking: (function() {
+        var lastElem;
+        var rect;
+        var PADDING = 5;
+
+        return function(e) {
+          switch (e.detail.state) {
+            case 'start':
+              var elem = e.detail.hover();
+              if (elem.nodeName.toLowerCase() !== 'paper-card') {
+                return;
+              }
+              elem._originalPosition = elem.getBoundingClientRect();
+              elem.style.zIndex = 5;
+              lastElem = elem;
+
+              this.dragging = true;
+              rect = this.containerRect;
+              break;
+            case 'track':
+              // We were dragging a non paper-card element
+              if (!lastElem) {
+                return;
+              }
+
+              // Position the element to the new y position based on its original
+              // position, the delta from the original position.
+              //
+              // The position is bounded to the container rectangle with a padding
+              var newTop = lastElem._originalPosition.top + e.detail.dy;
+              var bottomBoundary = rect.bottom - lastElem._originalPosition.height - PADDING;
+              var topBoundedToBottom = Math.min(newTop, bottomBoundary);
+              var topBoundedtoYAndBottom = Math.max(rect.top + PADDING, topBoundedToBottom);
+              lastElem.style.top = topBoundedtoYAndBottom + 'px';
+
+              // Same for the x position as pointed out above
+              var newLeft = lastElem._originalPosition.left + e.detail.dx;
+              var rightBoundary = rect.right - lastElem._originalPosition.width - PADDING;
+              var leftBoundedtoRight = Math.min(newLeft, rightBoundary);
+              var leftBoundedToLeftAndRight = Math.max(rect.left + PADDING, leftBoundedtoRight);
+              lastElem.style.left = leftBoundedToLeftAndRight + 'px';
+
+              break;
+            case 'end':
+              // We were dragging a non paper-card element
+              if (!lastElem) {
+                return;
+              }
+              lastElem.style.zIndex = 0;
+              lastElem = undefined;
+              this.dragging = false;
+              break;
+          }
+        }
+      })()
+    });
+  </script>
+</dom-module>
