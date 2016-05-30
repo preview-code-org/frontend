@@ -190,9 +190,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         });
         if(list.length > 0) {
           return list[0];
-        } else {
-          this.$.ajaxCustomPullRequest.generateRequest();
         }
+        this.$.ajaxCustomPullRequest.generateRequest();
       },
       _getCurrentView: function(projectSelected, pullRequestSelected) {
         if (!projectSelected) {
@@ -210,7 +209,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        this.$.ajaxPullRequest.generateRequest();
      },
      _showPullRequest: function(newPullrequest) {
-      this.pullrequests = this.pullrequests.concat([newPullrequest]);
+       this.pullrequests = this.pullrequests.concat([newPullrequest]);
      }
     });
   </script>
