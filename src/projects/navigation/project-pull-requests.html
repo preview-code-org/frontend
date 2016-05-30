@@ -74,7 +74,7 @@
     </style>
     <preview-list>
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
-      <paper-toggle-button class="co-switch" on-tap="_getPRState" checked>[[getPRState]]</paper-toggle-button>
+      <paper-toggle-button class="co-switch" on-tap="setPRState" checked>[[prState]]</paper-toggle-button>
       <div class= "header">
         <search-box value="{{searchWord}}"></search-box>
         <div class=dropdown>
@@ -112,10 +112,9 @@
           type: String,
           value: 'All'
         },
-        getPRState: {
+        prState: {
           type: String,
-          value: 'open',
-          notify: true
+          value: 'open'
         },
         getFields: {
           type: Function,
@@ -154,13 +153,14 @@
       _resetSearch: function() {
         this.searchWord = '';
       },
-      _getPRState: function(){
-        if(this.getPRState === 'closed'){
-          this.getPRState = 'open'
+      setPRState: function(e) {
+        if(this.prState === 'closed'){
+          this.prState = 'open'
         }
         else{
-          this.getPRState = 'closed'
+          this.prState = 'closed'
         }
+        this.fire('getPRState');
       }
     });
   </script>

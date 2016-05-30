@@ -107,7 +107,7 @@
 
       <project-pull-requests class$="pull-list [[showPullList]]" route="{{nameTail}}" tabindex="0"
                            project="[[project]]" pullrequests="[[pullrequests]]"
-                           selected-pull="[[selectedPull]]" get-p-r-state="{{getPRState}}"></project-pull-requests>
+                           selected-pull="[[selectedPull]]"></project-pull-requests>
     </div>
   </template>
   <script>
@@ -145,11 +145,7 @@
           computed: '_calcListClass(showProjectsList, showPullList)',
           reflectToAttribute: true
         },
-        pullrequests: Array,
-        getPRState: {
-          type: String,
-          notify: true
-        }
+        pullrequests: Array
       },
       observers: [
         '_resetSearch(project)',

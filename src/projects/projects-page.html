@@ -44,14 +44,14 @@
 
     <github-authenticated-ajax
       id="ajaxPullRequest"
-      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls?state=[[getPRState]]"
+      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls?state=[[prState]]"
       handle-as="json"
       last-response="{{pullrequests}}"></github-authenticated-ajax>
 
     <list-navigation
         route="[[route]]" show-projects-list="{{showProjectsList}}"
         show-pull-list="{{showPullList}}" selected-pull="[[selectedPull]]"
-        name-tail="{{nameTail}}" get-p-r-state="{{getPRState}}"
+        name-tail="{{nameTail}}"
         project="[[projectTitle]]" project-selected="[[projectSelected]]"
         projects="[[projects]]" pullrequests="[[pullrequests]]"
         pull-request-selected="[[pullRequestSelected]]"
@@ -121,15 +121,17 @@
           }
         },
         activeProject: Object,
-        getPRState: {
+        prState: {
           type: String,
           value: 'open'
         }
       },
       observers: [
-        'chooseProject(projectTitle.*)',
-        '_changePulls(getPRState)'
+        'chooseProject(projectTitle.*)'
       ],
+      listeners: {
+        'getPRState': '_changePulls',
+      },
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
         var name = projectTitle.value.name;
@@ -162,7 +164,13 @@
       _hideProjectList: function() {
        this.showProjectsList = false;
      },
-     _changePulls: function() {
+     _changePulls: function(e) {
+       if(this.prState === 'closed'){
+         this.prState = 'open';
+       }
+       else{
+         this.prState = 'closed';
+       }
        this.$.ajaxPullRequest.generateRequest();
      }
     });
