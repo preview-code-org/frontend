@@ -1,4 +1,32 @@
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="pull-request-space-card.html">
 
 <dom-module id="pull-request-space">
   <template>
@@ -9,27 +37,19 @@
       [hidden] {
         display: none !important;
       }
-      paper-card {
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
       #container {
         border: black 1px solid;
         width: 1000px;
-        height: 400px;
+        max-width: 100%;
+        min-height: 200px;
+        max-height: 400px;
+        position: absolute;
       }
       canvas {
         position: absolute;
       }
     </style>
-    <canvas id="canvas" width="1000" height="400"></canvas>
+    <canvas id="canvas"></canvas>
     <div id="container">
     </div>
   </template>
@@ -46,13 +66,15 @@
         return this.$.container.getBoundingClientRect();
       },
       listeners: {
-        'track': '_handlCardTracking'
+        'card-tracking': '_handleCardTracking',
+        'linked-from-or-to': '_maybeCreateLink'
       },
       attached: function() {
         this._blocks = [];
-        for (var i=0;i<10;i++) {
-          var elem = document.createElement('paper-card');
+        for (var i=0;i<5;i++) {
+          var elem = document.createElement('pull-request-space-card');
           elem.innerHTML = 'value';
+          elem.blockId = i;
           elem.style.right = (i * 100) + 'px';
           this.$.container.appendChild(elem);
           this._blocks.push(elem);
@@ -64,6 +86,35 @@
 
         setInterval(this._recalcCanvas.bind(this), 1000 / 60);
       },
+      _maybeCreateLink: (function() {
+        // New function to make sure we can remove the listener later to
+        // preserve memory
+        function updateMousePosition(e) {
+          this._mouseX = e.clientX;
+          this._mouseY = e.clientY;
+          this._recalcCanvas(true);
+        }
+
+        return function(e) {
+          var card = e.detail;
+          if (this._previousCard) {
+            var exists = this._previousCard.connections.filter(function(c) {
+              return c.id === card.blockId;
+            });
+            if (!exists.length && this._previousCard.blockId !== card.blockId) {
+              this._previousCard.push('connections', {
+                id: card.blockId
+              });
+            }
+            delete this._previousCard;
+            window.removeEventListener('mousemove', updateMousePosition);
+            this._recalcCanvas(true);
+          } else {
+            window.addEventListener('mousemove', updateMousePosition.bind(this));
+            this._previousCard = card;
+          }
+        }
+      })(),
       _calculateAnchorPoints: function(rectangleLeft, rectangleRight, dx, dy, containerRect) {
         var points = {};
 
@@ -129,7 +180,11 @@
           };
         }
       },
-      _drawArrow: function(ctx, fromX, fromY, toX, toY) {
+      _drawArrow: function(ctx, coordinates) {
+        var fromX = coordinates.fromX,
+            fromY = coordinates.fromY,
+            toX   = coordinates.toX,
+            toY   = coordinates.toY;
         ctx.beginPath();
         ctx.moveTo(fromX, fromY);
         ctx.lineTo(toX, toY);
@@ -148,70 +203,79 @@
       // Recalc the canvas if we are currently dragging
       _recalcCanvas: function(forced) {
         if (this.dragging || forced) {
-          this.ctx.clearRect(0, 0, 1000, 400);
+          // Update the width and height in case the frame was not calculated
+          // yet on stamping, or the window was resized.
           var containerRect = this.containerRect;
+          this.canvas.width = containerRect.width;
+          this.canvas.height = containerRect.height;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
           for (var i=0, l=this._blocks.length;i<l;i++) {
-            var fromRect = this._blocks[i].getBoundingClientRect();
+            var fromBlock = this._blocks[i];
+            var fromRect = fromBlock.getBoundingClientRect();
 
-            for (var j=i + 1; j<l;j++) {
-              var toRect = this._blocks[j].getBoundingClientRect();
+            for (var j=0, c=fromBlock.connections.length; j<c;j++) {
+              var connection = fromBlock.connections[j];
+              var toRect = this._blocks[connection.id].getBoundingClientRect();
 
               var coordinates = this._calculateCoordinates(containerRect, fromRect, toRect);
 
-              this._drawArrow(this.ctx, coordinates.fromX, coordinates.fromY, coordinates.toX, coordinates.toY);
+              this._drawArrow(this.ctx, coordinates);
             }
+          }
+
+          // We are currently creating a new connection
+          if (this._previousCard) {
+            var fromRect = this._previousCard.getBoundingClientRect();
+            var coordinates = this._calculateCoordinates(containerRect, fromRect, {
+              top: this._mouseY,
+              bottom: this._mouseY,
+              left: this._mouseX,
+              right: this._mouseX,
+              width: 1,
+              height: 1
+            });
+            this._drawArrow(this.ctx, coordinates);
           }
         }
       },
-      _handlCardTracking: (function() {
+      _handleCardTracking: (function() {
         var lastElem;
-        var rect;
         var PADDING = 5;
 
         return function(e) {
-          switch (e.detail.state) {
+          var event = e.detail.event;
+          switch (event.state) {
             case 'start':
-              var elem = e.detail.hover();
-              if (elem.nodeName.toLowerCase() !== 'paper-card') {
-                return;
-              }
+              var elem = e.detail.card;
               elem._originalPosition = elem.getBoundingClientRect();
               elem.style.zIndex = 5;
               lastElem = elem;
 
               this.dragging = true;
-              rect = this.containerRect;
               break;
             case 'track':
-              // We were dragging a non paper-card element
-              if (!lastElem) {
-                return;
-              }
+              var rect = this.containerRect;
 
               // Position the element to the new y position based on its original
               // position, the delta from the original position.
               //
               // The position is bounded to the container rectangle with a padding
-              var newTop = lastElem._originalPosition.top + e.detail.dy;
+              var newTop = lastElem._originalPosition.top + event.dy;
               var bottomBoundary = rect.bottom - lastElem._originalPosition.height - PADDING;
               var topBoundedToBottom = Math.min(newTop, bottomBoundary);
-              var topBoundedtoYAndBottom = Math.max(rect.top + PADDING, topBoundedToBottom);
+              var topBoundedtoYAndBottom = Math.max(rect.top + PADDING, topBoundedToBottom) - rect.top;
               lastElem.style.top = topBoundedtoYAndBottom + 'px';
 
               // Same for the x position as pointed out above
-              var newLeft = lastElem._originalPosition.left + e.detail.dx;
+              var newLeft = lastElem._originalPosition.left + event.dx;
               var rightBoundary = rect.right - lastElem._originalPosition.width - PADDING;
               var leftBoundedtoRight = Math.min(newLeft, rightBoundary);
-              var leftBoundedToLeftAndRight = Math.max(rect.left + PADDING, leftBoundedtoRight);
+              var leftBoundedToLeftAndRight = Math.max(rect.left + PADDING, leftBoundedtoRight) - rect.left;
               lastElem.style.left = leftBoundedToLeftAndRight + 'px';
 
               break;
             case 'end':
-              // We were dragging a non paper-card element
-              if (!lastElem) {
-                return;
-              }
               lastElem.style.zIndex = 0;
               lastElem = undefined;
               this.dragging = false;
