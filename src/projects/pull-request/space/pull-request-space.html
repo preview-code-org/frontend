@@ -239,6 +239,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
       },
+      _updateElemTrackingPosition: function(lastElem) {
+        var rect = this.containerRect;
+
+        // Position the element to the new y position based on its original
+        // position, the delta from the original position.
+        //
+        // The position is bounded to the container rectangle with a padding
+        var newTop = lastElem._originalPosition.top + event.dy;
+        var bottomBoundary = rect.bottom - lastElem._originalPosition.height - PADDING;
+        var topBoundedToBottom = Math.min(newTop, bottomBoundary);
+        var topBoundedtoYAndBottom = Math.max(rect.top + PADDING, topBoundedToBottom) - rect.top;
+        lastElem.style.top = topBoundedtoYAndBottom + 'px';
+
+        // Same for the x position as pointed out above
+        var newLeft = lastElem._originalPosition.left + event.dx;
+        var rightBoundary = rect.right - lastElem._originalPosition.width - PADDING;
+        var leftBoundedtoRight = Math.min(newLeft, rightBoundary);
+        var leftBoundedToLeftAndRight = Math.max(rect.left + PADDING, leftBoundedtoRight) - rect.left;
+        lastElem.style.left = leftBoundedToLeftAndRight + 'px';
+      },
       _handleCardTracking: (function() {
         var lastElem;
         var PADDING = 5;
@@ -249,36 +269,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             case 'start':
               var elem = e.detail.card;
               elem._originalPosition = elem.getBoundingClientRect();
+
               elem.style.zIndex = 5;
               lastElem = elem;
-
               this.dragging = true;
+
               break;
+
             case 'track':
-              var rect = this.containerRect;
-
-              // Position the element to the new y position based on its original
-              // position, the delta from the original position.
-              //
-              // The position is bounded to the container rectangle with a padding
-              var newTop = lastElem._originalPosition.top + event.dy;
-              var bottomBoundary = rect.bottom - lastElem._originalPosition.height - PADDING;
-              var topBoundedToBottom = Math.min(newTop, bottomBoundary);
-              var topBoundedtoYAndBottom = Math.max(rect.top + PADDING, topBoundedToBottom) - rect.top;
-              lastElem.style.top = topBoundedtoYAndBottom + 'px';
-
-              // Same for the x position as pointed out above
-              var newLeft = lastElem._originalPosition.left + event.dx;
-              var rightBoundary = rect.right - lastElem._originalPosition.width - PADDING;
-              var leftBoundedtoRight = Math.min(newLeft, rightBoundary);
-              var leftBoundedToLeftAndRight = Math.max(rect.left + PADDING, leftBoundedtoRight) - rect.left;
-              lastElem.style.left = leftBoundedToLeftAndRight + 'px';
-
+              this._updateElemTrackingPosition(lastElem);
               break;
+
             case 'end':
               lastElem.style.zIndex = 0;
               lastElem = undefined;
               this.dragging = false;
+
               break;
           }
         }
