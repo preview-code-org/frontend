@@ -91,7 +91,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
       .toggle-comments {
         background-color: var(--secondary-background-color);
-        padding: 0.5em;
+      }
+      .placeholder {
+        display: block;
+        border: dashed 3px #ccc;
+        color: #ccc;
+        padding: 1em;
+        text-align: center;
+      }
+      .hunk-diff {
+        border: solid red 4px;
+      }
+
+      pull-request-diff-highlight ~ .placeholder {
+        display: none;
       }
     </style>
 
@@ -111,10 +124,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           project="[[project]]"
         ></markdown-input>
       </header>
-      <sortable-js class="diffs" disabled="[[!editable]]">
+      <sortable-js id="diffs" class="diffs" disabled="[[!editable]]">
         <template is="dom-repeat" id="repeat" items="[[group.diff]]">
           <pull-request-diff-highlight class="diff" code="[[item.changes]]" lines-changed="[[item.linesChanged]]" file="[[item.file]]" file-url="[[item.fileUrl]]"></pull-request-diff-highlight>
         </template>
+        <div class="placeholder">
+          <h3>Drag some diffs here!</h3>
+        </div>
       </sortable-js>
 
     <p class="toggle-comments" hidden$="[[editable]]">
@@ -165,13 +181,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         project: Object
       },
       attached: function() {
-        if (!(this.editable && this.description)) {
+        if (!this.editable && !this.description) {
           this.hideDescription = true;
         }
         if (this.editable) {
           Sortable.create(this.$$('sortable-js'), {
-            group: 'group',
-            draggable: 'pull-request-diff-highlight'
+            group: 'diffs',
+            draggable: 'pull-request-diff-highlight',
+            ghostClass: 'hunk-ghost'
           });
           var self = this;
           this.$$('sortable-js').addEventListener('add', this._diffAdded.bind(self));
@@ -196,10 +213,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 linesChanged: changes.linesChanged
               }]
             });
-            // this.fire('upgraded', {
-            //   file: changes.file,
-            //   diffId: changes.diffId
-            // });
           }
         }
       },
