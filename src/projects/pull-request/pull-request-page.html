@@ -172,8 +172,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pull-request="[[selectedPull]]" project="[[project]]"></pull-request-general-information>
       <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
       <pull-request-diff data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
+          ordered-groups="{{orderedGroups}}"
           base-url="[[selectedPull.head.repo.html_url]]" sha="[[selectedPull.head.sha]]"></pull-request-diff>
-      <pull-request-space data-route="space"></pull-request-space>
+      <pull-request-space data-route="space" groups="[[orderedGroups]]"></pull-request-space>
 
       <span data-route="404">
         Oops you hit a 404!
