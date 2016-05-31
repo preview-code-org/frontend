@@ -101,7 +101,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     });
 
     test('shows title when collapsed', function() {
-      groupElem.title = 'someTitle';
+      var group = {
+        title: 'someTitle',
+        diff: [],
+        comments: []
+      }
+      groupElem.group = group;
       groupElem.collapsed = true;
       var title = get('h2');
       assert.equal(title.innerHTML, 'someTitle');

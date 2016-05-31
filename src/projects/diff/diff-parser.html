@@ -1,0 +1,121 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script>
+  Polymer({
+    is: 'diff-parser',
+    properties: {
+      diff: String,
+      baseUrl: String,
+      sha: String,
+      additions: {
+        type: Number,
+        value: 0,
+        notify: true
+      },
+      deletions: {
+        type: Number,
+        value: 0,
+        notify: true
+      },
+      hunks: {
+        type: Array,
+        computed: '_parseDiffToHunks(diff)',
+        notify: true
+      }
+    },
+    incrementLineModificationCounter: function(lines) {
+      var deletions = lines.match(/\n\-/g);
+      if (deletions) {
+        this.deletions += deletions.length;
+      }
+      var additions = lines.match(/\n\+/g);
+      if (additions) {
+        this.additions += additions.length;
+      }
+    },
+    _parseDiffToHunks: (function() {
+      var ANYTHING = '(?:.|\n)+?';
+      // Diff hunks are separated by "diff --git" code blocks.
+      // We therefore match up to the point that we encounter a new
+      // "diff --git" by using a positive lookahead (?=).
+      //
+      // "." does not match multi-lines, so we have to also match on "\n"
+      // Lastly the last "diff --git" block does not have a subsequent
+      // block, so we have to match on "$".
+      //
+      // [0] = full match
+      // [1] = from file name in format "--- a/FILE_NAME"
+      // [2] = to file name in format "+++ a/FILE_NAME"
+      // [3] = full changes as hunks
+      var DIFF_DELIMETER = 'diff --git';
+      var DIFF_HEADER = DIFF_DELIMETER + ANYTHING;
+      var DIFF_FILES = '\\-\\-\\- (a\\/(?:.+)|\\/dev\\/null)\n' +
+                       '\\+\\+\\+ (b\\/(?:.+)|\\/dev\\/null)\n'
+      var DIFF_EXPRESSION = '(?:' + DIFF_HEADER + DIFF_FILES + '(' + ANYTHING + ')(?:(?=\n' + DIFF_DELIMETER + ')|$))'
+      var DIFF_REGEX = new RegExp(DIFF_EXPRESSION, 'g')
+
+      // Changes in files are separated by "@@  line numbers @@"
+      // The same strategy as above is used, by using a positive lookahead
+      // for the same pattern.
+      //
+      // [0] = full match
+      // [1] = GROUP_DELIMETER
+      // [2] - Start line number before the change is applied
+      // [3] - Amount of lines before the change is applied
+      // [4] - Start line number after the change is applied
+      // [5] - Amount of lines after the change is applied
+      // [6] = all changes matched by ANTYHING
+      var DIGITS = '(\\d+)(?:,(\\d+))?';
+      var GROUP_DELIMETER = '@@ \\-' + DIGITS + ' \\+' + DIGITS + ' @@';
+      var GROUP_EXPRESSION = '(' + GROUP_DELIMETER  + ').*(' + ANYTHING + ')' + '(?:(?=\n' + GROUP_DELIMETER + ')|$)';
+      var GROUP_REGEX = new RegExp(GROUP_EXPRESSION, 'g');
+
+      function getFileHeader(file, fromFile, toFile) {
+        if (fromFile !== toFile) {
+          // Newly created file
+          if (file[1] === '/dev/null') {
+            return toFile;
+            // File was renamed
+          } else if (file[2] !== '/dev/null') {
+            return 'from ' + fromFile + ' to ' + toFile;
+          }
+        }
+        // Removed or updated file
+        return fromFile;
+      }
+
+      return function(diff) {
+        if (!diff || diff == '') {
+          return [];
+        }
+        var hunks = [];
+        var file, group;
+        while ((file = DIFF_REGEX.exec(diff)) !== null) {
+          while ((group = GROUP_REGEX.exec(file[3])) !== null) {
+            this.incrementLineModificationCounter(group[6]);
+
+            var fileHeader = getFileHeader(file, file[1].substring(2), file[2].substring(2));
+            var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileHeader;
+
+            // Default range fields to 1 when they are not present in the hunk.
+            var linesChanged = {
+              startLineBefore: parseInt(group[2]),
+              rangeBefore: parseInt(group[3] || 1),
+              startLineAfter: parseInt(group[4]),
+              rangeAfter: parseInt(group[5] || 1)
+            };
+
+            hunks.push({
+              file: fileHeader,
+              fileUrl: fileUrl,
+              diffId: group[1],
+              changes: group[6],
+              linesChanged: linesChanged
+            });
+          }
+        }
+        return hunks;
+      };
+    })()
+  });
+</script>

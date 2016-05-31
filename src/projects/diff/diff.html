@@ -26,10 +26,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="group.html">
+<link rel="import" href="diff-parser.html">
+<link rel="import" href="hunk-sorter.html">
+<link rel="import" href="input-dialog.html">
 
 <dom-module id="pull-request-diff">
   <template>
@@ -54,10 +56,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         --paper-toolbar-background: var(--primary-background-color);
       }
-      [icon='add'] {
-        border-radius: 20px;
-        background-color: var(--primary-action-green);
-      }
       .additions {
         color: var(--addition-color);
       }
@@ -65,6 +63,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         color: var(--deletion-color);
       }
     </style>
+    <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" additions="{{additions}}" deletions="{{deletions}}" hunks="{{hunks}}"></diff-parser>
+    <hunk-sorter raw-hunks="[[hunks]]" groups="{{orderedGroups}}"></hunk-sorter>
 
     <paper-toolbar justify="around">
       <div class="title">
@@ -72,25 +72,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <span class="deletions">- [[deletions]]</span>
       </div>
       <div class="actions">
-        <paper-icon-button
-            hidden$="[[!editable]]"
-            class="add-group-button" icon="add" on-tap="_addGroup"
-            title="Add a new group to this pull request"></paper-icon-button>
+        <input-dialog
+          action-title="Add a new group to this pull request"
+          label="Enter a title for this group"
+          on-confirm="_addGroup"
+        ></input-dialog>
       </div>
     </paper-toolbar>
 
-    <div class="diff-list">
+    <sortable-js class="diff-group" disabled="[[!editable]]">
       <template is="dom-repeat" items="[[orderedGroups]]" as="group">
         <pull-request-group
           class="draggable"
           group="[[group]]"
           on-empty="_removeGroup"
-          on-upgraded="_removeDummyGroup"
           editable="[[editable]]"
           ></pull-request-group>
       </template>
-    </div>
-
+    </sortable-js>
   </template>
   <script>
     Polymer({
@@ -102,19 +101,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         baseUrl: String,
         sha: String,
-        additions: {
-          type: Number,
-          value: 0
-        },
-        deletions: {
-          type: Number,
-          value: 0
-        },
-        diff: {
-          type: String,
-          observer: '_parseDiffToGroups'
-        },
-        groups: {
+        additions: Number,
+        deletions: Number,
+        diff: String,
+        hunks: {
           type: Array,
           value: function() {
             return [];
@@ -122,183 +112,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         orderedGroups: {
           type: Array,
-          computed: '_orderGroups(groups.*, ordering)'
-        },
-        ordering: {
-          type: Array,
-          value: function() {
-            return [];
-          },
-          observer: '_updateGroups'
+          observer: '_groupsOrdered'
         }
       },
-      _updateGroups: function() {
-        this.groups.forEach(function(e) {
-          delete e._index;
-        });
-        // this.notifyPath('groups', this.groups);
-      },
-      _addGroup: (function() {
-        var newGroup = {
-          file: 'New file',
-          diffId: 'new-group'
-        };
-
-        return function() {
-          if (!this.ordering.length || this.ordering[0][0] !== newGroup) {
-            this.ordering.unshift([
-              newGroup
-            ]);
+      _groupsOrdered: function(orderedGroups) {
+        if (orderedGroups && orderedGroups[0].diff.length > 0) {
+          console.log('ordering done: ', orderedGroups);
+          if (this.editable) {
+            Sortable.create(this.$$('sortable-js'), {
+              draggable: 'pull-request-group'
+            });
+            // var self = this;
+            this.$$('sortable-js').addEventListener('add', function() {
+              console.log('add');
+            });
+            // this.$$('sortable-js').addEventListener('remove', this._diffRemoved.bind(self));
           }
-          this.unshift('groups', {
-            file: 'New file',
-            fileUrl: '',
-            diffId: 'new-group',
-            changes: '',
-            linesChanged: {startLineBefore: 0, rangeBefore: 0,
-                           startLineAfter: 0,  rangeAfter: 0}
-          });
-        }
-      })(),
-      _removeDummyGroup: function(e) {
-        this.ordering[0].splice(0, 1, e.detail);
-        this.notifyPath('groups', this.groups);
-      },
-      _removeGroup: function() {
-        // this.splice('groups', e.model.group.originalIndex, 1);
-      },
-      _orderGroups: (function() {
-        function findGroup(groups, properties) {
-          for (var i=0, l=groups.length;i<l;i++) {
-            if (groups[i].file === properties.file
-                && groups[i].diffId === properties.diffId) {
-              groups[i].__index = i;
-              return groups[i];
-            }
-          }
-        }
-
-        return function(groupsSplices, ordering) {
-          var groups = groupsSplices.base;
-          var orderedGroups = [];
-          var i, l;
-          for (i=0, l=ordering.length; i<l; i++) {
-            for (var j=0, d=ordering[i].length;j<d;j++) {
-              var c = findGroup(groups, ordering[i][j]);
-              if (c) {
-                orderedGroups[i] = orderedGroups[i] || {
-                  diff: [],
-                  comments: []
-                };
-                orderedGroups[i].diff.push(c);
-              }
-            }
-          }
-          var unSortedGroup = orderedGroups[orderedGroups.length] = {
-            diff: [],
-            comments: []
-          };
-          for (i=0, l=groups.length;i<l;i++) {
-            if (groups[i].__index === undefined) {
-              unSortedGroup.diff.push(groups[i]);
-            }
-          }
-          return orderedGroups;
-        }
-      })(),
-      incrementLineModificationCounter: function(lines) {
-        var deletions = lines.match(/\n\-/g);
-        if (deletions) {
-          this.deletions += deletions.length;
-        }
-        var additions = lines.match(/\n\+/g);
-        if (additions) {
-          this.additions += additions.length;
         }
       },
-      _parseDiffToGroups: (function() {
-        var ANYTHING = '(?:.|\n)+?';
-        // Diff groups are separated by "diff --git" code blocks.
-        // We therefore match up to the point that we encounter a new
-        // "diff --git" by using a positive lookahead (?=).
-        //
-        // "." does not match multi-lines, so we have to also match on "\n"
-        // Lastly the last "diff --git" block does not have a subsequent
-        // block, so we have to match on "$".
-        //
-        // [0] = full match
-        // [1] = from file name in format "--- a/FILE_NAME"
-        // [2] = to file name in format "+++ a/FILE_NAME"
-        // [3] = full changes as groups
-        var DIFF_DELIMETER = 'diff --git';
-        var DIFF_HEADER = DIFF_DELIMETER + ANYTHING;
-        var DIFF_FILES = '\\-\\-\\- (a\\/(?:.+)|\\/dev\\/null)\n' +
-                         '\\+\\+\\+ (b\\/(?:.+)|\\/dev\\/null)\n'
-        var DIFF_EXPRESSION = '(?:' + DIFF_HEADER + DIFF_FILES + '(' + ANYTHING + ')(?:(?=\n' + DIFF_DELIMETER + ')|$))'
-        var DIFF_REGEX = new RegExp(DIFF_EXPRESSION, 'g')
-
-        // Changes in files are separated by "@@  line numbers @@"
-        // The same strategy as above is used, by using a positive lookahead
-        // for the same pattern.
-        //
-        // [0] = full match
-        // [1] = GROUP_DELIMETER
-        // [2] - Start line number before the change is applied
-        // [3] - Amount of lines before the change is applied
-        // [4] - Start line number after the change is applied
-        // [5] - Amount of lines after the change is applied
-        // [6] = all changes matched by ANTYHING
-        var DIGITS = '(\\d+)(?:,(\\d+))?';
-        var GROUP_DELIMETER = '@@ \\-' + DIGITS + ' \\+' + DIGITS + ' @@';
-        var GROUP_EXPRESSION = '(' + GROUP_DELIMETER  + ').*(' + ANYTHING + ')' + '(?:(?=\n' + GROUP_DELIMETER + ')|$)';
-        var GROUP_REGEX = new RegExp(GROUP_EXPRESSION, 'g');
-
-        function getFileHeader(file, fromFile, toFile) {
-          if (fromFile !== toFile) {
-            // Newly created file
-            if (file[1] === '/dev/null') {
-              return toFile;
-              // File was renamed
-            } else if (file[2] !== '/dev/null') {
-              return 'from ' + fromFile + ' to ' + toFile;
-            }
-          }
-          // Removed or updated file
-          return fromFile;
-        }
-
-        return function(diff) {
-          var groups = [];
-          this.deletions = 0;
-          this.additions = 0;
-          var file, group;
-          while ((file = DIFF_REGEX.exec(diff)) !== null) {
-            while ((group = GROUP_REGEX.exec(file[3])) !== null) {
-              this.incrementLineModificationCounter(group[6]);
-
-              var fileHeader = getFileHeader(file, file[1].substring(2), file[2].substring(2));
-              var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileHeader;
-
-              // Default range fields to 1 when they are not present in the hunk.
-              var linesChanged = {
-                startLineBefore: parseInt(group[2]),
-                rangeBefore: parseInt(group[3] || 1),
-                startLineAfter: parseInt(group[4]),
-                rangeAfter: parseInt(group[5] || 1)
-              };
-
-              groups.push({
-                file: fileHeader,
-                fileUrl: fileUrl,
-                diffId: group[1],
-                changes: group[6],
-                linesChanged: linesChanged
-              });
-            }
-          }
-          this.set('groups', groups);
-        };
-      })()
+      _addGroup: function(e) {
+        console.log('caught confirm event');
+        this.$$('hunk-sorter').addGroup(e.detail);
+      }
     });
   </script>
 </dom-module>
