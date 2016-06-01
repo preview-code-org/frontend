@@ -69,6 +69,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         assert.deepEqual(projectPage.projectTitle, projectPage.activeProject);
       });
 
+      test('hide project list when pull request is selected', function() {
+        projectPage.subPageActive = true;
+        assert.isFalse(projectPage.showProjectsList);
+      });
+
+      test('show project list when no pull request is selected', function() {
+        projectPage.subPageActive = false;
+        assert.isTrue(projectPage.showProjectsList);
+      });
+
+      test('show pull request list when project is selected', function() {
+        projectPage.projectSelected = true;
+        assert.isTrue(projectPage.showPullList);
+      });
+
+      test('hide pull request list when project is not selected', function() {
+        projectPage.projectSelected = false;
+        assert.isFalse(projectPage.showPullList);
+      });
+
       test('shows no project selected page when no project selected', function() {
         projectPage.projectSelected = false;
         assert.equal('no-selected', Polymer.dom(projectPage.root).querySelector('iron-pages').selected);
