@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <paper-card>
-      <div class="card-content">Value!</div>
+      <div class="card-content">[[text]]</div>
       <div class="card-actions">
         <paper-button on-tap="_linkFromOrTo">Link</paper-button>
       </div>
@@ -64,6 +64,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'pull-request-space-card',
       properties: {
         blockId: Number,
+        text: String,
         connections: {
           type: Array,
           value: function() {

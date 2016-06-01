@@ -56,6 +56,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <script>
     Polymer({
       is: 'pull-request-space',
+      properties: {
+        groups: {
+          type: Array,
+          observer: '_createBlocks'
+        },
+        _blocks: {
+          type: Array,
+          valu: function() {
+            return [];
+          }
+        }
+      },
       get canvas() {
         return this.$.canvas;
       },
@@ -70,21 +82,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'linked-from-or-to': '_maybeCreateLink'
       },
       attached: function() {
-        this._blocks = [];
-        for (var i=0;i<5;i++) {
-          var elem = document.createElement('pull-request-space-card');
-          elem.innerHTML = 'value';
-          elem.blockId = i;
-          elem.style.right = (i * 100) + 'px';
-          this.$.container.appendChild(elem);
-          this._blocks.push(elem);
-        }
-
         window.addEventListener('resize', function() {
           this._recalcCanvas(true);
         }.bind(this));
 
         setInterval(this._recalcCanvas.bind(this), 1000 / 60);
+      },
+      _createBlocks: function(groups) {
+        this._blocks = [];
+        var container = this.$.container;
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        for (var i=0, l=groups.length;i<l;i++) {
+          var elem = document.createElement('pull-request-space-card');
+          elem.text = groups[i].title;
+          elem.blockId = i;
+          elem.style.right = (i * 100) + 'px';
+          container.appendChild(elem);
+          this._blocks.push(elem);
+        }
       },
       _maybeCreateLink: (function() {
         // New function to make sure we can remove the listener later to
@@ -239,7 +256,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
       },
-      _updateElemTrackingPosition: function(lastElem) {
+      _updateElemTrackingPosition: function(lastElem, event, padding) {
         var rect = this.containerRect;
 
         // Position the element to the new y position based on its original
@@ -247,16 +264,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         //
         // The position is bounded to the container rectangle with a padding
         var newTop = lastElem._originalPosition.top + event.dy;
-        var bottomBoundary = rect.bottom - lastElem._originalPosition.height - PADDING;
+        var bottomBoundary = rect.bottom - lastElem._originalPosition.height - padding;
         var topBoundedToBottom = Math.min(newTop, bottomBoundary);
-        var topBoundedtoYAndBottom = Math.max(rect.top + PADDING, topBoundedToBottom) - rect.top;
+        var topBoundedtoYAndBottom = Math.max(rect.top + padding, topBoundedToBottom) - rect.top;
         lastElem.style.top = topBoundedtoYAndBottom + 'px';
 
         // Same for the x position as pointed out above
         var newLeft = lastElem._originalPosition.left + event.dx;
-        var rightBoundary = rect.right - lastElem._originalPosition.width - PADDING;
+        var rightBoundary = rect.right - lastElem._originalPosition.width - padding;
         var leftBoundedtoRight = Math.min(newLeft, rightBoundary);
-        var leftBoundedToLeftAndRight = Math.max(rect.left + PADDING, leftBoundedtoRight) - rect.left;
+        var leftBoundedToLeftAndRight = Math.max(rect.left + padding, leftBoundedtoRight) - rect.left;
         lastElem.style.left = leftBoundedToLeftAndRight + 'px';
       },
       _handleCardTracking: (function() {
@@ -277,7 +294,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               break;
 
             case 'track':
-              this._updateElemTrackingPosition(lastElem);
+              this._updateElemTrackingPosition(lastElem, event, PADDING);
               break;
 
             case 'end':
