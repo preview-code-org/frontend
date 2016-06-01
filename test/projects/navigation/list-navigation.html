@@ -57,30 +57,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         listNavigation.projects = [{name: 'hello', owner: 'world'}, {name: 'hi', owner: 'bye'}];
       });
 
-      test('display the projectlist when no project is selected', function() {
-        listNavigation.projectSelected = false;
-        assert.isTrue(listNavigation.showProjectsList);
-      });
-
-      test('show project list when there is a project', function() {
-        listNavigation.projectSelected = false;
-        listNavigation.project = 'project';
-        assert.isTrue(listNavigation.showProjectsList);
-      });
-
-      test('shows both lists when a project is selected', function() {
-        listNavigation.projectSelected = true;
-        assert.isTrue(listNavigation.showProjectsList);
-        assert.isTrue(listNavigation.showPullList);
-      });
-
-      test('shows only pulllist when a pull request is selected', function() {
-        listNavigation.projectSelected = true;
-        listNavigation.pullRequestSelected = true;
-        assert.isFalse(listNavigation.showProjectsList);
-        assert.isTrue(listNavigation.showPullList);
-      });
-
       test('shows no list when both are deselected', function() {
         listNavigation.showProjectsList = false;
         listNavigation.showPullList = false;
