@@ -146,7 +146,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       properties: {
         route: Object,
         project: Object,
-        projectSelected: Boolean,
         nameTail: Object,
         showProjectsList: {
           type: Boolean,
@@ -158,7 +157,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           notify: true
         },
         projects: Array,
-        pullRequestSelected: Boolean,
         selectedPull: Object,
         getFields: {
           type: Function,
@@ -176,9 +174,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pullrequests: Array
       },
       observers: [
-        '_resetSearch(project)',
-        '_resetListsOnProjectChange(projectSelected)',
-        '_resetListsOnPullChange(pullRequestSelected)'
+        '_resetSearch(project)'
       ],
       _calcListClass: function(showProjectsList, showPullList) {
         if (!showProjectsList && !showPullList) {
@@ -200,13 +196,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.set('route.path', e.model.project.owner + '/' + e.model.project.name + '/activity');
           this.fire('opened-project');
         }
-      },
-      _resetListsOnProjectChange: function(newValue) {
-        this.showProjectsList = true;
-        this.showPullList = newValue;
-      },
-      _resetListsOnPullChange: function(newValue) {
-        this.showProjectsList = this.showProjectsList && !newValue;
       }
     });
   </script>
