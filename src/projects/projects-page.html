@@ -68,6 +68,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
+    <carbon-route route="[[nameTail]]" pattern="/:subpage" active="{{subPageActive}}"></carbon-route>
     <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{prTail}}" active="{{pullRequestSelected}}"></carbon-route>
 
     <github-authenticated-ajax
@@ -163,7 +164,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       observers: [
         'chooseProject(projectTitle.*)',
         '_showPullRequest(newPullrequest)',
-        '_hideProjectList(pullRequestSelected)',
+        '_hideProjectList(subPageActive)',
         '_showPullsList(projectSelected)'
       ],
       listeners: {
