@@ -68,7 +68,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <carbon-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></carbon-route>
-    <carbon-route route="[[nameTail]]" pattern="/:subpage" active="{{subPageActive}}"></carbon-route>
+    <carbon-route route="[[nameTail]]" pattern="/:subpage" data="{{subPage}}"></carbon-route>
     <carbon-route route="{{nameTail}}" pattern="/pulls/:pr" data="{{pr}}" tail="{{prTail}}" active="{{pullRequestSelected}}"></carbon-route>
 
     <github-authenticated-ajax
@@ -84,8 +84,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       last-response="{{newPullrequest}}"></github-authenticated-ajax>
 
     <list-navigation
-        route="[[route]]" show-projects-list="[[showProjectsList]]"
-        show-pull-list="[[showPullList]]" selected-pull="[[selectedPull]]"
+        route="[[route]]" show-projects-list="{{showProjectsList}}"
+        show-pull-list="{{showPullList}}" selected-pull="[[selectedPull]]"
         name-tail="{{nameTail}}" project="[[projectTitle]]"
         projects="[[projects]]" pullrequests="[[pullrequests]]"
         on-opened-project="_focusProject"></list-navigation>
@@ -94,7 +94,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         class="project"
         selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
         attr-for-selected="data-route"
-        on-tap="_hideProjectList">
+        on-tap="_tapHideProjectList">
       <no-project-selected data-route="no-selected"></no-project-selected>
       <project-overview-page data-route="overview" tabindex="0"
           project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
@@ -164,7 +164,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       observers: [
         'chooseProject(projectTitle.*)',
         '_showPullRequest(newPullrequest)',
-        '_hideProjectList(subPageActive)',
+        '_hideProjectList(pullRequestSelected, subPage)',
         '_showPullsList(projectSelected)'
       ],
       listeners: {
@@ -203,8 +203,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
         return 'pr';
       },
-      _hideProjectList: function(subPageActive) {
-        this.showProjectsList = !subPageActive;
+      _tapHideProjectList: function() {
+        this.showProjectsList = !this.projectSelected;
+      },
+      _hideProjectList: function(pullRequestSelected) {
+        this.showProjectsList = !pullRequestSelected;
       },
       _showPullsList: function(projectSelected) {
         this.showPullList = projectSelected;
