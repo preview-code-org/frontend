@@ -130,7 +130,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         linesChanged: Object
       },
       observers: [
-        '_observeLinesChanged(linesChanged, code)'
+        '_observeLinesChanged(linesChanged, code)',
+        '_resetCollapsed(code)'
       ],
       _observeLinesChanged: function(linesChanged, code) {
         var lines = code.split('\n');
@@ -175,6 +176,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
         var event = this.fire('syntax-highlight', {code: code, lang: 'diff'});
         return event.detail.code || code;
+      },
+      _resetCollapsed(code) {
+        this.collapsed = false;
       }
     });
   </script>

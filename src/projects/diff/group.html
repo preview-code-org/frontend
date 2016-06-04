@@ -165,7 +165,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: ''
         },
         collapseComments: {
-          type: Boolean,
+          type: Object,
           value: true
         },
         hideComments: {
@@ -180,6 +180,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         project: Object
       },
+      observers: ['_resetCollapsed(group)'],
       attached: function() {
         if (!this.editable && !this.description) {
           this.hideDescription = true;
@@ -229,7 +230,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _shouldHideComments: function(collapsed, editable) {
         return collapsed || editable;
+      },
+      _resetCollapsed: function() {
+        this.collapsed = false;
+        this.collapseComments = true;
       }
+
     });
   </script>
 </dom-module>
