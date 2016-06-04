@@ -34,6 +34,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <template>
     <style is="custom-style" include="prism-styles"></style>
     <style>
+      [hidden] {
+        display: none !important;
+      }
       :host {
         display: block;
         margin: 1em 0;
@@ -100,7 +103,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <a href$="[[fileUrl]]" target="_blank">Full file</a>
       <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
     </header>
-    <div class="content">
+    <div class="content" hidden$="[[collapsed]]">
       <div class="lines">
         <div id="beforeColumn"></div>
         <div id="afterColumn"></div>
@@ -119,7 +122,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           observer: '_render'
         },
         fileUrl: String,
-        collapsed: Boolean,
+        collapsed: {
+          type: Boolean,
+          value: false
+        },
         file: String,
         linesChanged: Object
       },
