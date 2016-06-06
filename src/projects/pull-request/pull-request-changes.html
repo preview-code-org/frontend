@@ -1,0 +1,110 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../diff/diff.html">
+<link rel="import" href="space/pull-request-space.html">
+
+<dom-module id="pull-request-changes">
+  <template>
+    <style>
+      :host {
+        display: block;
+        will-change: left;
+        left: 0;
+      }
+      :host([show-space]) {
+        width: calc(100vw - 100px);
+        left: 80px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .container {
+        display: flex;
+      }
+      pull-request-space, pull-request-diff {
+        flex: 1;
+        max-width: 100%;
+      }
+      :host([show-space]) pull-request-space,
+      :host([show-space]) pull-request-diff {
+        width: 50%;
+        flex: none;
+      }
+    </style>
+    <header>
+      <paper-button raised on-tap="_showView" hidden$="[[showSpace]]">Show 2D view</paper-button>
+      <paper-button raised on-tap="_hideView" hidden$="[[!showSpace]]">Hide 2D view</paper-button>
+    </header>
+    <div class="container">
+      <pull-request-space id="space" data-route="space"
+          groups="[[orderedGroups]]" hidden$="[[!showSpace]]"></pull-request-space>
+      <pull-request-diff id="diff" data-route="diff" diff="[[diff]]"
+          ordering="[[ordering]]" ordered-groups="{{orderedGroups}}"
+          base-url="[[baseUrl]]" sha="[[sha]]"></pull-request-diff>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-changes',
+      properties: {
+        diff: String,
+        ordering: Array,
+        baseUrl: String,
+        sha: String,
+        orderedGroups: Array,
+        showSpace: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        }
+      },
+      observers: [
+        '_hideView(baseUrl)',
+        '_resizeSpace(showSpace)'
+      ],
+      listeners: {
+        'jump-to-group': 'jumpToGroup'
+      },
+      _showView: function() {
+        this.showSpace = true;
+        this.fire('force-hide-list');
+      },
+      _hideView: function() {
+        this.showSpace = false;
+      },
+      _resizeSpace: function() {
+        this.$.space.updateAfterResize();
+      },
+      jumpToGroup: function(e) {
+        this.$.diff.jumpToGroup(e.detail.name);
+      }
+    });
+  </script>
+</dom-module>

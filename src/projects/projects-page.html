@@ -172,7 +172,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         '_showPullsList(projectSelected)'
       ],
       listeners: {
-        'PRStateFilter-updated': '_changePRStateFilter'
+        'PRStateFilter-updated': '_changePRStateFilter',
+        'force-hide-list': '_hideBothLists'
       },
       chooseProject: function(projectTitle) {
         var owner = projectTitle.value.owner;
@@ -215,6 +216,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _showPullsList: function(projectSelected) {
         this.showPullList = projectSelected;
+      },
+      _hideBothLists: function() {
+        this.showProjectsList = false;
+        this.showPullList = false;
       },
       _changePRStateFilter: function(e) {
         this.prStateFilter = e.detail;

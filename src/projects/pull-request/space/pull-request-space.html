@@ -39,18 +39,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
       #container {
         border: black 1px solid;
-        width: 1000px;
-        max-width: 100%;
-        min-height: 200px;
-        max-height: 400px;
+        height: 400px;
         position: absolute;
       }
       canvas {
         position: absolute;
       }
     </style>
-    <canvas id="canvas"></canvas>
-    <div id="container">
+    <div>
+      <canvas id="canvas"></canvas>
+
+      <div id="container">
+      </div>
     </div>
   </template>
   <script>
@@ -66,6 +66,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           valu: function() {
             return [];
           }
+        },
+        _padding: {
+          type: Number,
+          value: 5
         }
       },
       get canvas() {
@@ -82,11 +86,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'linked-from-or-to': '_maybeCreateLink'
       },
       attached: function() {
-        window.addEventListener('resize', function() {
-          this._recalcCanvas(true);
+        this.updateAfterResize();
+        this._updateMousePosition = this._updateMousePosition.bind(this);
+        this.updateAfterResize = this.updateAfterResize.bind(this);
+        this._recalcCanvas = this._recalcCanvas.bind(this);
+        this._maybeCancelLinking = this._maybeCancelLinking.bind(this);
+
+        window.addEventListener('resize', this.updateAfterResize);
+
+        setInterval(this._recalcCanvas, 1000 / 60);
+      },
+      updateAfterResize: function() {
+        if (!this.isAttached) {
+          return;
+        }
+        this.$.container.style.width = Math.min(800, this.parentNode.getBoundingClientRect().width / 2 - 100) + 'px';
+
+        this._blocks.forEach(function(block) {
+          block._originalPosition = block.getBoundingClientRect();
+          this._updateElemTrackingPosition(block, 0, 0, this._padding);
         }.bind(this));
 
-        setInterval(this._recalcCanvas.bind(this), 1000 / 60);
+        this._recalcCanvas(true);
       },
       _createBlocks: function(groups) {
         this._blocks = [];
@@ -103,35 +124,46 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this._blocks.push(elem);
         }
       },
-      _maybeCreateLink: (function() {
-        // New function to make sure we can remove the listener later to
-        // preserve memory
-        function updateMousePosition(e) {
-          this._mouseX = e.clientX;
-          this._mouseY = e.clientY;
+      // New functions to make sure we can remove the listener later to
+      // preserve memory
+      _updateMousePosition: function updateMousePosition(e) {
+        this._mouseX = e.clientX;
+        this._mouseY = e.clientY;
+        this._recalcCanvas(true);
+      },
+      _maybeCancelLinking: function(e) {
+        // Escape key
+        if (e.keyCode === 27) {
+          delete this._previousCard;
           this._recalcCanvas(true);
         }
-
-        return function(e) {
-          var card = e.detail;
-          if (this._previousCard) {
-            var exists = this._previousCard.connections.filter(function(c) {
-              return c.id === card.blockId;
-            });
-            if (!exists.length && this._previousCard.blockId !== card.blockId) {
-              this._previousCard.push('connections', {
-                id: card.blockId
-              });
-            }
-            delete this._previousCard;
-            window.removeEventListener('mousemove', updateMousePosition);
-            this._recalcCanvas(true);
-          } else {
-            window.addEventListener('mousemove', updateMousePosition.bind(this));
-            this._previousCard = card;
-          }
+      },
+      _createLink: function(card) {
+        var exists = this._previousCard.connections.filter(function(c) {
+          return c.id === card.blockId;
+        });
+        if (!exists.length && this._previousCard.blockId !== card.blockId) {
+          this._previousCard.push('connections', {
+            id: card.blockId
+          });
         }
-      })(),
+        this._previousCard.linkText = 'Link';
+        delete this._previousCard;
+        window.removeEventListener('mousemove', this._updateMousePosition);
+        window.removeEventListener('keydown', this._maybeCancelLinking);
+        this._recalcCanvas(true);
+      },
+      _maybeCreateLink: function(e) {
+        var card = e.detail;
+        if (this._previousCard) {
+          this._createLink(card);
+        } else {
+          window.addEventListener('mousemove', this._updateMousePosition);
+          window.addEventListener('keydown', this._maybeCancelLinking);
+          card.linkText = 'Stop';
+          this._previousCard = card;
+        }
+      },
       _calculateAnchorPoints: function(rectangleLeft, rectangleRight, dx, dy, containerRect) {
         var points = {};
 
@@ -170,13 +202,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _calculateCoordinates: function(containerRect, fromRect, toRect) {
         var dy = Math.abs(toRect.top - fromRect.top);
         var dx = Math.abs(toRect.left - fromRect.left);
-        var anchorFrom, anchorTo;
-
-        var fromX, fromY, toX, toY;
+        var points;
 
         // Arrow points to the right
         if (fromRect.left < toRect.left) {
-          var points = this._calculateAnchorPoints(fromRect, toRect, dx, dy, containerRect);
+          points = this._calculateAnchorPoints(fromRect, toRect, dx, dy, containerRect);
 
           return {
             fromX: points.leftX,
@@ -186,16 +216,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           };
           // Arrow points to the left, so swap the values to make sure the Arrow
           // points in the correct direction
-        } else {
-          var points = this._calculateAnchorPoints(toRect, fromRect, dx, dy, containerRect);
-
-          return {
-            fromX: points.rightX,
-            fromY: points.rightY,
-            toX: points.leftX,
-            toY: points.leftY
-          };
         }
+
+        points = this._calculateAnchorPoints(toRect, fromRect, dx, dy, containerRect);
+
+        return {
+          fromX: points.rightX,
+          fromY: points.rightY,
+          toX: points.leftX,
+          toY: points.leftY
+        };
       },
       _drawArrow: function(ctx, coordinates) {
         var fromX = coordinates.fromX,
@@ -220,6 +250,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       // Recalc the canvas if we are currently dragging
       _recalcCanvas: function(forced) {
         if (this.dragging || forced) {
+          var fromRect, coordinates;
           // Update the width and height in case the frame was not calculated
           // yet on stamping, or the window was resized.
           var containerRect = this.containerRect;
@@ -229,13 +260,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
           for (var i=0, l=this._blocks.length;i<l;i++) {
             var fromBlock = this._blocks[i];
-            var fromRect = fromBlock.getBoundingClientRect();
+            fromRect = fromBlock.getBoundingClientRect();
 
             for (var j=0, c=fromBlock.connections.length; j<c;j++) {
               var connection = fromBlock.connections[j];
               var toRect = this._blocks[connection.id].getBoundingClientRect();
 
-              var coordinates = this._calculateCoordinates(containerRect, fromRect, toRect);
+              coordinates = this._calculateCoordinates(containerRect, fromRect, toRect);
 
               this._drawArrow(this.ctx, coordinates);
             }
@@ -243,8 +274,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
           // We are currently creating a new connection
           if (this._previousCard) {
-            var fromRect = this._previousCard.getBoundingClientRect();
-            var coordinates = this._calculateCoordinates(containerRect, fromRect, {
+            fromRect = this._previousCard.getBoundingClientRect();
+            coordinates = this._calculateCoordinates(containerRect, fromRect, {
               top: this._mouseY,
               bottom: this._mouseY,
               left: this._mouseX,
@@ -256,21 +287,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
       },
-      _updateElemTrackingPosition: function(lastElem, event, padding) {
+      _updateElemTrackingPosition: function(lastElem, dy, dx, padding) {
         var rect = this.containerRect;
 
         // Position the element to the new y position based on its original
         // position, the delta from the original position.
         //
         // The position is bounded to the container rectangle with a padding
-        var newTop = lastElem._originalPosition.top + event.dy;
+        var newTop = lastElem._originalPosition.top + dy;
         var bottomBoundary = rect.bottom - lastElem._originalPosition.height - padding;
         var topBoundedToBottom = Math.min(newTop, bottomBoundary);
         var topBoundedtoYAndBottom = Math.max(rect.top + padding, topBoundedToBottom) - rect.top;
         lastElem.style.top = topBoundedtoYAndBottom + 'px';
 
         // Same for the x position as pointed out above
-        var newLeft = lastElem._originalPosition.left + event.dx;
+        var newLeft = lastElem._originalPosition.left + dx;
         var rightBoundary = rect.right - lastElem._originalPosition.width - padding;
         var leftBoundedtoRight = Math.min(newLeft, rightBoundary);
         var leftBoundedToLeftAndRight = Math.max(rect.left + padding, leftBoundedtoRight) - rect.left;
@@ -278,7 +309,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _handleCardTracking: (function() {
         var lastElem;
-        var PADDING = 5;
 
         return function(e) {
           var event = e.detail.event;
@@ -294,7 +324,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               break;
 
             case 'track':
-              this._updateElemTrackingPosition(lastElem, event, PADDING);
+              this._updateElemTrackingPosition(lastElem, event.dy, event.dx, this._padding);
               break;
 
             case 'end':

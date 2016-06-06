@@ -173,7 +173,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.$.hunkGroups.addEventListener('update', this._groupUpdate.bind(this));
         }
       },
-
+      jumpToGroup: function(name) {
+        var group = this.$$('pull-request-group[display-title="' + name + '"]');
+        this.fire('scroll-to', {
+          top: group.offsetTop - 60
+        })
+      },
       _addGroup: function(e) {
         this.$.sorter.addGroup(e.detail);
       },

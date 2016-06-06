@@ -53,9 +53,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <paper-card>
-      <div class="card-content">[[text]]</div>
+      <div class="card-content" on-tap="_throwCardTap">[[text]]</div>
       <div class="card-actions">
-        <paper-button on-tap="_linkFromOrTo">Link</paper-button>
+        <paper-button on-tap="_linkFromOrTo">[[linkText]]</paper-button>
       </div>
     </paper-card>
   </template>
@@ -65,6 +65,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       properties: {
         blockId: Number,
         text: String,
+        linkText: {
+          type: String,
+          value: 'Link'
+        },
         connections: {
           type: Array,
           value: function() {
@@ -83,6 +87,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _linkFromOrTo: function() {
         this.fire('linked-from-or-to', this);
+      },
+      _throwCardTap: function() {
+        this.fire('jump-to-group', {
+          name: this.text
+        });
       }
     });
   </script>
