@@ -112,6 +112,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           assert.equal(emptyAfterLines.length, afterLines.length);
         });
 
+        test('Hides diff when collapsed', function() {
+            diffElem.collapsed = true;
+            var display = getComputedStyle(get('.content')).display;
+            assert.equal('none', display);
+        });
+
+        test('Shows diff when not collapsed', function() {
+            diffElem.collapsed = false;
+            var display = getComputedStyle(get('.content')).display;
+            assert.notEqual('none', display);
+        });
+
         var getChildrenForId = function(id) {
           return [].slice.call(Polymer.dom(diffElem.root).querySelector('#' + id).children)
         }
@@ -126,6 +138,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return elems.filter(function(e) {
             return e.innerHTML === '';
           });
+        }
+
+        var get = function(elem) {
+          return Polymer.dom(diffElem.root).querySelector(elem);
         }
       });
     });
