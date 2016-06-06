@@ -74,16 +74,16 @@ function retrieveETagFromGitHubCache(request) {
           return oldResponse.clone();
         });
       })
-      .catch(function(e) {
-        console.log('Cached file resulted in network error', e);
-        return fetch(request).then(function(newResponse) {
-          cache.put(request.url, newResponse.clone());
-          return newResponse.clone();
-        }).catch(function(e2) {
-          console.log('Fetching uncached failed too, are we offline?', e2);
-        });
+    })
+    .catch(function(e) {
+      console.log('Cached file resulted in network error', e);
+      return fetch(request).then(function(newResponse) {
+        cache.put(request.url, newResponse.clone());
+        return newResponse.clone();
+      }).catch(function(e2) {
+        console.log('Fetching uncached failed too, are we offline?', e2);
       });
-  });
+    });
 }
 
 self.addEventListener('fetch', function(event) {

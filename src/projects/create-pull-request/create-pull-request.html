@@ -71,7 +71,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <github-authenticated-ajax
       id="ajaxBranches"
       refurl="https://api.github.com/repos/[[project.owner]]/[[project.name]]/branches"
-      handle-as="json"
       per-page="250"
       last-response="{{branches}}"
       ></github-authenticated-ajax>
@@ -79,7 +78,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <github-authenticated-ajax
       id="ajaxCollaborators"
       refurl="https://api.github.com/repos/[[project.owner]]/[[project.name]]/contributors"
-      handle-as="json"
       per-page="250"
       last-response="{{contributors}}"
       ></github-authenticated-ajax>

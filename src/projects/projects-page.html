@@ -70,13 +70,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <github-authenticated-ajax
       id="ajaxPullRequest"
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls?state=[[prStateFilter]]"
-      handle-as="json"
       last-response="{{pullrequests}}"></github-authenticated-ajax>
 
     <github-authenticated-ajax
       id="ajaxCustomPullRequest"
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls/[[pr.pr]]"
-      handle-as="json"
       last-response="{{newPullrequest}}"></github-authenticated-ajax>
 
     <list-navigation

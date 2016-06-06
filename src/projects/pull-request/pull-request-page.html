@@ -129,6 +129,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"></github-authenticated-ajax>
 
+    <github-authenticated-ajax
+      id="ajaxSelf"
+      refurl="[[selectedPull._links.self.href]]"
+      on-response="_mergeSinglePRWithSelectedPull"></github-authenticated-ajax>
+
     <firebase-document
         app-name="preview-code"
         path="[[orderingPath]]"
@@ -184,7 +189,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         diff: String,
         selectedPull: {
           type: Object,
-          observer: '_fetchDiff'
+          observer: '_fetchAjax'
         },
         orderingPath: {
           type: String,
@@ -194,9 +199,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       listeners: {
         'scroll-to': '_scrollTo'
       },
-      _fetchDiff: function(pullRequest) {
+      _fetchAjax: function(pullRequest) {
         if (pullRequest) {
           this.$.ajaxDiff.generateRequest();
+          this.$.ajaxSelf.generateRequest();
+        }
+      },
+      _mergeSinglePRWithSelectedPull: function(e) {
+        var f;
+        var actualPr = e.detail.response;
+        for (f in actualPr) {
+          if (!this.selectedPull[f]) {
+            this.set('selectedPull.' + f, actualPr[f]);
+          }
         }
       },
       _computeOrderingPath: function(project, selectedPull) {
