@@ -131,7 +131,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       observers: [
-        'chooseProject(projectTitle.*)',
+        'chooseProject(projects, projectTitle.*)',
         '_showPullRequest(newPullrequest)',
         '_hideProjectList(pullRequestSelected, subPage)',
         '_showPullsList(projectSelected)'
@@ -140,16 +140,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'PRStateFilter-updated': '_changePRStateFilter',
         'force-hide-list': '_hideBothLists'
       },
-      chooseProject: function(projectTitle) {
+      chooseProject: function(projects, projectTitle) {
         var owner = projectTitle.value.owner;
         var name = projectTitle.value.name;
         if (!owner || !name) {
           return;
         }
 
-        this.activeProject = this.projects.filter(function(p) {
-          return p.owner === owner && p.name === name;
+        var project = projects.filter(function(p) {
+          return p.owner.login === owner && p.name === name;
         })[0];
+        if (!project) {
+          return;
+        }
+        project.owner = project.owner.login;
+
+        this.activeProject = project;
 
         this.$.ajaxPullRequest.generateRequest();
       },

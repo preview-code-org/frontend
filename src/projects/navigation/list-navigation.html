@@ -125,7 +125,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <preview-list>
           <search-box value="{{searchWord}}"></search-box>
           <template is="dom-repeat" items="[[search(projects, searchWord)]]" as="project">
-            <a href$="[[route.prefix]]/[[project.owner]]/[[project.name]]/activity" tabindex="-1">
+            <a href$="[[route.prefix]]/[[project.owner.login]]/[[project.name]]/activity" tabindex="-1">
               <project-list-item project="[[project]]" selected="[[_isActiveProject(project, activeProject)]]"
                                  tabindex="0" on-keydown="_maybeOpenProject"></project-list-item>
             </a>
@@ -133,9 +133,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </preview-list>
       </div>
 
-      <project-pull-requests class$="pull-list [[showPullList]]" route="{{nameTail}}" tabindex="0"
-                           project="[[project]]" pullrequests="[[pullrequests]]"
-                           selected-pull="[[selectedPull]]"></project-pull-requests>
+      <project-pull-requests
+          class$="pull-list [[showPullList]]" route="{{nameTail}}" tabindex="0"
+          project="[[project]]" pullrequests="[[pullrequests]]"
+          selected-pull="[[selectedPull]]"></project-pull-requests>
     </div>
   </template>
   <script>
