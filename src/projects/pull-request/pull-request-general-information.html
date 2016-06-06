@@ -46,12 +46,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <dom-module id="pull-request-general-information">
   <template>
     <style>
+      .primary-container {
+        @apply(--primary-container);
+      }
       .description {
-        background-color: var(--primary-background-color);
-        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
-        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
-        overflow: hidden;
-        margin-bottom: 2em;
+        padding: 0;
       }
       pull-request-comments {
         display: block;
@@ -105,23 +104,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         border-left: solid 1px var(--secondary-background-color);
         max-width: 150px;
       }
+      .merge-button {
+        --paper-button: {
+          @apply(--green-action-button);
+        };
+      }
     </style>
     <github-authenticated-ajax
       id="ajaxComments"
       refurl="[[pullRequest._links.comments.href]]"
-      handle-as="json"
       last-response="{{comments}}"></github-authenticated-ajax>
 
     <github-authenticated-ajax
       id="ajaxIssue"
       refurl="[[pullRequest._links.issue.href]]"
-      handle-as="json"
       last-response="{{issue}}"></github-authenticated-ajax>
 
-    <div class="description">
+    <github-authenticated-ajax
+      id="ajaxMergePR"
+      refurl="[[pullRequest._links.self.href]]/merge"
+      method="PUT"
+      on-response="_prHasBeenMerged"></github-authenticated-ajax>
+
+    <div class="description primary-container">
       <header>
         <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
-        <span><a-user user=[[pullRequest.user]]></a-user> wants to merge</span>
+        <span><a-user user="[[pullRequest.user]]"></a-user> wants to merge</span>
         <branch-tag class="head" branch="[[pullRequest.head.label]]"></branch-tag>
         <span>into</span>
         <branch-tag class="base" branch="[[pullRequest.base.label]]"></branch-tag>
@@ -143,6 +151,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
       </section>
     </div>
+
+    <div class="primary-container">
+      <paper-button
+          class="merge-button" on-tap="_mergePR"
+          raised disabled="[[!pullRequest.mergeable]]">
+        [[_getMergeButtonText(pullRequest.mergeable)]]
+      </paper-button>
+    </div>
+
     <pull-request-comments comments="{{comments}}" project="[[project]]"></pull-request-comments>
   </template>
   <script>
@@ -168,6 +185,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.$.ajaxComments.generateRequest();
           this.$.ajaxIssue.generateRequest();
         }
+      },
+      _mergePR: function() {
+        this.$.ajaxMergePR.body = {
+          commit_title: 'Merged pull request #' + this.pullRequest.number + ' from ' + this.pullRequest.head.label,
+          sha: this.pullRequest.head.sha
+        };
+        this.$.ajaxMergePR.generateRequest();
+      },
+      _getMergeButtonText: function(mergeable) {
+        return mergeable ? 'Merge pull request' : 'This branch has conflicts that must be resolved';
+      },
+      _prHasBeenMerged: function(e) {
+        console.log(e);
       },
       _getReviewers: function(assignee) {
         if (!assignee) {

@@ -92,13 +92,19 @@ of the GitHub oAuth token.
               this.fire('github-token', this._tokens.GitHub);
               return;
             }
-            this.$.auth.signInWithRedirect();
+            this._redirectToGitHub();
           } else {
             this._parseSuccesfulResult(result);
           }
         }.bind(this)).catch(function() {
           this.loading = false;
         });
+      },
+      _redirectToGitHub: function() {
+        var provider = new firebase.auth.GithubAuthProvider();
+        provider.addScope('user');
+        provider.addScope('repo');
+        this.$.auth.signInWithRedirect(provider);
       },
       _parseSuccesfulResult: function(result) {
         var token = result.credential.accessToken;

@@ -68,13 +68,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <github-authenticated-ajax
       id="ajaxIssue"
       refurl="[[pr._links.issue.href]]"
-      handle-as="json"
       last-response="{{issue}}"></github-authenticated-ajax>
 
     <github-authenticated-ajax
       id="ajaxStatuses"
       refurl="[[pr._links.statuses.href]]"
-      handle-as="json"
       last-response="{{statuses}}"></github-authenticated-ajax>
 
     <column-list-item selected="[[selected]]" focused="[[focused]]">
