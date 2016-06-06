@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
 
 <dom-module id="input-dialog">
@@ -30,21 +29,12 @@
       paper-button {
         color: var(--anchor-color);
       }
-      paper-icon-button {
-        border-radius: 20px;
-        background-color: var(--primary-action-green);
-      }
     </style>
-
-    <paper-icon-button
-      icon="add"
-      on-tap="_openAddGroupDialog"
-      title$="[[actionTitle]]"></paper-icon-button>
     <paper-dialog id="addGroupDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-      <paper-input id="titleInput" label="[[label]]"></paper-input>
+      <paper-input id="input" label="[[label]]"></paper-input>
       <div class="buttons">
-        <paper-button autofocus dialog-confirm>OK</paper-button>
-        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button id="ok" autofocus dialog-confirm>OK</paper-button>
+        <paper-button id="cancel" dialog-dismiss>Cancel</paper-button>
       </div>
     </paper-dialog>
 
@@ -60,16 +50,16 @@
         'iron-overlay-opened': '_focusNewGroupInput',
         'iron-overlay-closed': '_dialogClosed'
       },
-      _openAddGroupDialog: function() {
-        this.$.titleInput.value = '';
+      open: function() {
+        this.$.input.value = '';
         this.$.addGroupDialog.open();
       },
       _focusNewGroupInput: function() {
-        this.$.titleInput.focus();
+        this.$.input.focus();
       },
       _dialogClosed: function(e) {
-        var title = this.$.titleInput.value
-        if (e.detail.confirmed && !e.detail.canceled && title != '') {
+        var title = this.$.input.value
+        if (e.detail.confirmed && !e.detail.canceled && title !== '') {
           this.fire('confirm', title);
         } else {
           this.fire('cancel');

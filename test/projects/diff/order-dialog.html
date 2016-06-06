@@ -1,0 +1,101 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>order-dialog tests</title>
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/diff/order-dialog.html'>
+
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <order-dialog></order-dialog>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('order-dialog', function() {
+      var orderDialog;
+
+      setup(function() {
+        orderDialog = fixture('basic');
+      });
+
+      test('opens the dialog when orderDialog.open() is called', function(done) {
+        stub('paper-dialog', {
+          open: function() {
+            done();
+          }
+        });
+        orderDialog.open();
+      });
+
+      test('fires `order` when _orderUpdated is called', function(done) {
+        var causeEvent = new Event('');
+        causeEvent.oldIndex = 42;
+        causeEvent.newIndex = -42;
+        var expectedEvent = new CustomEvent('order', {'detail': {oldIndex: 42, newIndex: -42}});
+
+        orderDialog.addEventListener('order', function(e) {
+          assert.deepEqual(expectedEvent.detail, e.detail);
+          done();
+        });
+
+        orderDialog._orderUpdated(causeEvent);
+      });
+
+      test('calls _orderUpdated when sortable fires `update`', function(done) {
+        var causeEvent = new Event('update');
+        orderDialog.addEventListener('order', function() {
+          done();
+        });
+        Polymer.dom(orderDialog.root).querySelector('#sortable').dispatchEvent(causeEvent);
+      });
+
+      test('sets te drag image to 0 width and height', function() {
+        var dataTransfer = {
+          setDragImage: function(img, w, h) {
+            assert.equal(0, w);
+            assert.equal(0, h);
+          }
+        };
+        orderDialog._setDragImage(dataTransfer, undefined);
+      })
+
+    });
+  </script>
+</body>
+</html>

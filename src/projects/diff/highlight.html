@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../util/collapse-icon.html">
 <link rel="import" href="../../bower_components/prism-element/prism-style-import.html">
+<link rel="import" href="hunk-ghost.html">
 
 <dom-module id='pull-request-diff-highlight'>
   <template>
@@ -99,8 +100,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </style>
 
     <header>
-      [[file]]
-      <a href$="[[fileUrl]]" target="_blank">Full file</a>
+      [[hunk.file]]
+      <a href$="[[hunk.fileUrl]]" target="_blank">Full file</a>
       <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
     </header>
     <div class="content" hidden$="[[collapsed]]">
@@ -110,6 +111,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
       <pre><code id="codeView"></code></pre>
     </div>
+
+    <hunk-ghost id="ghost" hunk-text="[[hunk.file]]"></hunk-ghost>
   </template>
 
   <script>
@@ -117,21 +120,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'pull-request-diff-highlight',
 
       properties: {
-        code: {
-          type: String,
-          observer: '_render'
-        },
-        fileUrl: String,
-        collapsed: {
-          type: Boolean,
-          value: false
-        },
-        file: String,
-        linesChanged: Object
+        hunk: Object,
+        collapsed: Boolean,
+        _hasRendered: Boolean
       },
       observers: [
-        '_observeLinesChanged(linesChanged, code)',
-        '_resetCollapsed(code)'
+        '_observeLinesChanged(hunk.linesChanged, hunk.changes)',
+        '_resetCollapsed(hunk.changes)'
       ],
       _observeLinesChanged: function(linesChanged, code) {
         var lines = code.split('\n');
@@ -160,20 +155,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Polymer.dom(this.$.afterColumn).innerHTML = afterContent;
       },
       attached: function() {
-        this._render();
+          if (this.hunk) {
+            this._render(this.hunk.changes);
+            var img = new Image();
+            img.src = 'data:image/svg+xml;char-set=utf-8,' + this.$.ghost.getSVG();
+            this.hunk.img = img;
+          }
       },
-      _render: function() {
-        if (!this.isAttached) {
-          return;
-        }
+      _render: function(code) {
         this.async(function() {
-          Polymer.dom(this.$.codeView).innerHTML = this.highlight(this.code);
+          Polymer.dom(this.$.codeView).innerHTML = this.highlight(code);
         });
       },
       highlight: function(code) {
-        if (!code) {
-          return 'Drag diff here';
-        }
         var event = this.fire('syntax-highlight', {code: code, lang: 'diff'});
         return event.detail.code || code;
       },
@@ -182,6 +176,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     });
   </script>
-
-
 </dom-module>

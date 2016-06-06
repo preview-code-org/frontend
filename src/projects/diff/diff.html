@@ -26,12 +26,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../ajax/github-authenticated-ajax.html">
+<link rel="import" href="../../util/dom-repeat-once.html">
 <link rel="import" href="group.html">
 <link rel="import" href="diff-parser.html">
 <link rel="import" href="hunk-sorter.html">
 <link rel="import" href="input-dialog.html">
+<link rel="import" href="order-dialog.html">
 
 <dom-module id="pull-request-diff">
   <template>
@@ -49,7 +53,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display: block;
       }
       .actions {
-        margin-right: 15px;
+        position: fixed;
+        bottom: 2em;
+        right: 5em;
+      }
+      .actions * {
+        margin: 1em;
+        --paper-fab-background: var(--primary-background-color);
+        --paper-fab-iron-icon: {
+          fill: var(--secondary-text-color);
+        };
       }
       paper-toolbar {
         -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
@@ -62,34 +75,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .deletions {
         color: var(--deletion-color);
       }
+      .group-ghost {
+        -webkit-box-shadow: 0 8px 16px 0 rgba(0,0,0,0.25);
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.25);
+        -webkit-transition: all 0.4s;
+        -moz-transition: all 0.4s;
+        -o-transition: all 0.4s;
+        -ms-transition: all 0.4s;
+        transition: all 0.4s;
+      }
+
     </style>
     <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" additions="{{additions}}" deletions="{{deletions}}" hunks="{{hunks}}"></diff-parser>
-    <hunk-sorter raw-hunks="[[hunks]]" groups="{{orderedGroups}}"></hunk-sorter>
+    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}"></hunk-sorter>
 
-    <paper-toolbar justify="around">
-      <div class="title">
-        <span class="additions">+ [[additions]]</span>
-        <span class="deletions">- [[deletions]]</span>
-      </div>
-      <div class="actions">
-        <input-dialog
-          action-title="Add a new group to this pull request"
-          label="Enter a title for this group"
-          on-confirm="_addGroup"
-        ></input-dialog>
-      </div>
-    </paper-toolbar>
-
-    <sortable-js class="diff-group" disabled="[[!editable]]">
-      <template is="dom-repeat" items="[[orderedGroups]]" as="group">
-        <pull-request-group
-          class="draggable"
-          group="[[group]]"
-          on-empty="_removeGroup"
-          editable="[[editable]]"
-          ></pull-request-group>
+    <div id="hunkGroups">
+      <template is="dom-repeat" items="[[orderedGroups]]">
+        <pull-request-group group="[[item]]" editable="[[editable]]"></pull-request-group>
       </template>
-    </sortable-js>
+    </div>
+
+    <div class="actions" hidden$="[[!editable]]">
+      <paper-fab icon="icons:add" on-tap="_openAddGroupDialog" title="Add a group"></paper-fab>
+      <paper-fab icon="icons:list" on-tap="_openGroupOrderDialog" title="Re-order groups"></paper-fab>
+    </div>
+
+    <order-dialog
+      id="orderGroupDialog"
+      action-title="Drag groups to re-order them"
+      on-confirm="_reorderGroups"
+      items="[[_groupTitles]]"
+    ></order-dialog>
+
+    <input-dialog
+      id="addGroupDialog"
+      action-title="Add a new group to this pull request"
+      label="Enter a title for this group"
+      on-confirm="_addGroup"
+    ></input-dialog>
+
   </template>
   <script>
     Polymer({
@@ -112,28 +136,61 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         orderedGroups: {
           type: Array,
-          notify: true,
-          observer: '_groupsOrdered'
+          notify: true
+        },
+        _groupTitles: Array,
+        _sortable: Object
+      },
+      observers: [
+        '_groupsOrdered(orderedGroups.*, editable)',
+        '_setGroupTitles(orderedGroups.*)'
+      ],
+      listeners: {
+        'empty': '_groupEmpty',
+        'order': '_groupMove'
+      },
+      _openAddGroupDialog: function() {
+        this.$.addGroupDialog.open();
+      },
+      _openGroupOrderDialog: function() {
+        this.$.orderGroupDialog.open();
+      },
+      _setGroupTitles: function(groups) {
+        this._groupTitles = groups.base.map(function(group) {
+          return group.title;
+        });
+      },
+      _reorderGroups: function() {
+        // console.log('reorder plz');
+      },
+      _groupsOrdered: function(orderedGroups, editable) {
+        var groups = orderedGroups.base;
+        if (editable && !this._sortable &&
+            groups && groups[0].diff.length > 0) {
+          this._sortable = true;
+          this.$.hunkGroups.addEventListener('add', this._groupAdded.bind(this));
+          this.$.hunkGroups.addEventListener('remove', this._groupRemoved.bind(this));
+          this.$.hunkGroups.addEventListener('update', this._groupUpdate.bind(this));
         }
       },
-      _groupsOrdered: function(orderedGroups) {
-        if (orderedGroups && orderedGroups[0].diff.length > 0) {
-          console.log('ordering done: ', orderedGroups);
-          if (this.editable) {
-            Sortable.create(this.$$('sortable-js'), {
-              draggable: 'pull-request-group'
-            });
-            // var self = this;
-            this.$$('sortable-js').addEventListener('add', function() {
-              console.log('add');
-            });
-            // this.$$('sortable-js').addEventListener('remove', this._diffRemoved.bind(self));
-          }
-        }
-      },
+
       _addGroup: function(e) {
-        console.log('caught confirm event');
-        this.$$('hunk-sorter').addGroup(e.detail);
+        this.$.sorter.addGroup(e.detail);
+      },
+      _groupAdded: function(e) {
+        // console.log('added group', e);
+      },
+      _groupRemoved: function(e) {
+        // console.log('removed group', e);
+      },
+      _groupUpdate: function(e) {
+        // console.log('updated group', e);
+      },
+      _groupEmpty: function(e) {
+        // console.log('group is now empty', e.detail.groupName);
+      },
+      _groupMove: function(e) {
+        // console.log('moved group', e);
       }
     });
   </script>

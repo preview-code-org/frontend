@@ -50,25 +50,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <script>
   /*global testDiffs*/
     suite('<pull-request-diff-highlight>', function() {
-      var diffElem;
-      setup(function() {
-        replace('collapse-icon').with('stub-collapse-icon');
-        diffElem = fixture('basic');
-      });
-
       test('renders when attached', function(done) {
         var elem = document.createElement('pull-request-diff-highlight');
+        elem.hunk = testDiffs[0];
         elem._render = function() {
           done();
         }
         document.body.appendChild(elem);
-      });
-
-      test('renders when code changes', function(done) {
-        diffElem._render = function() {
-          done();
-        }
-        diffElem.code = '+ insert!';
       });
     });
 
@@ -80,17 +68,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         setup(function() {
           replace('collapse-icon').with('stub-collapse-icon');
           diffElem = fixture('basic');
-          diffElem.code = diff.changes;
-          diffElem.linesChanged = diff.linesChanged;
+          diffElem.hunk = diff;
         });
 
         test('shows correct amount of `before` lines', function() {
-          var beforeLines = filterEmpty(getChildrenForId('beforeColumn'), '');
+          var beforeLines = filterEmpty(getChildrenForId('beforeColumn'));
           assert.equal(diff.linesChanged.rangeBefore, beforeLines.length);
         });
 
         test('shows correct amount of `after` lines', function() {
-          var afterLines = filterEmpty(getChildrenForId('afterColumn'), '');
+          var afterLines = filterEmpty(getChildrenForId('afterColumn'));
           assert.equal(diff.linesChanged.rangeAfter, afterLines.length);
         });
 

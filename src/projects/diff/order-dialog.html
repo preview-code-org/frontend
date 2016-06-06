@@ -1,0 +1,119 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../bower_components/Sortable/Sortable.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+
+<dom-module id="order-dialog">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      :host * {
+        -webkit-transition: all 0.4s;
+        -moz-transition: all 0.4s;
+        -o-transition: all 0.4s;
+        -ms-transition: all 0.4s;
+        transition: all 0.4s;
+      }
+      paper-button {
+        color: var(--anchor-color);
+      }
+      h1 {
+        font-size: 20px;
+      }
+
+      .item {
+        padding: 1em;
+        border-bottom: solid 1px var(--secondary-background-color);
+        cursor: pointer;
+      }
+      .item:hover iron-icon,
+      .ghost iron-icon {
+        opacity: 1
+      }
+      iron-icon {
+        opacity: 0.15;
+        fill: var(--secondary-text-color);
+        margin-right: 1em;
+      }
+      .ghost {
+        opacity: 0.5;
+        background-color: var(--primary-background-color);
+        z-index: 100;
+        margin-left: 0.5em;
+      }
+
+    </style>
+    <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+      <h1 id="title">[[actionTitle]]</h1>
+      <div id="sortable">
+        <template is="dom-repeat" items="[[items]]">
+          <div class="item"><iron-icon icon="editor:drag-handle"></iron-icon>[[item]]</div>
+        </template>
+      </div>
+      <div class="buttons">
+        <paper-button autofocus dialog-dismiss>OK</paper-button>
+      </div>
+    </paper-dialog>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'order-dialog',
+      properties: {
+        actionTitle: String,
+        items: Array
+      },
+      attached: function() {
+        Sortable.create(this.$.sortable, {
+          group: this.actionTitle + '-group',
+          ghostClass: 'ghost',
+          animation: 300,
+          setData: this._setDragImage
+        });
+        this.$.sortable.addEventListener('update', this._orderUpdated.bind(this));
+      },
+      _orderUpdated: function(e) {
+        e.stopPropagation();
+        this.fire('order', {oldIndex: e.oldIndex, newIndex: e.newIndex});
+      },
+      open: function() {
+        this.$.dialog.open();
+      },
+      _setDragImage: function(dataTransfer) {
+        dataTransfer.setDragImage(new Image(), 0, 0);
+      }
+    });
+  </script>
+</dom-module>

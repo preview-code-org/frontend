@@ -1,3 +1,31 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
 <dom-module id="hunk-sorter">
   <template>
     <!--
@@ -37,19 +65,33 @@
           value: function() {
             return {
               'Amazing stuff': {
-                hunks: ['src/lib/base.html,138,9,139,9']
+                order: 0,
+                hunks: ['src/lib/base.html,138,9,139,9'],
+                comments: []
               }
             };
           }
         }
       },
       addGroup: function(groupTitle) {
-        console.log('Adding group: ', groupTitle);
-        this.unshift('groups', {
-          title: groupTitle,
-          diff: [],
-          comments: []
-        });
+        this.unshift('groups', this._createGroup(groupTitle, []));
+      },
+      removeGroup: function(groupTitle) {
+        if (groupTitle !== 'Unsorted changes') {
+          delete this._groupMap[groupTitle];
+        }
+      },
+      addHunkToGroup: function(hunkId, groupTitle, index) {
+
+      },
+      removeHunkFromGroup: function(hunkId, groupTitle) {
+
+      },
+      moveHunk: function(hunkId, oldIndex, newIndex) {
+
+      },
+      moveGroup: function(groupTitle, oldIndex, newIndex) {
+
       },
       _onNewHunks: function(hunks) {
         var allHunks = {};
@@ -59,34 +101,35 @@
         return allHunks;
       },
       _sortHunks: function(unsortedHunks, groupMap) {
-        if (unsortedHunks.size == 0) {
+        if (unsortedHunks.size === 0) {
           return;
         }
         var allGroups = [];
-        var group, hunks;
-        for (title in groupMap) {
+        var group;
+        for (var title in groupMap) {
           group = this._reconstructGroup(groupMap[title], unsortedHunks);
           if (group) {
             allGroups.push(group);
           }
         }
 
-        unsortedGroup = this._createGroup('Unsorted changes', []);
-        var remainingHunk;
-        for (remainingHunkId in unsortedHunks) {
+        var unsortedGroup = this._createGroup('Unsorted changes', []);
+        var remainingHunk, i = 0;
+        for (var remainingHunkId in unsortedHunks) {
           remainingHunk = unsortedHunks[remainingHunkId];
+          remainingHunk.order = i++;
           unsortedGroup.diff.push(remainingHunk);
         }
         allGroups.push(unsortedGroup);
         return allGroups;
       },
       _reconstructGroup: function(group, unsortedHunks) {
-        hunks = this._findHunksInGroup(group, unsortedHunks);
+        var hunks = this._findHunksInGroup(group, unsortedHunks);
         hunks = hunks.filter(function(hunk) {
           return !!hunk;
         });
         if (hunks.length > 0) {
-          return this._createGroup(title, hunks);
+          return this._createGroup(group.title, hunks);
         }
       },
       _findHunksInGroup: function(group, unsortedHunks) {
