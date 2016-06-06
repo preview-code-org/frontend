@@ -60,11 +60,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
 
-    <paper-input class="title" label="Enter a pull request title" value="[[title]]"></paper-input>
+    <paper-input class="title" label="Enter a pull request title" value="{{title}}"></paper-input>
     <markdown-input
       label="Enter a description for your pull request. Markdown is supported."
       project="[[project]]"
-      markdown="[[description]]"></markdown-input>
+      markdown="{{description}}"></markdown-input>
   </template>
   <script>
   /*global FadeInBehavior*/
@@ -72,8 +72,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'project-create-pull-request-description',
       properties: {
         project: Object,
-        title: String,
-        description: String
+        title: {
+          type: String,
+          notify: true
+        },
+        description: {
+          type: String,
+          notify: true
+        }
       },
       behaviors: [FadeInBehavior]
     });

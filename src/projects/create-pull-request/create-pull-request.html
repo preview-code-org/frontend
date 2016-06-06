@@ -94,6 +94,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       on-response="_showPullRequestInformation"
       ></github-authenticated-ajax>
 
+      <iron-ajax
+        id="createPull"
+        method="POST"
+        url="[[backendPath]]"
+        headers='{"Content-Type": "application/json"}'
+        handle-as="json"
+        last-response="{{number}}"
+        on-response="_madePulls"
+        ></iron-ajax>
+
     <div class="inputs">
       <div class="selectBranches">
         <h2>Choose branches to create a pull request on</h2>
@@ -110,8 +120,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <project-create-pull-request-description
         id="description"
         project="[[project]]"
-        title$="[[title]]"
-        description="[[description]]"
+        title="{{title}}"
+        description="{{description}}"
         ></project-create-pull-request-description>
     </div>
 
@@ -122,6 +132,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       diff="[[diff]]"
       base-url="https://github.com/[[project.owner]]/[[project.name]]"
       sha="[[headBranch]]"
+      project="[[project]]"
+      title="[[title]]"
+      description="[[description]]"
       ></project-create-pull-diff>
   </template>
   <script>
@@ -144,12 +157,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         branchNames: {
           type: Array,
           computed: '_branchNames(branches)'
+        },
+        backendPath: {
+          type: String,
+          computed: '_updateBackendPath(title, project, headBranch, baseBranch)'
         }
       },
       observers: [
         '_fetchBranchesAndCollaborators(project)',
         '_fetchDiff(baseBranch, headBranch)'
       ],
+      listeners: {
+        'create-pr': '_createPullRequest'
+      },
       _fetchBranchesAndCollaborators: function() {
         this.$.ajaxBranches.generateRequest();
         this.$.ajaxCollaborators.generateRequest();
@@ -170,6 +190,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _showPullRequestInformation: function() {
         this.$.diffView.show();
         this.$.description.show();
+      },
+      _createPullRequest: function() {
+        this.$.createPull.body = {
+          title: this.title,
+          description: this.description
+        };
+        this.$.createPull.generateRequest();
+      },
+      _updateBackendPath: function(title, project, headBranch, baseBranch) {
+        return 'https://localhost:8443/project/' + project.owner + '/' + project.name + '/createPR/' + headBranch + '/' + baseBranch;
+      },
+      _madePulls: function() {
+        if (this.number.number !== 0) {
+          var location = '/projects/' + this.project.owner + '/' + this.project.name + '/pulls/' + this.number.number + '/overview'
+          window.location.assign(location);
+        }
       }
     });
   </script>

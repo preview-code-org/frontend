@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../../list-items/list-item-label.html">
 <dom-module id="pr-status">
@@ -41,8 +42,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         white-space: normal;
       }
     </style>
+    <iron-ajax
+      id="setPrStatus"
+      method="POST"
+      url="[[backendPath]]"
+      headers='{"Content-Type": "application/json"}'
+      handle-as="json"></iron-ajax>
+
+    <firebase-document
+      app-name="preview-code"
+      path="[[statusPath]]"
+      on-data-changed="_updateRetrievedStatus"
+      ></firebase-document>
+
     <list-item-label type="box" title="status">[[status]]</list-item-label>
-    <paper-dropdown-menu label="Set status" value="{{status}}">
+    <paper-dropdown-menu label="Set status" value="{{status}}" on-value-changed="_updateFirebaseStatus">
       <paper-menu class="dropdown-content">
         <template is="dom-repeat" items="[[statuses]]" index-as="index">
           <paper-item>[[item]]</paper-item>
@@ -61,14 +75,43 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         },
         status: {
-          type: String,
-          notify: true
+          type: String
         },
-        pullRequest: Object
+        sendStatus: String,
+        pullRequest: Object,
+        project: Object,
+        statusPath: {
+          type: String,
+          computed: '_updateStatusPath(project, pullRequest)'
+        },
+        backendPath: {
+          type: String,
+          computed: '_updateBackendPath(pullRequest)'
+        }
       },
-      observers: ['_resetStatus(pullRequest)'],
-      _resetStatus: function() {
-        this.status = 'No reviewer assigned';
+      observers: [
+        '_setStatus(retrievedStatus)'
+      ],
+      _updateRetrievedStatus: function(e) {
+        this.retrievedStatus = e.detail.value;
+      },
+      _updateStatusPath: function(project, pullRequest) {
+        return '/pulls/' + project.owner + '/' + project.name + '/branch/' + pullRequest.number + '/status';
+      },
+      _updateBackendPath: function(pullRequest) {
+        return 'https://localhost:8443/pr/' + this.project.owner + '/' + this.project.name + '/' + pullRequest.number + '/status';
+      },
+      _updateFirebaseStatus: function(e) {
+        if (!e.detail.value) {
+          return;
+        }
+        this.$.setPrStatus.body = {
+          status: this.status
+        };
+        this.$.setPrStatus.generateRequest();
+      },
+      _setStatus: function(retrievedStatus) {
+        this.status = (typeof retrievedStatus !== 'object') ? retrievedStatus : 'No reviewer assigned';
       }
     });
   </script>

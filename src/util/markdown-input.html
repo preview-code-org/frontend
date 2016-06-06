@@ -86,7 +86,6 @@ after toggling the preview showing the rendered markdown in real-time.
         min-height: 50px;
       }
     </style>
-
     <paper-textarea hidden$="[[!_hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
     <marked-github-element hidden$="[[_hidePreview]]" markdown="[[markdown]]" project="[[project]]"></marked-github-element>
     <paper-button toggles raised hidden$="[[disabled]]" active="{{_previewToggle}}">[[_toggleText]]</paper-button>

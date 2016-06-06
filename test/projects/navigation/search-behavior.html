@@ -63,7 +63,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     });
 
     test('matches on exact word on first field', function() {
-      console.log(elem);
       var outcome = elem.search(items, 'hello');
       assert.deepEqual([items[0]], outcome);
     });

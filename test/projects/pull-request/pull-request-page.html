@@ -78,6 +78,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
 
       test('triggers ajax for diff when PR changes', function(done) {
+        prPageElem.project = {'owner': 'Test', 'name': 'test'}
         stub('github-authenticated-ajax', {
           generateRequest: function() {
             if (this.id === 'ajaxDiff') {

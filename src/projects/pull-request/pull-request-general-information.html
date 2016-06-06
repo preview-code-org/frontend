@@ -133,7 +133,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <pull-request-add-comments comments="{{comments}}"></pull-request-add-comments>
         </div>
         <div class="sidebar">
-          <pr-status pull-request="[[pullRequest]]"></pr-status>
+          <pr-status pull-request="[[pullRequest]]" project="[[project]]"></pr-status>
           <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewers-list>
           <tags-list>
             <template is="dom-repeat" items="[[issue.labels]]">
