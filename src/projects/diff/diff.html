@@ -107,7 +107,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <order-dialog
       id="orderGroupDialog"
       action-title="Drag groups to re-order them"
-      on-confirm="_reorderGroups"
       items="[[_groupTitles]]"
     ></order-dialog>
 
@@ -166,9 +165,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return group.title;
         });
       },
-      _reorderGroups: function() {
-        // console.log('reorder plz');
-      },
       jumpToGroup: function(name) {
         var group = this.$$('pull-request-group[display-title="' + name + '"]');
         this.fire('scroll-to', {
@@ -179,19 +175,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.sorter.addGroup(e.detail);
       },
       _hunkAdded: function(e) {
-        console.log('added group', e.detail);
+        this.$.sorter.addHunkToGroup(e.detail.hunk, e.detail.groupId, e.detail.newIndex);
       },
       _hunkRemoved: function(e) {
-        console.log('removed group', e.detail);
+        this.$.sorter.removeHunkFromGroup(e.detail.groupId, e.detail.hunk);
       },
       _hunkUpdate: function(e) {
-        console.log('updated group', e.detail);
-      },
-      _groupEmpty: function(e) {
-        console.log('group is now empty', e.detail.groupName);
+        this.$.sorter.moveHunk(e.detail.groupId, e.detail.oldIndex, e.detail.newIndex);
       },
       _groupMove: function(e) {
-        console.log('moved group', e);
+        this.$.sorter.moveGroup(e.detail.oldIndex, e.detail.newIndex);
+        var groups = this.orderedGroups;
+        this.set('orderedGroups', []);
+        this.set('orderedGroups', groups);
       }
     });
   </script>

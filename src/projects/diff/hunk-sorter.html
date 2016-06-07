@@ -43,19 +43,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Polymer({
       is: 'hunk-sorter',
       properties: {
-
-        rawHunks: {
-          type: Array,
-          value: function() {
-            return [];
-          }
-        },
+        rawHunks: Array,
         groups: {
           type: Array,
           value: function() {
             return [];
           },
-          computed: '_sortHunks(rawHunks, _ordering.*)',
           notify: true
         },
         _ordering: {
@@ -63,64 +56,118 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: function() {
             return [];
           }
-        }
+        },
+        _remoteOrdering: Object
+      },
+      observers: [
+        '_sortHunks(rawHunks, _remoteOrdering)'
+      ],
+      attached: function() {
+        // Remove when linking to Firebase
+        this._remoteOrdering = [];
       },
 
       addGroup: function(groupTitle) {
-        if (!this._groupTitleExists(groupTitle)) {
-          this.unshift('_ordering', this._createHunkOrdering(groupTitle, []));
-        }
+        var group = this._createHunkOrdering(groupTitle, []);
+        this.unshift('_ordering', group);
+        this.unshift('groups', this._createGroup(groupTitle, group.id, []));
+        return group.id;
       },
 
       removeGroup: function(groupId) {
-        if (groupId !== 1 &&
-            this._groupExists(groupId)) {
+        if (this._groupExists(groupId)) {
           this._ordering = this._ordering.filter(function(o) {
             return o.id !== groupId;
+          });
+          this.groups = this.groups.filter(function(g) {
+            return g.id !== groupId;
+          })
+        }
+      },
+
+      addHunkToGroup: function(hunk, groupId, index) {
+        this._doForGroup(groupId, function(i, group, groupOrdering) {
+          group.diff.splice(index, 0, hunk);
+          groupOrdering.hunks.splice(index, 0, this._getHunkId(hunk));
+        }.bind(this));
+      },
+
+      removeHunkFromGroup: function(groupId, hunk) {
+        this._doForGroup(groupId, function(i, group, groupOrdering) {
+          for (var j = 0, m = groupOrdering.hunks.length; j < m; j++) {
+            if (this._getHunkId(hunk) === groupOrdering.hunks[j]) {
+              groupOrdering.hunks.splice(j, 1);
+              this.groups[i].diff.splice(j, 1);
+              this._removeGroupIfEmpty(i);
+              return;
+            }
+          }
+        }.bind(this));
+      },
+
+      _removeGroupIfEmpty: function(index) {
+        if (this.groups[index].diff.length === 0) {
+          this.groups.splice(index, 1);
+          this._ordering.splice(index, 1);
+        }
+      },
+
+      _doForGroup(groupId, f) {
+        for (var i = 0, l = this._ordering.length; i < l; i++) {
+          if (this._ordering[i].id === groupId) {
+            return f(i, this.groups[i], this._ordering[i]);
+          }
+        }
+      },
+
+      moveHunk: function(groupId, oldIndex, newIndex) {
+        if (oldIndex !== newIndex) {
+          this._doForGroup(groupId, function(index, group, groupOrdering) {
+            var hunk = group.diff.splice(oldIndex, 1)[0];
+            var hunkId = groupOrdering.hunks.splice(oldIndex, 1)[0];
+            group.diff.splice(Math.max(newIndex, 0), 0, hunk);
+            groupOrdering.hunks.splice(Math.max(newIndex, 0), 0, hunkId);
           });
         }
       },
 
-      addHunkToGroup: function(hunkId, groupTitle, index) {
-
-      },
-
-      removeHunkFromGroup: function(hunkId, groupTitle) {
-        for (var i = 0, l = this._ordering.length; i < l; i++) {
-          for (j = 0, m = group.length; j < m; j++) {
-            var hunkId = group[j];
-
-          }
+      moveGroup: function(oldIndex, newIndex) {
+        if (oldIndex !== newIndex) {
+          var group = this.groups.splice(oldIndex, 1)[0];
+          var ord = this._ordering.splice(oldIndex, 1)[0];
+          this.groups.splice(Math.max(newIndex, 0), 0, group);
+          this._ordering.splice(Math.max(newIndex, 0), 0, ord);
         }
       },
 
-      moveHunk: function(hunkId, oldIndex, newIndex) {
-
-      },
-      moveGroup: function(groupTitle, oldIndex, newIndex) {
-
-      },
-
-
-      _sortHunks: function(rawHunks, o) {
-        if (o.path === '_ordering.length') {
-          return this.groups;
+      _getOrderingFromFirebaseObj(fbOrdering) {
+        var defaultGroupName = 'Unsorted changes';
+        var ordering = [];
+        if (fbOrdering.ordering) {
+          defaultGroupName = 'New changes since: ' + fbOrdering.lastChanged;
+          ordering = fbOrdering.ordering;
         }
-        var ordering = o.base;
-        delete ordering.splices;
+        var defaultGroup = this._createHunkOrdering(defaultGroupName, []);
+        ordering.push(defaultGroup);
+        return [ordering, defaultGroup];
+      },
+
+      _sortHunks: function(rawHunks, fbOrdering) {
+        var tuple = this._getOrderingFromFirebaseObj(fbOrdering);
+        var ordering = tuple[0];
+        var defaultGroup = tuple[1];
         var unsortedHunks = this._hunksToMap(rawHunks);
 
         var allGroups = [];
-        var group;
         for (var i = 0, l = ordering.length; i < l; i++) {
           var group = this._reconstructGroup(ordering[i], unsortedHunks);
-          if (group) {
+          if (group && group.id !== defaultGroup.id) {
             allGroups.push(group);
           }
         }
-
-        allGroups.push(this._distributeUnsortedHunks(unsortedHunks));
-        return allGroups;
+        allGroups.push(this._distributeUnsortedHunks(defaultGroup, unsortedHunks));
+        this.groups = allGroups;
+        this._ordering = ordering;
       },
 
       _hunksToMap: function(hunks) {
@@ -154,17 +201,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }.bind(this));
       },
 
-      _distributeUnsortedHunks: function(unsortedHunks) {
-        var unsortedGroup = this._createDefaultGroup();
-        var remainingHunk;
+      _distributeUnsortedHunks: function(defaultGroup, unsortedHunks) {
+        var unsortedGroup = this._createGroup(defaultGroup.title, defaultGroup.id, []);
         for (var remainingHunkId in unsortedHunks) {
-          remainingHunk = unsortedHunks[remainingHunkId];
-          unsortedGroup.diff.push(remainingHunk);
+          unsortedGroup.diff.push(unsortedHunks[remainingHunkId]);
+          defaultGroup.hunks.push(remainingHunkId);
         }
         return unsortedGroup;
       },
 
       _getHunkId: function(hunk) {
+        if (!hunk) {
+          return;
+        }
         return hunk.file + ',' +
           hunk.linesChanged.startLineBefore + ',' +
           hunk.linesChanged.rangeBefore + ',' +
@@ -181,13 +230,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
 
-      _createDefaultGroup: function() {
-        return this._createGroup('Unsorted changes', 1, []);
-      },
-
       _createHunkOrdering: function(title, hunkIds) {
         return {
-          id: this.guid(),
+          id: this._guid(),
           title: title,
           hunks: hunkIds
         }
@@ -203,7 +248,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       _searchGroup: function(field) {
         return function(entry) {
-          return this.groups.filter(function(g) {
+          return this._ordering.filter(function(g) {
             return g[field] === entry;
           }).length > 0;
         }
@@ -212,9 +257,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       /**
        * RFC4122 v4 compliant GUID generator
        */
-      guid: function() {
+      _guid: function() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
         });
       }
