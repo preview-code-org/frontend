@@ -47,12 +47,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <div class$="margin indicator [[project.notification]]"></div>
       <div class="main">
         <list-item-label type="title">[[project.name]]</list-item-label>
-        <list-item-label type="subtitle">[[project.owner]]</list-item-label>
+        <list-item-label type="subtitle">[[project.owner.login]]</list-item-label>
       </div>
       <div class="info">
         <list-item-label type="info" title="Last activity">[[project.activity]]</list-item-label>
-        <list-item-label type="info" title="Open issues" icon="icons:error-outline">[[project.issues]]</list-item-label>
-        <list-item-label type="info" title="Open pull requests" icon="editor:merge-type">[[project.prs]]</list-item-label>
+        <list-item-label type="info" title="Number of open issues" icon="icons:error-outline">[[project.open_issues_count]]</list-item-label>
+        <!--
+          FIXME(Tim) - We should store this in Firebase instead and show the number
+          pull requests that are reviewable using our tool
+        -->
+        <!-- <list-item-label type="info" title="Number of open pull requests" icon="editor:merge-type">[[project.prs]]</list-item-label> -->
       </div>
     </column-list-item>
   </template>

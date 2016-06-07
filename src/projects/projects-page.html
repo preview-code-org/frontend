@@ -77,6 +77,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls/[[pr.pr]]"
       last-response="{{newPullrequest}}"></github-authenticated-ajax>
 
+    <github-authenticated-ajax
+      auto
+      id="ajaxUserRepos"
+      refurl="https://api.github.com/user/repos"
+      last-response="{{projects}}"></github-authenticated-ajax>
+
     <list-navigation
         route="[[route]]" show-projects-list="{{showProjectsList}}"
         show-pull-list="{{showPullList}}" selected-pull="[[selectedPull]]"
@@ -113,48 +119,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         projects: {
           type: Array,
           value: function() {
-            return [
-              {
-                owner: 'Polymer',
-                name: 'polymer',
-                activity: '3 hours ago',
-                issues: 500,
-                prs: 20,
-                notification: true
-              },
-              {
-                owner: 'preview-code',
-                name: 'rite-evaluation',
-                activity: '3 hours ago',
-                issues: 3,
-                prs: 2,
-                notification: true
-              },
-              {
-                owner: 'preview-code',
-                name: 'frontend',
-                activity: '5 days ago',
-                issues: 15,
-                prs: 3,
-                notification: false
-              },
-              {
-                owner: 'preview-code',
-                name: 'backend',
-                activity: '7 days ago',
-                issues: 20,
-                prs: 5,
-                notification: true
-              },
-              {
-                owner: 'preview-code',
-                name: 'test-github-integration',
-                activity: '7 days ago',
-                issues: 20,
-                prs: 5,
-                notification: true
-              }
-            ];
+            return [];
           }
         },
         activeProject: Object,
@@ -164,7 +129,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       observers: [
-        'chooseProject(projectTitle.*)',
+        'chooseProject(projects, projectTitle.*)',
         '_showPullRequest(newPullrequest)',
         '_hideProjectList(pullRequestSelected, subPage)',
         '_showPullsList(projectSelected)'
@@ -173,16 +138,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'PRStateFilter-updated': '_changePRStateFilter',
         'force-hide-list': '_hideBothLists'
       },
-      chooseProject: function(projectTitle) {
+      chooseProject: function(projects, projectTitle) {
         var owner = projectTitle.value.owner;
         var name = projectTitle.value.name;
         if (!owner || !name) {
           return;
         }
 
-        this.activeProject = this.projects.filter(function(p) {
-          return p.owner === owner && p.name === name;
+        var project = projects.filter(function(p) {
+          return p.owner.login === owner && p.name === name;
         })[0];
+        if (!project) {
+          return;
+        }
+        project.owner = project.owner.login;
+
+        this.activeProject = project;
 
         this.$.ajaxPullRequest.generateRequest();
       },

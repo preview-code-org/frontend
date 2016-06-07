@@ -66,7 +66,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
 
       test('sets activeProject when project title is set', function() {
-        projectPage.projects = [{name: 'hello', owner: 'world'}, {name: 'hi', owner: 'bye'}, {name: 'rite-evaluation', owner: 'preview-code'}];
+        projectPage.projects = [
+          {
+            name: 'hello',
+            owner: {
+              login: 'world'
+            }
+          },
+          {
+            name: 'hi',
+            owner: {
+              login: 'bye'
+            }
+          },
+          {
+            name: 'rite-evaluation',
+            owner: {
+              login: 'preview-code'
+            }
+          }
+        ];
         projectPage.projectTitle = {name: 'rite-evaluation', owner: 'preview-code'};
         assert.deepEqual(projectPage.projectTitle, projectPage.activeProject);
       });
