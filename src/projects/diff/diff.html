@@ -91,11 +91,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" additions="{{additions}}" deletions="{{deletions}}" hunks="{{hunks}}"></diff-parser>
-    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}"></hunk-sorter>
+    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}" project="[[project]]"></hunk-sorter>
 
     <div id="hunkGroups">
       <template is="dom-repeat" items="[[orderedGroups]]">
-        <pull-request-group group="[[item]]" editable="[[editable]]"></pull-request-group>
+        <pull-request-group group="[[item]]" editable="[[editable]]" project="[[project]]"></pull-request-group>
       </template>
     </div>
 
@@ -123,6 +123,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Polymer({
       is: 'pull-request-diff',
       properties: {
+        project: Object,
         editable: {
           type: Boolean,
           value: false
@@ -146,12 +147,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         _sortable: Object
       },
       observers: [
-        '_groupsOrdered(orderedGroups.*, editable)',
         '_setGroupTitles(orderedGroups.*)'
       ],
       listeners: {
-        'empty': '_groupEmpty',
-        'order': '_groupMove'
+        'order': '_groupMove',
+        'remove': '_hunkRemoved',
+        'add': '_hunkAdded',
+        'update': '_hunkUpdate'
       },
       _openAddGroupDialog: function() {
         this.$.addGroupDialog.open();
@@ -167,16 +169,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _reorderGroups: function() {
         // console.log('reorder plz');
       },
-      _groupsOrdered: function(orderedGroups, editable) {
-        var groups = orderedGroups.base;
-        if (editable && !this._sortable &&
-            groups && groups[0].diff.length > 0) {
-          this._sortable = true;
-          this.$.hunkGroups.addEventListener('add', this._groupAdded.bind(this));
-          this.$.hunkGroups.addEventListener('remove', this._groupRemoved.bind(this));
-          this.$.hunkGroups.addEventListener('update', this._groupUpdate.bind(this));
-        }
-      },
       jumpToGroup: function(name) {
         var group = this.$$('pull-request-group[display-title="' + name + '"]');
         this.fire('scroll-to', {
@@ -186,20 +178,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _addGroup: function(e) {
         this.$.sorter.addGroup(e.detail);
       },
-      _groupAdded: function(e) {
-        // console.log('added group', e);
+      _hunkAdded: function(e) {
+        console.log('added group', e.detail);
       },
-      _groupRemoved: function(e) {
-        // console.log('removed group', e);
+      _hunkRemoved: function(e) {
+        console.log('removed group', e.detail);
       },
-      _groupUpdate: function(e) {
-        // console.log('updated group', e);
+      _hunkUpdate: function(e) {
+        console.log('updated group', e.detail);
       },
       _groupEmpty: function(e) {
-        // console.log('group is now empty', e.detail.groupName);
+        console.log('group is now empty', e.detail.groupName);
       },
       _groupMove: function(e) {
-        // console.log('moved group', e);
+        console.log('moved group', e);
       }
     });
   </script>

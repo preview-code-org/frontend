@@ -1,0 +1,114 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>hunk-sorter tests</title>
+
+  <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='test-diffs.js'></script>
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../../src/projects/diff/hunk-sorter.html'>
+
+</head>
+<body>
+
+  <test-fixture id='basic'>
+    <template>
+      <hunk-sorter></hunk-sorter>
+    </template>
+  </test-fixture>
+
+  <script>
+  /*global testDiffs*/
+  suite('<pull-request-group> unit', function() {
+    var sorter;
+
+    setup(function() {
+      sorter = fixture('basic');
+    });
+
+    test('has default empty group', function() {
+      assert.equal(0, sorter.groups[0].diff.length);
+    });
+
+    test('orders new hunks', function() {
+      sorter.rawHunks = [testDiffs[0]];
+      assert.deepEqual(testDiffs[0], sorter.groups[0].diff[0]);
+    });
+
+    test('adds group to the front', function() {
+      sorter.addGroup('01');
+      sorter.addGroup('02');
+      assert.equal('02', sorter.groups[0].title);
+      assert.equal('01', sorter.groups[1].title);
+    });
+
+    test('adds new empty group', function() {
+      sorter.addGroup('01');
+      assert.equal(0, sorter.groups[0].diff.length);
+    });
+
+    test('does not add duplicate groups', function() {
+      sorter.addGroup('01');
+      sorter.addGroup('01');
+      // There should be two groups because 'Unsorted changes' is the default group.
+      assert.equal(2, sorter.groups.length);
+    });
+
+    test('removes group by title', function() {
+      sorter.addGroup('01');
+      sorter.removeGroup('01');
+      assert.equal(1, sorter.groups.length);
+    });
+
+    test('does not remove too much', function() {
+      sorter.addGroup('01');
+      sorter.addGroup('02');
+      sorter.addGroup('03');
+      sorter.removeGroup('01');
+      assert.equal(3, sorter.groups.length);
+    });
+
+    test('adds hunk to correct group', function() {
+      sorter.rawHunks = testDiffs;
+      sorter.addGroup('group');
+      assert.equal(0, sorter.groups[0].diff.length);
+      sorter.addHunkToGroup(testDiffs[0], 'group');
+      assert.equal(1, sorter.groups[0].diff.length);
+    })
+  });
+
+  </script>
+
+</body>
+</html>

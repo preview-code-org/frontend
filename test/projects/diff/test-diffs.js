@@ -258,9 +258,9 @@ var testDiffs = [
   },
   {
     index: '6',
-    file: 'a',
+    file: 'b',
     diffId: '@@ -1,5 +1,5 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileUrl: 'base/blob/sha/b',
     changes: "\n one line\n" +
     " line inbetween\n" +
     "-another line\n" +

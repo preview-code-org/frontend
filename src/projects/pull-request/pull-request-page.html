@@ -158,8 +158,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pull-request="[[selectedPull]]" project="[[project]]"></pull-request-general-information>
       <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
       <pull-request-changes data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
-          base-url="[[selectedPull.head.repo.html_url]]"
-          sha="[[selectedPull.head.sha]]" show-space="[[_showSpace]]"></pull-request-changes>
+          base-url="[[selectedPull.head.repo.html_url]]" project="[[project]]"
+          sha="[[selectedPull.head.sha]]"></pull-request-changes>
+
+      <span data-route="404">
+        Oops you hit a 404!
+        <a href="/">Head back home</a>
+      </span>
     </iron-pages>
   </template>
   <script>
