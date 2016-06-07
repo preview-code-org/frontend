@@ -158,7 +158,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pull-request="[[selectedPull]]" project="[[project]]"></pull-request-general-information>
       <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
       <pull-request-changes data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
-          base-url="[[selectedPull.head.repo.html_url]]" project="[[project]]"
+          base-url="[[selectedPull.head.repo.html_url]]" project="[[project]]" show-space="[[_showSpace]]"
           sha="[[selectedPull.head.sha]]"></pull-request-changes>
 
       <span data-route="404">
@@ -187,7 +187,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           computed: '_getShowSpace(page.page)'
         },
         _selectedTab: {
-          type: Boolean,
+          type: String,
           computed: '_getSelectedTab(page.page)'
         }
       },
