@@ -120,6 +120,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
     });
 
+    test('filters on both status and search', function(done) {
+      elem.status = 'Under review';
+      elem.searchWord = 'Second';
+      flush(function() {
+        var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
+        assert.equal(prs.length, 0);
+        done();
+      });
+    });
+
     test('selecting pr resets search', function() {
       elem.searchWord = 'User1';
       elem.selectedPull = pr2;

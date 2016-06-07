@@ -86,7 +86,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         backendPath: {
           type: String,
-          computed: '_updateBackendPath(pullRequest)'
+          computed: '_updateBackendPath(project, pullRequest)'
         }
       },
       observers: [
@@ -98,8 +98,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _updateStatusPath: function(project, pullRequest) {
         return '/pulls/' + project.owner + '/' + project.name + '/branch/' + pullRequest.number + '/status';
       },
-      _updateBackendPath: function(pullRequest) {
-        return 'https://localhost:8443/pr/' + this.project.owner + '/' + this.project.name + '/' + pullRequest.number + '/status';
+      _updateBackendPath: function(project, pullRequest) {
+        return 'https://localhost:8443/pr/' + project.owner + '/' + project.name + '/' + pullRequest.number + '/status';
       },
       _updateFirebaseStatus: function(e) {
         if (!e.detail.value) {

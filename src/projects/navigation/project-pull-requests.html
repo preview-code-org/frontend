@@ -100,7 +100,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         margin-left:75%;
       }
     </style>
-    <preview-list>
+    <preview-list id="list" on-end-of-list="_retrieveNewPullRequests">
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
       <paper-toggle-button class="pr-state-switch" on-tap="_setPRStateFilter" checked>[[prStateFilter]]</paper-toggle-button>
       <div class= "header">
@@ -160,8 +160,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       observers: [
-        '_resetSearch(selectedPull)'
+        '_resetSearch(selectedPull)',
+        '_clearTriggers(pullrequests.*)'
       ],
+      attached: function() {
+        this.$.list.setScrollTarget(this);
+      },
       _filter: function(pullrequests, status, searchWord) {
         if (status !== 'All') {
           pullrequests = pullrequests.filter(function(e) {
@@ -180,6 +184,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _resetSearch: function() {
         this.searchWord = '';
+      },
+      _clearTriggers: function(pullrequests) {
+        if (pullrequests.base.length) {
+          this.$.list.resetEndOfList();
+        }
+      },
+      _retrieveNewPullRequests: function() {
+        this.fire('pull-request-list-end-reached');
       },
       _setPRStateFilter: function() {
         if(this.prStateFilter === 'closed') {

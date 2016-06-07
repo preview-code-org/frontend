@@ -70,7 +70,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <github-authenticated-ajax
       id="ajaxPullRequest"
       refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls?state=[[prStateFilter]]"
-      last-response="{{pullrequests}}"></github-authenticated-ajax>
+      page="[[pullRequestPagination]]"
+      debounce-duration="300"
+      on-response="_appendPullRequests"></github-authenticated-ajax>
 
     <github-authenticated-ajax
       id="ajaxCustomPullRequest"
@@ -109,6 +111,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: Object,
           notify: true
         },
+        pullRequestPagination: {
+          type: Number,
+          value: 1
+        },
+        pullrequests: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
         showProjectsList: Boolean,
         showPullList: Boolean,
         selectedPull: {
@@ -136,12 +148,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ],
       listeners: {
         'PRStateFilter-updated': '_changePRStateFilter',
-        'force-hide-list': '_hideBothLists'
+        'force-hide-list': '_hideBothLists',
+        'pull-request-list-end-reached': '_incrementPageAndRetrievePRs'
       },
       chooseProject: function(projects, projectTitle) {
         var owner = projectTitle.value.owner;
         var name = projectTitle.value.name;
         if (!owner || !name) {
+          return;
+        }
+
+        if (this.activeProject && this.activeProject.owner === owner && this.activeProject.name === name) {
           return;
         }
 
@@ -151,23 +168,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         if (!project) {
           return;
         }
-        project.owner = project.owner.login;
 
-        this.activeProject = project;
+        this.activeProject = {
+          owner: project.owner.login,
+          name: project.name
+        };
 
+        this.pullRequestPagination = 1;
+        this._lastPage = undefined;
         this.$.ajaxPullRequest.generateRequest();
+        this.pullrequests = [];
       },
       _focusProject: function() {
         this.$$('project-overview-page').focus();
       },
       _getPullFromId: function(pullrequests, id) {
+        if (!id) {
+          return;
+        }
         var list = pullrequests.filter(function(pr) {
           return pr.number === parseInt(id);
         });
-        if(list.length > 0) {
+        if (list.length > 0) {
+          this._lastId = id;
           return list[0];
         }
-        this.$.ajaxCustomPullRequest.generateRequest();
+
+        if (this._lastId === id) {
+          return;
+        }
+        this._lastId = id;
+
+        if (this.$.ajaxCustomPullRequest.refurl.match(id + '$')) {
+          this.$.ajaxCustomPullRequest.generateRequest();
+        }
       },
       _getCurrentView: function(projectSelected, pullRequestSelected) {
         if (!projectSelected) {
@@ -195,7 +229,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.ajaxPullRequest.generateRequest();
       },
       _showPullRequest: function(newPullrequest) {
-        this.pullrequests = this.pullrequests.concat([newPullrequest]);
+        this.push('pullrequests', newPullrequest);
+      },
+      _appendPullRequests: function(e) {
+        var response = e.detail.response;
+        // Event was fired twice, ignore this one
+        if (this._lastPRResponse === response) {
+          return;
+        }
+        // To enable pagination, we must retrieve the maximum page
+        // If we do not, GitHub will throw errors when we are fetching too much
+        // For more information see
+        // https://developer.github.com/guides/traversing-with-pagination/#consuming-the-information
+        var pagination = e.detail.xhr.getResponseHeader('Link');
+        if (pagination) {
+          var lastPage = pagination.match('page=(\\d+)>; rel="last"');
+          if (lastPage) {
+            this._lastPage = lastPage[1];
+          }
+        }
+        this._lastPRResponse = response;
+        Array.prototype.unshift.apply(response, this.pullrequests);
+        this.notifyPath('pullrequests', response);
+      },
+      _incrementPageAndRetrievePRs: function(e) {
+        if (!this.pullrequests.length) {
+          return;
+        }
+        this.pullRequestPagination = this.pullRequestPagination + 1;
+        if (!this._lastPage || this.pullRequestPagination <= this._lastPage) {
+          this.$.ajaxPullRequest.generateRequest();
+        }
       }
     });
   </script>

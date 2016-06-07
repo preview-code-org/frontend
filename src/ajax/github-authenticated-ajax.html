@@ -97,7 +97,7 @@ of params with oAuth tokens.
          */
         params: {
           type: Object,
-          computed: '_generateParams(shared, perPage)',
+          computed: '_generateParams(shared, perPage, page)',
           observer: '_maybeFire'
         },
         /**
@@ -107,6 +107,14 @@ of params with oAuth tokens.
         perPage: {
           type: Number,
           value: 10
+        },
+        /**
+         * The nth page from GitHub, used to travers through pagination.
+         * @type {Number}
+         */
+        page: {
+          type: Number,
+          value: 1
         },
         /**
          * The HTTP method to use such as 'GET', 'POST', 'PUT', or 'DELETE'.
@@ -359,14 +367,15 @@ of params with oAuth tokens.
           shared.instances[i](shared);
         }
       },
-      _generateParams: function(shared, perPage) {
+      _generateParams: function(shared, perPage, page) {
         var accessToken = shared.accessToken;
         if (!accessToken) {
           return undefined;
         }
         return {
           access_token: accessToken,
-          per_page: perPage
+          per_page: perPage,
+          page: page
         };
       },
       _setHeader: function(name, value) {
