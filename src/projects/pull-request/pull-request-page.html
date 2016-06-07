@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../info-header.html">
 <link rel="import" href="pull-request-general-information.html">
 <link rel="import" href="pull-request-changes.html">
 <link rel="import" href="pull-request-commits.html">
@@ -42,11 +43,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <template>
     <style>
       :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
         background-color: var(--secondary-background-color);
-        flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
+        height: 100%;
       }
       :host > div {
         flex: 1;
@@ -62,27 +64,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         background-color: white;
         color: var(--primary-color);
       }
-      .info-area  {
-        padding-top: 2em;
-        color: var(--primary-text-color);
-      }
-      .info-area .content {
-        margin: 0 auto 2em auto;
-        text-align: center;
-      }
-      header h1,
-      header h2 {
-        text-align: center;
-      }
-      header h1 {
-        font-size: 2em;
-        color: var(--primary-text-color);
-        margin: 0;
-      }
-      header h2 {
-        font-size: 1em;
-        color: var(--secondary-text-color);
-      }
       paper-tabs {
         display: block;
         justify-content: center;
@@ -90,7 +71,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         --paper-tabs-selection-bar-color: var(--secondary-action-red);
         color: var(--secondary-action-red);
         font-size: 1em;
-        width: 300px;
+        width: 400px;
         margin: 0 auto;
       }
       paper-tab {
@@ -107,18 +88,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         padding: 0 20px;
         height: 100%;
       }
-      .info-area,
       iron-pages {
-        max-width: 1100px;
-        margin: 0 auto;
-        width: 75%;
+        flex: 1;
+        z-index: 0;
       }
-      iron-pages {
-        margin-bottom: 2em;
+      info-header {
+        z-index: 1;
+      }
+      iron-pages > pull-request-changes[show-space] {
+        @apply(--full-width);
+        margin-bottom: 0;
       }
       iron-pages > * {
         display: flex;
         flex-direction: column;
+        @apply(--constraint-width);
+        margin-bottom: 2em;
+        -webkit-transition: all 0.5s ease;
+        -moz-transition: all 0.5s ease;
+        -ms-transition: all 0.5s ease;
+        -o-transition: all 0.5s ease;
+        transition: all 0.5s ease;
       }
     </style>
 
@@ -142,15 +132,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
 
-    <div class="info-area">
-      <div class="content">
-        <header>
-          <h1>[[selectedPull.title]]</h1>
-          <h2><img src$="[[selectedPull.user.avatar_url]]" width="24px" height="24px" alt$="[[selectedPull.user.login]]"/>[[selectedPull.user.login]]</h2>
-        </header>
-      </div>
-
-      <paper-tabs selected="{{page.page}}" class="bottom self-end" attr-for-selected="data-route">
+    <info-header title="[[selectedPull.title]]" collapsed="[[_showSpace]]">
+      <span class="subtitle"><img src$="[[selectedPull.user.avatar_url]]" width="24px" height="24px" alt$="[[selectedPull.user.login]]"/>[[selectedPull.user.login]]</span>
+      <paper-tabs selected="[[page.page]]" class="bottom self-end" attr-for-selected="data-route">
         <paper-tab data-route="overview">
           <a href$="[[route.prefix]]/overview">Overview</a>
         </paper-tab>
@@ -160,24 +144,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <paper-tab data-route="diff">
           <a href$="[[route.prefix]]/diff">Changes</a>
         </paper-tab>
+        <paper-tab data-route="space">
+          <a href$="[[route.prefix]]/space">Space</a>
+        </paper-tab>
       </paper-tabs>
-    </div>
+    </info-header>
 
     <iron-pages
-        selected="[[page.page]]"
+        selected="[[_selectedTab]]"
         attr-for-selected="data-route"
-        fallback-selection="404">
+        fallback-selection="overview">
       <pull-request-general-information data-route="overview" class="overview"
         pull-request="[[selectedPull]]" project="[[project]]"></pull-request-general-information>
       <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
       <pull-request-changes data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
           base-url="[[selectedPull.head.repo.html_url]]"
-          sha="[[selectedPull.head.sha]]"></pull-request-changes>
-
-      <span data-route="404">
-        Oops you hit a 404!
-        <a href="/">Head back home</a>
-      </span>
+          sha="[[selectedPull.head.sha]]" show-space="[[_showSpace]]"></pull-request-changes>
     </iron-pages>
   </template>
   <script>
@@ -194,10 +176,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         orderingPath: {
           type: String,
           computed: '_computeOrderingPath(project, selectedPull)'
+        },
+        _showSpace: {
+          type: Boolean,
+          computed: '_getShowSpace(page.page)'
+        },
+        _selectedTab: {
+          type: Boolean,
+          computed: '_getSelectedTab(page.page)'
         }
       },
       listeners: {
         'scroll-to': '_scrollTo'
+      },
+      _getSelectedTab: function(page) {
+        if (page === 'space') {
+          return 'diff';
+        }
+        return page;
+      },
+      _getShowSpace: function(page) {
+        if (page === 'space') {
+          this.fire('force-hide-list');
+          return true;
+        }
+        return false;
       },
       _fetchAjax: function(pullRequest) {
         if (pullRequest) {

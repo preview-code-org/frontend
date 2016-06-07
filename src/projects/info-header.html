@@ -26,76 +26,75 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../diff/diff.html">
-<link rel="import" href="space/pull-request-space.html">
+<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 
-<dom-module id="pull-request-changes">
+<dom-module id="info-header">
   <template>
     <style>
       :host {
+        @apply(--constraint-width);
         display: block;
-      }
-      :host([show-space]) {
-        height: 100%;
-        display: flex;
-        flex-direction: row;
-        overflow-y: hidden;
-      }
-      [hidden] {
-        display: none !important;
-      }
-      pull-request-diff {
-        max-width: 100%;
+        padding-top: 2em;
+        color: var(--primary-text-color);
         z-index: 1;
-        will-change: max-width;
+        will-change: width;
       }
-      :host([show-space]) pull-request-diff {
-        flex: 1;
-        max-width: 35%;
-        overflow-y: auto;
-        top: calc(2 * var(--header-height));
-        height: calc(100vh - 2*var(--header-height));
+      :host header {
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
       }
-      :host([show-space]) pull-request-space {
-        flex: 1;
-        height: calc(100vh - 2*var(--header-height));
-        z-index: 0;
+      :host([collapsed]) {
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
+        background-color: var(--primary-background-color);
+        padding-top: 0;
+        @apply(--full-width);
+      }
+      header {
+        margin: 0 auto 2em auto;
+        text-align: center;
+      }
+      header[hidden] {
+        display: none;
+      }
+      header h1,
+      header h2 {
+        text-align: center;
+      }
+      header h1 {
+        font-size: 2em;
+        color: var(--primary-text-color);
+        margin: 0;
+      }
+      header h2 {
+        font-size: 1em;
+        color: var(--secondary-text-color);
       }
     </style>
-    <pull-request-space id="space" data-route="space"
-        groups="[[orderedGroups]]" hidden$="[[!showSpace]]"></pull-request-space>
-    <pull-request-diff id="diff" data-route="diff" diff="[[diff]]"
-        ordering="[[ordering]]" ordered-groups="{{orderedGroups}}"
-        base-url="[[baseUrl]]" sha="[[sha]]"></pull-request-diff>
+
+    <header id="header" hidden$="[[collapsed]]">
+      <h1>[[title]]</h1>
+      <h2><content select=".subtitle"></content></h2>
+    </header>
+
+    <div class=".tab-area">
+      <content></content>
+    </div>
 
   </template>
   <script>
     Polymer({
-      is: 'pull-request-changes',
+      is: 'info-header',
       properties: {
-        diff: String,
-        ordering: Array,
-        baseUrl: String,
-        sha: String,
-        orderedGroups: Array,
-        showSpace: {
+        title: String,
+        collapsed: {
           type: Boolean,
           value: false,
           reflectToAttribute: true
         }
-      },
-      observers: [
-        '_resizeSpace(showSpace)'
-      ],
-      listeners: {
-        'jump-to-group': 'jumpToGroup'
-      },
-      _resizeSpace: function() {
-        this.$.space.updateAfterResize();
-      },
-      jumpToGroup: function(e) {
-        this.$.diff.jumpToGroup(e.detail.name);
       }
     });
   </script>

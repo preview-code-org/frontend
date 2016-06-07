@@ -38,20 +38,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display: none !important;
       }
       #container {
-        border: black 1px solid;
-        height: 400px;
-        position: absolute;
+        height: 100%;
+        width: 100%;
+        position: relative;
       }
       canvas {
         position: absolute;
       }
     </style>
-    <div>
       <canvas id="canvas"></canvas>
-
-      <div id="container">
-      </div>
-    </div>
+      <div id="container"></div>
   </template>
   <script>
     Polymer({
@@ -96,19 +92,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         setInterval(this._recalcCanvas, 1000 / 60);
       },
-      updateAfterResize: function() {
-        if (!this.isAttached) {
-          return;
+      updateAfterResize: (function() {
+        var wait = false;
+
+        return function() {
+          if (!this.isAttached || wait) {
+            return;
+          }
+          var rect = this.containerRect;
+          this._blocks.forEach(function(block) {
+            this._updateElemTrackingPosition(rect, block, 0, 0, 0);
+          }.bind(this));
+
+          this._recalcCanvas(true);
+
+          wait = true;
+          setTimeout(function() {
+            wait = false;
+          }, 1000 / 10);
         }
-        this.$.container.style.width = Math.min(800, this.parentNode.getBoundingClientRect().width / 2 - 100) + 'px';
-
-        this._blocks.forEach(function(block) {
-          block._originalPosition = block.getBoundingClientRect();
-          this._updateElemTrackingPosition(block, 0, 0, this._padding);
-        }.bind(this));
-
-        this._recalcCanvas(true);
-      },
+      })(),
       _createBlocks: function(groups) {
         this._blocks = [];
         var container = this.$.container;
@@ -121,6 +124,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           elem.blockId = i;
           elem.style.right = (i * 100) + 'px';
           container.appendChild(elem);
+          elem._originalPosition = elem.getBoundingClientRect();
           this._blocks.push(elem);
         }
       },
@@ -287,9 +291,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
       },
-      _updateElemTrackingPosition: function(lastElem, dy, dx, padding) {
-        var rect = this.containerRect;
-
+      _updateElemTrackingPosition: function(rect, lastElem, dy, dx, padding) {
         // Position the element to the new y position based on its original
         // position, the delta from the original position.
         //
@@ -308,7 +310,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         lastElem.style.left = leftBoundedToLeftAndRight + 'px';
       },
       _handleCardTracking: (function() {
-        var lastElem;
+        var lastElem, rect;
 
         return function(e) {
           var event = e.detail.event;
@@ -316,6 +318,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             case 'start':
               var elem = e.detail.card;
               elem._originalPosition = elem.getBoundingClientRect();
+              rect = this.containerRect;
 
               elem.style.zIndex = 5;
               lastElem = elem;
@@ -324,7 +327,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               break;
 
             case 'track':
-              this._updateElemTrackingPosition(lastElem, event.dy, event.dx, this._padding);
+              this._updateElemTrackingPosition(rect, lastElem, event.dy, event.dx, this._padding);
               break;
 
             case 'end':

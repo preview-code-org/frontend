@@ -83,7 +83,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         -ms-transition: all 0.4s;
         transition: all 0.4s;
       }
-
+      pull-request-group:first-child {
+        margin-top: 0;
+      }
+      #hunkGroups {
+        will-change: height;
+      }
     </style>
     <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" additions="{{additions}}" deletions="{{deletions}}" hunks="{{hunks}}"></diff-parser>
     <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}"></hunk-sorter>

@@ -33,26 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="create-pull-request/create-pull-request.html">
 <link rel="import" href="project-activity.html">
+<link rel="import" href="info-header.html">
 
 <dom-module id="project-overview-page">
   <template>
     <style>
       :host {
         display: block;
-      }
-      .info-area  {
-        padding-top: 2em;
-        color: var(--primary-text-color);
-      }
-      .info-area .content {
-        margin: 0 auto 2em auto;
-        text-align: center;
-      }
-      header h1, header h2, header span {
-        display: inline;
-        font-size: 2em;
-        color: var(--primary-text-color);
-        text-align: center;
       }
       .description {
         margin-top: 1em;
@@ -83,29 +70,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         padding: 0 20px;
         height: 100%;
       }
-      .info-area,
       iron-pages {
-        max-width: 1100px;
-        margin: 0 auto;
-        width: 75%;
+        @apply(--constraint-width);
       }
     </style>
 
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}"></carbon-route>
 
-    <div class="info-area">
-      <div class="content">
-        <header>
-          <h1>[[project.owner]]</h1>
-          <span>/</span>
-          <h2>[[project.name]]</h2>
-        </header>
-        <div class="description">
-            RITE-evaluation prototype for the PReview application.
-        </div>
-      </div>
+    <info-header title="[[project.owner]] / [[project.name]]">
+      <span class="subtitle">
+          RITE-evaluation prototype for the PReview application.
+      </span>
 
-      <paper-tabs selected="{{page.page}}" class="bottom self-end" attr-for-selected="data-route">
+      <paper-tabs selected="[[page.page]]" class="bottom self-end" attr-for-selected="data-route">
         <paper-tab data-route="activity">
           <a href$="[[route.prefix]]/activity">Activity</a>
         </paper-tab>
@@ -113,7 +90,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <a href$="[[route.prefix]]/createpull">Create pull request</a>
         </paper-tab>
       </paper-tabs>
-    </div>
+    </info-header>
 
     <iron-pages selected="[[page.page]]"
                 attr-for-selected="data-route"
@@ -121,7 +98,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <project-activity data-route="activity"></project-activity>
       <project-create-pull-request data-route="createpull"
           project="[[project]]"></project-create-pull-request>
-
       <span data-route="404">
         Oops you hit a 404!
         <a href="/">Head back home</a>
