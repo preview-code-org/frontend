@@ -46,11 +46,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         rawHunks: {
           type: Array,
-          value: []
+          value: function() {
+            return [];
+          }
         },
         groups: {
           type: Array,
-          value: [],
+          value: function() {
+            return [];
+          },
           computed: '_sortHunks(rawHunks, _ordering.*)',
           notify: true
         },
@@ -98,6 +102,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return this.groups;
         }
         var ordering = o.base;
+        delete ordering.splices;
         var unsortedHunks = this._hunksToMap(rawHunks);
 
         var allGroups = [];
@@ -138,7 +143,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       _findHunksInOrdering: function(hunkOrdering, unsortedHunks) {
         if (hunkOrdering.length === 0) {
-          return;
+          return [];
         }
         return hunkOrdering.hunks.map(function(hunkId) {
           var hunk = unsortedHunks[hunkId];
