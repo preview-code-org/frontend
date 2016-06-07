@@ -85,9 +85,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.equal(2, sorter.groups.length);
     });
 
-    test('removes group by title', function() {
-      sorter.addGroup('01');
-      sorter.removeGroup('01');
+    test('removes group by id', function() {
+      sorter.addGroup('group');
+      var id = sorter.groups[0].id;
+      sorter.removeGroup(id);
       assert.equal(1, sorter.groups.length);
     });
 
@@ -95,8 +96,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.addGroup('01');
       sorter.addGroup('02');
       sorter.addGroup('03');
-      sorter.removeGroup('01');
+      sorter.removeGroup(sorter.groups[0].id);
       assert.equal(3, sorter.groups.length);
+    });
+
+    test('can remove middle group', function() {
+      sorter.addGroup('01');
+      sorter.addGroup('02');
+      sorter.addGroup('03');
+      sorter.removeGroup(sorter.groups[1].id);
+      assert.equal('01', sorter.groups[1].title);
     });
 
     test('adds hunk to correct group', function() {

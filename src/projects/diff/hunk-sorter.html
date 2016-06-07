@@ -65,22 +65,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
       },
+
       addGroup: function(groupTitle) {
-        if (!this._hasGroup(groupTitle)) {
+        if (!this._groupTitleExists(groupTitle)) {
           this.unshift('_ordering', this._createHunkOrdering(groupTitle, []));
         }
       },
-      removeGroup: function(groupTitle) {
-        if (groupTitle !== 'Unsorted changes' &&
-            this._hasGroup(groupTitle)) {
+
+      removeGroup: function(groupId) {
+        if (groupId !== 1 &&
+            this._groupExists(groupId)) {
           this._ordering = this._ordering.filter(function(o) {
-            return o.title !== groupTitle;
+            return o.id !== groupId;
           });
         }
       },
+
       addHunkToGroup: function(hunkId, groupTitle, index) {
 
       },
+
       removeHunkFromGroup: function(hunkId, groupTitle) {
         for (var i = 0, l = this._ordering.length; i < l; i++) {
           for (j = 0, m = group.length; j < m; j++) {
@@ -89,6 +93,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
       },
+
       moveHunk: function(hunkId, oldIndex, newIndex) {
 
       },
@@ -114,14 +119,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
 
-        var unsortedGroup = this._createGroup('Unsorted changes', []);
-        var remainingHunk, i = 0;
-        for (var remainingHunkId in unsortedHunks) {
-          remainingHunk = unsortedHunks[remainingHunkId];
-          remainingHunk.order = i++;
-          unsortedGroup.diff.push(remainingHunk);
-        }
-        allGroups.push(unsortedGroup);
+        allGroups.push(this._distributeUnsortedHunks(unsortedHunks));
         return allGroups;
       },
 
@@ -138,7 +136,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         hunks = hunks.filter(function(hunk) {
           return !!hunk;
         });
-        return this._createGroup(hunkOrdering.title, hunks);
+        return this._createGroup(hunkOrdering.title, hunkOrdering.id, hunks);
       },
 
       _findHunksInOrdering: function(hunkOrdering, unsortedHunks) {
@@ -156,6 +154,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }.bind(this));
       },
 
+      _distributeUnsortedHunks: function(unsortedHunks) {
+        var unsortedGroup = this._createDefaultGroup();
+        var remainingHunk;
+        for (var remainingHunkId in unsortedHunks) {
+          remainingHunk = unsortedHunks[remainingHunkId];
+          unsortedGroup.diff.push(remainingHunk);
+        }
+        return unsortedGroup;
+      },
+
       _getHunkId: function(hunk) {
         return hunk.file + ',' +
           hunk.linesChanged.startLineBefore + ',' +
@@ -164,26 +172,53 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           hunk.linesChanged.rangeAfter;
       },
 
-      _createGroup: function(title, diff) {
+      _createGroup: function(title, id, diff) {
         return {
+          id: id,
           title: title,
           diff: diff,
           comments: []
         }
       },
 
+      _createDefaultGroup: function() {
+        return this._createGroup('Unsorted changes', 1, []);
+      },
+
       _createHunkOrdering: function(title, hunkIds) {
         return {
+          id: this.guid(),
           title: title,
           hunks: hunkIds
         }
       },
 
-      _hasGroup: function(title) {
-        return this.groups.filter(function(g) {
-          return g.title === title;
-        }).length > 0;
+      _groupExists: function(id) {
+        return this._searchGroup('id').bind(this)(id);
+      },
+
+      _groupTitleExists: function(title) {
+        return this._searchGroup('title').bind(this)(title);
+      },
+
+      _searchGroup: function(field) {
+        return function(entry) {
+          return this.groups.filter(function(g) {
+            return g[field] === entry;
+          }).length > 0;
+        }
+      },
+
+      /**
+       * RFC4122 v4 compliant GUID generator
+       */
+      guid: function() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
       }
+
     });
   </script>
 </dom-module>

@@ -291,7 +291,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           e.stopPropagation();
           this.fire(name, {
             hunk: e.item.children[1].hunk,
-            group: this.group.title,
+            groupId: this.group.id,
             oldIndex: e.oldIndex,
             newIndex: e.newIndex
           });
