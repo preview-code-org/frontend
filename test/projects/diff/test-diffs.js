@@ -64,10 +64,10 @@ var actualDiffs = [
 
   {
     file: 6,
-    diff: 'diff --git a/a b/a\n' +
+    diff: 'diff --git a/b b/b\n' +
           'index 0a96631..c8f047a 100644\n' +
-          '--- a/a\n' +
-          '+++ b/a\n' +
+          '--- a/b\n' +
+          '+++ b/b\n' +
           '@@ -1,5 +1,5 @@\n' +
           ' one line\n' +
           ' line inbetween\n' +
