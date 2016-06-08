@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../util/branch-selector.html">
 <link rel="import" href="../../util/markdown-input.html">
 <link rel="import" href="../../ajax/github-authenticated-ajax.html">
+<link rel="import" href="../../ajax/backend-ajax.html">
 <link rel="import" href="../diff/diff.html">
 <link rel="import" href="create-pull-request-description.html">
 <link rel="import" href="create-pull-diff.html">
@@ -87,15 +88,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       on-response="_showPullRequestInformation"
       ></github-authenticated-ajax>
 
-      <iron-ajax
-        id="createPull"
-        method="POST"
-        url="[[backendPath]]"
-        headers='{"Content-Type": "application/json"}'
-        handle-as="json"
-        last-response="{{number}}"
-        on-response="_madePulls"
-        ></iron-ajax>
+    <backend-ajax
+      id="createPull"
+      refurl="[[backendPath]]"
+      last-response="{{number}}"
+      on-response="_madePulls"
+      ></backend-ajax>
 
     <div class="inputs">
       <div class="selectBranches">
@@ -192,7 +190,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.createPull.generateRequest();
       },
       _updateBackendPath: function(title, project, headBranch, baseBranch) {
-        return 'https://localhost:8443/project/' + project.owner + '/' + project.name + '/createPR/' + headBranch + '/' + baseBranch;
+        return 'project/' + project.owner + '/' + project.name + '/createPR/' + headBranch + '/' + baseBranch;
       },
       _madePulls: function() {
         if (this.number.number !== 0) {

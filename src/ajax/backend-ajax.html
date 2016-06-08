@@ -34,11 +34,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Wrapper around iron-ajax to enable caching of ETags and proper handling
 of params with oAuth tokens.
 -->
-<dom-module id="github-authenticated-ajax">
+<dom-module id="backend-ajax">
   <template>
     <iron-ajax
       id="ajax"
-      url="[[refurl]]"
+      url="https://localhost:8443/[[refurl]]"
       params="[[params]]"
       method="[[method]]"
       headers="[[headers]]"
@@ -60,61 +60,37 @@ of params with oAuth tokens.
       on-error="_onError"></iron-ajax>
   </template>
   <script>
-  var shared = {
-    responseCache: {},
-    headerCache: {}
-  };
-
-  (function() {
     Polymer({
-      is: 'github-authenticated-ajax',
+      is: 'backend-ajax',
       behaviors: [IronAjaxProperties],
       properties: {
+        /**
+         * The HTTP method to use such as 'GET', 'POST', 'PUT', or 'DELETE'.
+         * Default is 'POST'.
+         * @type {String}
+         */
+        method: {
+          type: String,
+          value: 'POST'
+        },
         /**
          * Parameters decorated with the oAuth token and the perPage property
          * @type {Object}
          */
         params: {
           type: Object,
-          computed: '_generateParams(shared, perPage, page)',
+          computed: '_generateParams(shared)',
           observer: '_maybeFire'
-        },
-        /**
-         * How many results must be retrieved from GitHub, default 10.
-         * @type {Number}
-         */
-        perPage: {
-          type: Number,
-          value: 10
-        },
-        /**
-         * The nth page from GitHub, used to travers through pagination.
-         * @type {Number}
-         */
-        page: {
-          type: Number,
-          value: 1
         }
       },
-      observers: [
-        '_updateIfNoneMatch(refurl)'
-      ],
-      _generateParams: function(shared, perPage, page) {
+      _generateParams: function(shared) {
         var accessToken = shared.accessToken;
         if (!accessToken) {
           return undefined;
         }
         return {
-          access_token: accessToken,
-          per_page: perPage,
-          page: page
+          access_token: accessToken
         };
-      },
-      _updateIfNoneMatch: function(refurl) {
-        var etag = shared.headerCache[refurl];
-        if (etag) {
-          this._setHeader('If-None-Match', etag);
-        }
       },
       /**
        * Performs an AJAX request to the specified URL.
@@ -122,7 +98,6 @@ of params with oAuth tokens.
        * @return {!IronRequestElement}
        */
       generateRequest: function() {
-        this._updateIfNoneMatch(this.refurl);
         if (!this.shared.accessToken) {
           this._fireLater = true;
           return;
@@ -130,32 +105,16 @@ of params with oAuth tokens.
         return this.$.ajax.generateRequest();
       },
       _onResponse: function(e) {
-        shared.headerCache[this.refurl] = e.detail.xhr.getResponseHeader('ETag');
-        shared.responseCache[this.refurl] = e.detail.response;
-        this._setLastResponse(shared.responseCache[this.refurl]);
+        this._setLastResponse(e.detail.response);
         this.fire('response', e.detail, {
           bubbles: this.bubbles
         });
       },
       _onError: function(e) {
-        shared.headerCache[this.refurl] = e.detail.request.xhr.getResponseHeader('ETag');
-        // Cache responses to save the rate limit of the GitHub api
-        if (e.detail.request.status === 304) {
-          this._setLastResponse(shared.responseCache[this.refurl]);
-          // Modify the original request to remove the error and make it a proper respond
-          var request = e.detail.request;
-          // Inject our last response
-          request._setResponse(this.lastResponse);
-          this.fire('response', Object.create(request), {
-            bubbles: this.bubbles
-          });
-        } else {
-          this.fire('error', e.detail, {
-            bubbles: this.bubbles
-          });
-        }
+        this.fire('error', e.detail, {
+          bubbles: this.bubbles
+        });
       }
     });
-  })();
   </script>
 </dom-module>
