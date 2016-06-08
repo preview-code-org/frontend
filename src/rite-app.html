@@ -39,7 +39,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="bower_components/prism-element/prism-highlighter.html">
-<link rel="import" href="bower_components/prism-element/prism-style-import.html">
 
 <link rel="stylesheet" href="bower_components/font-roboto/roboto.html">
 <link rel="import" href="ajax/github-authenticated-ajax.html">
@@ -49,9 +48,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*global Prism*/
 // Match all lines that are not insertions or deletions
 Prism.languages.diff.other = /.+/m;
-// Additions and deletions can also be an empty line
-Prism.languages.diff.inserted = /^[+>].*$/m
-Prism.languages.diff.deleted = /^[-<].*$/m
 </script>
 
 <dom-module id="rite-app">
