@@ -112,14 +112,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.equal(title.innerHTML, 'someTitle');
     });
 
-    var addEventListener = function(element, name, func) {
-      var inner = function(e) {
-        func(e);
-        element.removeEventListener(name, inner);
-      };
-      element.addEventListener(name, inner);
-    }
-
     var get = function(elem) {
       return Polymer.dom(groupElem.root).querySelector(elem);
     }

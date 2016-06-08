@@ -112,7 +112,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
 
-      _doForGroup(groupId, f) {
+      _doForGroup: function(groupId, f) {
         for (var i = 0, l = this._ordering.length; i < l; i++) {
           if (this._ordering[i].id === groupId) {
             return f(i, this.groups[i], this._ordering[i]);
@@ -140,7 +140,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
 
-      _getOrderingFromFirebaseObj(fbOrdering) {
+      _getOrderingFromFirebaseObj: function(fbOrdering) {
         var defaultGroupName = 'Unsorted changes';
         var ordering = [];
         if (fbOrdering.ordering) {
@@ -211,9 +211,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       _getHunkId: function(hunk) {
-        if (!hunk) {
-          return;
-        }
         return hunk.file + ',' +
           hunk.linesChanged.startLineBefore + ',' +
           hunk.linesChanged.rangeBefore + ',' +
@@ -240,10 +237,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       _groupExists: function(id) {
         return this._searchGroup('id').bind(this)(id);
-      },
-
-      _groupTitleExists: function(title) {
-        return this._searchGroup('title').bind(this)(title);
       },
 
       _searchGroup: function(field) {
