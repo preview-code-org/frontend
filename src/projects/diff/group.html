@@ -140,16 +140,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </style>
     <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
     <div class="collapsedContent" hidden$="[[!collapsed]]">
-      <h2>[[displayTitle]]</h2>
+      <h2>[[group.info.title]]</h2>
     </div>
     <div class="content" hidden$="[[collapsed]]">
       <header>
-        <editable-title editable="[[editable]]" value="{{displayTitle}}"></editable-title>
+        <editable-title editable="[[editable]]" value="{{group.info.title}}"></editable-title>
         <markdown-input
           hidden$="[[hideDescription]]"
           disabled="[[!editable]]"
           label="Enter a description for these changes. Markdown is supported."
-          markdown="{{description}}"
+          markdown="{{group.info.description}}"
           project="[[project]]"
         ></markdown-input>
       </header>
@@ -177,14 +177,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: false
         },
         group: Object,
-        displayTitle: {
-          type: String,
-          observer: '_renameGroup'
-        },
-        description: {
-          type: String,
-          value: ''
-        },
         collapseComments: {
           type: Boolean,
           value: true
@@ -207,11 +199,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         '_groupChanged(group, editable)'
       ],
       attached: function() {
-        if (!this.editable && !this.description) {
+        if (!this.editable && !this.group.info.description) {
           this.hideDescription = true;
         }
         this.initSortable();
-        this.displayTitle = this.group.title;
+        this.displayTitle = this.group.info.title;
       },
       initSortable: function() {
         if (this.editable && !this._isAlreadyInitialized) {
@@ -241,7 +233,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             // is correctly cleared after stamping groups to the hunks section
             this.$.hunks.style.zoom = this.$.hunks.style.zoom ? '0.999999' : '1';
           }, 1);
-          this.displayTitle = this.group.title;
+          this.displayTitle = this.group.info.title;
         }
       },
       _createDraggableHunk: function(hunk, editable) {
@@ -259,7 +251,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         return container;
       },
       _renameGroup: function(newTitle) {
-        if (this.group && newTitle !== this.group.title) {
+        if (this.group && newTitle !== this.group.info.title) {
           this.fire('rename', {
             groupId: this.group.id,
             title: newTitle

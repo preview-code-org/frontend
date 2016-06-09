@@ -77,8 +77,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.rawHunks = [testDiffs[0]];
       sorter.addGroup('01');
       sorter.addGroup('02');
-      assert.equal('02', sorter.groups[0].title);
-      assert.equal('01', sorter.groups[1].title);
+      assert.equal('02', sorter.groups[0].info.title);
+      assert.equal('01', sorter.groups[1].info.title);
     });
 
     test('adds group to the front of _ordering', function() {
@@ -139,7 +139,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.addGroup('02');
       sorter.addGroup('03');
       sorter.removeGroup(sorter.groups[1].id);
-      assert.equal('01', sorter.groups[1].title);
+      assert.equal('01', sorter.groups[1].info.title);
     });
 
     test('can remove middle group from _ordering', function() {
@@ -378,38 +378,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.moveGroup(0, 10);
       assert.deepEqual(idFirst, sorter._ordering[0].id);
       assert.deepEqual(idLast, sorter._ordering[2].id);
-    });
-
-    test('updates group title when renameGroup is called', function() {
-      sorter.rawHunks = testDiffs;
-      var id = sorter.addGroup('group');
-      var newTitle = 'new-group';
-      sorter.renameGroup(id, newTitle);
-      assert.equal(newTitle, sorter.groups[0].title);
-    });
-
-    test('updates group title in _ordering when renameGroup is called', function() {
-      sorter.rawHunks = testDiffs;
-      var id = sorter.addGroup('group');
-      var newTitle = 'new-group';
-      sorter.renameGroup(id, newTitle);
-      assert.equal(newTitle, sorter._ordering[0].title);
-    });
-
-    test('does not rename when renameGroup is called with an invalid id', function() {
-      sorter.rawHunks = testDiffs;
-      var oldTitle = 'group';
-      sorter.addGroup(oldTitle);
-      sorter.renameGroup('nope', oldTitle);
-      assert.equal(oldTitle, sorter.groups[0].title);
-    });
-
-    test('does not rename in _ordering when renameGroup is called with an invalid id', function() {
-      sorter.rawHunks = testDiffs;
-      var oldTitle = 'group';
-      sorter.addGroup(oldTitle);
-      sorter.renameGroup('nope', oldTitle);
-      assert.equal(oldTitle, sorter._ordering[0].title);
     });
 
     var getHunkId = function(hunk) {

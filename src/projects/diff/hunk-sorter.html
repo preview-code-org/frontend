@@ -68,10 +68,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       addGroup: function(groupTitle) {
-        var group = this._createHunkOrdering(groupTitle, []);
-        this.unshift('_ordering', group);
-        this.unshift('groups', this._createGroup(groupTitle, group.id, []));
-        return group.id;
+        var ordering = this._createHunkOrdering(groupTitle, []);
+        this.unshift('_ordering', ordering);
+        this.unshift('groups', this._createGroupFromOrdering(ordering, []));
+        return ordering.id;
       },
 
       removeGroup: function(groupId) {
@@ -126,13 +126,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
 
-      renameGroup: function(groupId, newTitle) {
-        this._doForGroup(groupId, function(i, group, groupOrdering) {
-          group.title = newTitle;
-          groupOrdering.title = newTitle;
-        });
-      },
-
       _getOrderingFromFirebaseObj: function(fbOrdering) {
         var defaultGroupName = 'Unsorted changes';
         var ordering = [];
@@ -176,7 +169,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         hunks = hunks.filter(function(hunk) {
           return !!hunk;
         });
-        return this._createGroup(hunkOrdering.title, hunkOrdering.id, hunks);
+        return this._createGroupFromOrdering(hunkOrdering, hunks);
       },
 
       _findHunksInOrdering: function(hunkOrdering, unsortedHunks) {
@@ -195,7 +188,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       _distributeUnsortedHunks: function(defaultGroup, unsortedHunks) {
-        var unsortedGroup = this._createGroup(defaultGroup.title, defaultGroup.id, []);
+        var unsortedGroup = this._createGroupFromOrdering(defaultGroup, []);
         for (var remainingHunkId in unsortedHunks) {
           unsortedGroup.diff.push(unsortedHunks[remainingHunkId]);
           defaultGroup.hunks.push(remainingHunkId);
@@ -211,19 +204,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           hunk.linesChanged.rangeAfter;
       },
 
-      _createGroup: function(title, id, diff) {
+      _createGroupFromOrdering: function(ordering, diff) {
         return {
-          id: id,
-          title: title,
+          id: ordering.id,
+          info: ordering.info,
           diff: diff,
           comments: []
         }
       },
 
-      _createHunkOrdering: function(title, hunkIds) {
+      _createHunkOrdering: function(groupTitle, hunkIds) {
         return {
           id: this._guid(),
-          title: title,
+          info: {
+            title: groupTitle,
+            description: ''
+          },
           hunks: hunkIds
         }
       },
