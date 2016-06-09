@@ -105,22 +105,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }.bind(this));
       },
 
-      _removeGroupIfEmpty: function(index) {
-        if (this.groups[index].diff.length === 0) {
-          this.groups.splice(index, 1);
-          this._ordering.splice(index, 1);
-          this.fire('orderUpdate');
-        }
-      },
-
-      _doForGroup: function(groupId, f) {
-        for (var i = 0, l = this._ordering.length; i < l; i++) {
-          if (this._ordering[i].id === groupId) {
-            return f(i, this.groups[i], this._ordering[i]);
-          }
-        }
-      },
-
       moveHunk: function(groupId, oldIndex, newIndex) {
         if (oldIndex !== newIndex) {
           this._doForGroup(groupId, function(index, group, groupOrdering) {
@@ -140,6 +124,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this._ordering.splice(Math.max(newIndex, 0), 0, ord);
           this.fire('orderUpdate');
         }
+      },
+
+      renameGroup: function(groupId, newTitle) {
+        this._doForGroup(groupId, function(i, group, groupOrdering) {
+          group.title = newTitle;
+          groupOrdering.title = newTitle;
+        });
       },
 
       _getOrderingFromFirebaseObj: function(fbOrdering) {
@@ -237,6 +228,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
 
+      _removeGroupIfEmpty: function(index) {
+        if (this.groups[index].diff.length === 0) {
+          this.groups.splice(index, 1);
+          this._ordering.splice(index, 1);
+          this.fire('orderUpdate');
+        }
+      },
+
       _groupExists: function(id) {
         return this._searchGroup('id').bind(this)(id);
       },
@@ -249,6 +248,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
 
+      _doForGroup: function(groupId, f) {
+        for (var i = 0, l = this._ordering.length; i < l; i++) {
+          if (this._ordering[i].id === groupId) {
+            return f(i, this.groups[i], this._ordering[i]);
+          }
+        }
+      },
+
       /**
        * RFC4122 v4 compliant GUID generator
        */
@@ -258,7 +265,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             return v.toString(16);
         });
       }
-
     });
   </script>
 </dom-module>

@@ -1,7 +1,7 @@
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animations.html">
 
 <dom-module id="input-dialog">
   <template>
@@ -43,7 +43,7 @@
     Polymer({
       is: 'input-dialog',
       properties: {
-        actionTitle: String,
+        value: String,
         label: String
       },
       listeners: {
@@ -58,9 +58,9 @@
         this.$.input.focus();
       },
       _dialogClosed: function(e) {
-        var title = this.$.input.value
-        if (e.detail.confirmed && !e.detail.canceled && title !== '') {
-          this.fire('confirm', title);
+        var newValue = this.$.input.value
+        if (e.detail.confirmed && !e.detail.canceled && newValue !== '') {
+          this.fire('confirm', newValue);
         } else {
           this.fire('cancel');
         }

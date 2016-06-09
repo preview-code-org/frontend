@@ -27,8 +27,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/Sortable/Sortable.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../util/markdown-input.html">
+<link rel="import" href="../../util/editable-title.html">
 <link rel="import" href="../../util/collapse-icon.html">
 <link rel="import" href="../../util/dom-repeat-once.html">
 <link rel="import" href="../pull-request/pull-request-add-comments.html">
@@ -83,27 +83,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         content: "Drag some diffs here!";
         font-size: 1.4em;
         font-weight: 600;
-      }
-      h2 {
-        margin-bottom: 1em;
-        margin-top: 0.5em;
-      }
-      paper-input.title {
-        --paper-input-container: {
-          padding: 0 0 1em 0;
-        };
-        --paper-input-container-input: {
-          font-size: 1.5em;
-        };
-        --paper-input-container-label: {
-          font-size: 1.5em;
-          color: var(--secondary-text-color);
-        };
-        --paper-input-container-label-floating: {
-          font-size: 1em;
-        }
-        --paper-input-container-color: var(--secondary-background-color);
-        --paper-input-container-focus-color: var(--anchor-color);
       }
       .toggle-comments {
         background-color: var(--secondary-background-color);
@@ -165,8 +144,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
     <div class="content" hidden$="[[collapsed]]">
       <header>
-        <paper-input hidden$="[[!editable]]" class="title" label="Enter a title for this group" value="{{group.title}}"></paper-input>
-        <h2 hidden$="[[editable]]">[[displayTitle]]</h2>
+        <editable-title editable="[[editable]]" value="{{displayTitle}}"></editable-title>
         <markdown-input
           hidden$="[[hideDescription]]"
           disabled="[[!editable]]"
@@ -201,9 +179,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         group: Object,
         displayTitle: {
           type: String,
-          computed: '_getDisplayTitle(group)',
-          value: 'Unsorted changes',
-          reflectToAttribute: true
+          observer: '_renameGroup'
         },
         description: {
           type: String,
@@ -235,6 +211,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.hideDescription = true;
         }
         this.initSortable();
+        this.displayTitle = this.group.title;
       },
       initSortable: function() {
         if (this.editable && !this._isAlreadyInitialized) {
@@ -257,16 +234,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _groupChanged: function(group, editable) {
         if (group) {
           this.$.hunks.reset(function(hunk) {
-            return this._createDraggableGroup(hunk, editable);
+            return this._createDraggableHunk(hunk, editable);
           }.bind(this));
           this.async(function() {
             // Force a recalc to make sure that the `:empty` pseudo selector
             // is correctly cleared after stamping groups to the hunks section
             this.$.hunks.style.zoom = this.$.hunks.style.zoom ? '0.999999' : '1';
           }, 1);
+          this.displayTitle = this.group.title;
         }
       },
-      _createDraggableGroup: function(hunk, editable) {
+      _createDraggableHunk: function(hunk, editable) {
         var container = document.createElement('div');
         container.setAttribute('class', 'hunk');
         var dragHandle = document.createElement('div');
@@ -280,11 +258,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         container.appendChild(hunkElem);
         return container;
       },
-      _getDisplayTitle: function(group) {
-        if (!group || !group.title || group.title === '') {
-          return 'Unsorted changes';
+      _renameGroup: function(newTitle) {
+        if (this.group && newTitle !== this.group.title) {
+          this.fire('rename', {
+            groupId: this.group.id,
+            title: newTitle
+          });
         }
-        return group.title;
       },
       _fire: function(name) {
         return function(e) {
