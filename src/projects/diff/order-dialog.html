@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../util/dom-repeat-once.html">
 
 <dom-module id="order-dialog">
   <template>
@@ -77,11 +78,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </style>
     <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
       <h1 id="title">[[actionTitle]]</h1>
-      <div id="sortable">
-        <template is="dom-repeat" items="[[items]]">
-          <div class="item"><iron-icon icon="editor:drag-handle"></iron-icon>[[item]]</div>
-        </template>
-      </div>
+      <dom-repeat-once id="sortable" items="[[items]]">
+      </dom-repeat-once>
       <div class="buttons">
         <paper-button autofocus dialog-dismiss>OK</paper-button>
       </div>
@@ -109,6 +107,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.fire('order', {oldIndex: e.oldIndex, newIndex: e.newIndex});
       },
       open: function() {
+        this.$.sortable.reset(function(groupTitle) {
+          var div = document.createElement('div');
+          div.setAttribute('class', 'item');
+          div.innerHTML = '<iron-icon icon="editor:drag-handle"></iron-icon>' + groupTitle;
+          return div;
+        });
         this.$.dialog.open();
       },
       _setDragImage: function(dataTransfer) {
