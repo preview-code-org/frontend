@@ -144,7 +144,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
     <div class="content" hidden$="[[collapsed]]">
       <header>
-        <editable-title editable="[[editable]]" value="{{group.info.title}}"></editable-title>
+        <editable-title id="editTitleDialog" editable="[[editable]]" value="{{group.info.title}}"></editable-title>
         <markdown-input
           hidden$="[[hideDescription]]"
           disabled="[[!editable]]"
@@ -203,7 +203,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.hideDescription = true;
         }
         this.initSortable();
-        this.displayTitle = this.group.info.title;
+        this.$.editTitleDialog.addEventListener('confirm', this._renameGroup.bind(this));
       },
       initSortable: function() {
         if (this.editable && !this._isAlreadyInitialized) {
@@ -250,11 +250,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         container.appendChild(hunkElem);
         return container;
       },
-      _renameGroup: function(newTitle) {
-        if (this.group && newTitle !== this.group.info.title) {
+      _renameGroup: function(e) {
+        if (this.group) {
           this.fire('rename', {
             groupId: this.group.id,
-            title: newTitle
+            title: e.detail
           });
         }
       },

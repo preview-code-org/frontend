@@ -153,7 +153,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'add': '_hunkAdded',
         'update': '_hunkUpdate',
         'orderUpdate': '_updateUI',
-        'rename': '_renameGroup'
+        'rename': '_updateUI'
       },
       _openAddGroupDialog: function() {
         this.$.addGroupDialog.open();
@@ -191,10 +191,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var groups = this.orderedGroups;
         this.set('orderedGroups', []);
         this.set('orderedGroups', groups);
-      },
-      _renameGroup: function(e) {
-        this.$.sorter.renameGroup(e.detail.groupId, e.detail.title);
-        this._updateUI();
       }
     });
   </script>
