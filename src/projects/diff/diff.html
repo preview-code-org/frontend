@@ -152,7 +152,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'order': '_groupMove',
         'remove': '_hunkRemoved',
         'add': '_hunkAdded',
-        'update': '_hunkUpdate'
+        'update': '_hunkUpdate',
+        'orderUpdate': '_updateUI'
       },
       _openAddGroupDialog: function() {
         this.$.addGroupDialog.open();
@@ -185,6 +186,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _groupMove: function(e) {
         this.$.sorter.moveGroup(e.detail.oldIndex, e.detail.newIndex);
+      },
+      _updateUI: function() {
         var groups = this.orderedGroups;
         this.set('orderedGroups', []);
         this.set('orderedGroups', groups);
