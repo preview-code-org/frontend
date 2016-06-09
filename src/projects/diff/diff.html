@@ -171,6 +171,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.orderGroupDialog.open();
       },
       _setGroupTitles: function(groups) {
+        console.log('update titles');
         this._groupTitles = groups.base.map(function(group) {
           return group.info.title;
         });
