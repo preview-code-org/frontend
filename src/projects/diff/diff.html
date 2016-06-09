@@ -91,11 +91,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" additions="{{additions}}" deletions="{{deletions}}" hunks="{{hunks}}"></diff-parser>
-    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}"></hunk-sorter>
+    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}" project="[[project]]"></hunk-sorter>
 
     <div id="hunkGroups">
       <template is="dom-repeat" items="[[orderedGroups]]">
-        <pull-request-group group="[[item]]" editable="[[editable]]"></pull-request-group>
+        <pull-request-group group="[[item]]" editable="[[editable]]" project="[[project]]"></pull-request-group>
       </template>
     </div>
 
@@ -107,7 +107,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <order-dialog
       id="orderGroupDialog"
       action-title="Drag groups to re-order them"
-      on-confirm="_reorderGroups"
       items="[[_groupTitles]]"
     ></order-dialog>
 
@@ -123,6 +122,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Polymer({
       is: 'pull-request-diff',
       properties: {
+        project: Object,
         editable: {
           type: Boolean,
           value: false
@@ -146,12 +146,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         _sortable: Object
       },
       observers: [
-        '_groupsOrdered(orderedGroups.*, editable)',
         '_setGroupTitles(orderedGroups.*)'
       ],
       listeners: {
-        'empty': '_groupEmpty',
-        'order': '_groupMove'
+        'order': '_groupMove',
+        'remove': '_hunkRemoved',
+        'add': '_hunkAdded',
+        'update': '_hunkUpdate',
+        'orderUpdate': '_updateUI'
       },
       _openAddGroupDialog: function() {
         this.$.addGroupDialog.open();
@@ -164,19 +166,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return group.title;
         });
       },
-      _reorderGroups: function() {
-        // console.log('reorder plz');
-      },
-      _groupsOrdered: function(orderedGroups, editable) {
-        var groups = orderedGroups.base;
-        if (editable && !this._sortable &&
-            groups && groups[0].diff.length > 0) {
-          this._sortable = true;
-          this.$.hunkGroups.addEventListener('add', this._groupAdded.bind(this));
-          this.$.hunkGroups.addEventListener('remove', this._groupRemoved.bind(this));
-          this.$.hunkGroups.addEventListener('update', this._groupUpdate.bind(this));
-        }
-      },
       jumpToGroup: function(name) {
         var group = this.$$('pull-request-group[display-title="' + name + '"]');
         this.fire('scroll-to', {
@@ -186,20 +175,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _addGroup: function(e) {
         this.$.sorter.addGroup(e.detail);
       },
-      _groupAdded: function(e) {
-        // console.log('added group', e);
+      _hunkAdded: function(e) {
+        this.$.sorter.addHunkToGroup(e.detail.hunk, e.detail.groupId, e.detail.newIndex);
       },
-      _groupRemoved: function(e) {
-        // console.log('removed group', e);
+      _hunkRemoved: function(e) {
+        this.$.sorter.removeHunkFromGroup(e.detail.groupId, e.detail.hunk);
       },
-      _groupUpdate: function(e) {
-        // console.log('updated group', e);
-      },
-      _groupEmpty: function(e) {
-        // console.log('group is now empty', e.detail.groupName);
+      _hunkUpdate: function(e) {
+        this.$.sorter.moveHunk(e.detail.groupId, e.detail.oldIndex, e.detail.newIndex);
       },
       _groupMove: function(e) {
-        // console.log('moved group', e);
+        this.$.sorter.moveGroup(e.detail.oldIndex, e.detail.newIndex);
+      },
+      _updateUI: function() {
+        var groups = this.orderedGroups;
+        this.set('orderedGroups', []);
+        this.set('orderedGroups', groups);
       }
     });
   </script>

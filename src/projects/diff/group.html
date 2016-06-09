@@ -247,7 +247,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               dataTransfer.setDragImage(dragEl.querySelector('pull-request-diff-highlight').hunk.img, 50, 50);
             }
           });
-          this.$.hunks.addEventListener('remove', this._hunkRemoved.bind(this));
+          this.$.hunks.addEventListener('remove', this._fire('remove').bind(this));
+          this.$.hunks.addEventListener('add', this._fire('add').bind(this));
+          this.$.hunks.addEventListener('update', this._fire('update').bind(this));
           this._isAlreadyInitialized = true;
           this.updateStyles();
         }
@@ -284,9 +286,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
         return group.title;
       },
-      _hunkRemoved: function() {
-        if (this.group.diff.length === 0) {
-          this.fire('empty', {groupName: this.group.title});
+      _fire: function(name) {
+        return function(e) {
+          e.stopPropagation();
+          this.fire(name, {
+            hunk: e.item.children[1].hunk,
+            groupId: this.group.id,
+            oldIndex: e.oldIndex,
+            newIndex: e.newIndex
+          });
         }
       },
       _shouldHideComments: function(collapsed, editable) {
