@@ -51,12 +51,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           },
           notify: true
         },
-        _ordering: {
-          type: Array,
-          value: function() {
-            return [];
-          }
-        },
         _remoteOrdering: Object
       },
       observers: [
@@ -67,18 +61,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this._remoteOrdering = [];
       },
 
+      getOrdering: function() {
+        return this.groups.map(function(group) {
+          return {
+            id: group.id,
+            info: group.info,
+            diff: group.diff.map(function(hunk) {
+              return this._getHunkId(hunk);
+            }.bind(this))
+          };
+        }.bind(this));
+      },
+
       addGroup: function(groupTitle) {
         var ordering = this._createHunkOrdering(groupTitle, []);
-        this.unshift('_ordering', ordering);
         this.unshift('groups', this._createGroupFromOrdering(ordering, []));
         return ordering.id;
       },
 
       removeGroup: function(groupId) {
         if (this._groupExists(groupId)) {
-          this._ordering = this._ordering.filter(function(o) {
-            return o.id !== groupId;
-          });
           this.groups = this.groups.filter(function(g) {
             return g.id !== groupId;
           })
@@ -86,17 +88,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       addHunkToGroup: function(hunk, groupId, index) {
-        this._doForGroup(groupId, function(i, group, groupOrdering) {
+        this._doForGroup(groupId, function(i, group) {
           group.diff.splice(index, 0, hunk);
-          groupOrdering.hunks.splice(index, 0, this._getHunkId(hunk));
         }.bind(this));
       },
 
       removeHunkFromGroup: function(groupId, hunk) {
-        this._doForGroup(groupId, function(i, group, groupOrdering) {
-          for (var j = 0, m = groupOrdering.hunks.length; j < m; j++) {
-            if (this._getHunkId(hunk) === groupOrdering.hunks[j]) {
-              groupOrdering.hunks.splice(j, 1);
+        this._doForGroup(groupId, function(i, group) {
+          for (var j = 0, m = group.diff.length; j < m; j++) {
+            if (this._getHunkId(hunk) === this._getHunkId(group.diff[j])) {
               this.groups[i].diff.splice(j, 1);
               this._removeGroupIfEmpty(i);
               return;
@@ -107,11 +107,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       moveHunk: function(groupId, oldIndex, newIndex) {
         if (oldIndex !== newIndex) {
-          this._doForGroup(groupId, function(index, group, groupOrdering) {
+          this._doForGroup(groupId, function(index, group) {
             var hunk = group.diff.splice(oldIndex, 1)[0];
-            var hunkId = groupOrdering.hunks.splice(oldIndex, 1)[0];
             group.diff.splice(Math.max(newIndex, 0), 0, hunk);
-            groupOrdering.hunks.splice(Math.max(newIndex, 0), 0, hunkId);
           });
         }
       },
@@ -119,9 +117,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       moveGroup: function(oldIndex, newIndex) {
         if (oldIndex !== newIndex) {
           var group = this.groups.splice(oldIndex, 1)[0];
-          var ord = this._ordering.splice(oldIndex, 1)[0];
           this.groups.splice(Math.max(newIndex, 0), 0, group);
-          this._ordering.splice(Math.max(newIndex, 0), 0, ord);
           this.fire('orderUpdate');
         }
       },
@@ -152,8 +148,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
         allGroups.push(this._distributeUnsortedHunks(defaultGroup, unsortedHunks));
-        this.groups =  allGroups;
-        this._ordering = ordering;
+        this.groups = allGroups;
       },
 
       _hunksToMap: function(hunks) {
@@ -177,7 +172,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         if (hunkOrdering.length === 0) {
           return [];
         }
-        return hunkOrdering.hunks.map(function(hunkId) {
+        return hunkOrdering.diff.map(function(hunkId) {
           var hunk = unsortedHunks[hunkId];
           delete unsortedHunks[hunkId];
           if (hunk) {
@@ -192,7 +187,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var unsortedGroup = this._createGroupFromOrdering(defaultGroup, []);
         for (var remainingHunkId in unsortedHunks) {
           unsortedGroup.diff.push(unsortedHunks[remainingHunkId]);
-          defaultGroup.hunks.push(remainingHunkId);
+          defaultGroup.diff.push(remainingHunkId);
         }
         return unsortedGroup;
       },
@@ -221,14 +216,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             title: groupTitle,
             description: ''
           },
-          hunks: hunkIds
+          diff: hunkIds
         }
       },
 
       _removeGroupIfEmpty: function(index) {
         if (this.groups[index].diff.length === 0) {
           this.groups.splice(index, 1);
-          this._ordering.splice(index, 1);
           this.fire('orderUpdate');
         }
       },
@@ -239,16 +233,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       _searchGroup: function(field) {
         return function(entry) {
-          return this._ordering.filter(function(g) {
+          return this.groups.filter(function(g) {
             return g[field] === entry;
           }).length > 0;
         }
       },
 
       _doForGroup: function(groupId, f) {
-        for (var i = 0, l = this._ordering.length; i < l; i++) {
-          if (this._ordering[i].id === groupId) {
-            return f(i, this.groups[i], this._ordering[i]);
+        for (var i = 0, l = this.groups.length; i < l; i++) {
+          if (this.groups[i].id === groupId) {
+            return f(i, this.groups[i]);
           }
         }
       },
