@@ -155,7 +155,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         attr-for-selected="data-route"
         fallback-selection="overview">
       <pull-request-general-information data-route="overview" class="overview"
-        pull-request="[[selectedPull]]" project="[[project]]"></pull-request-general-information>
+        pull-request="{{selectedPull}}" project="[[project]]"></pull-request-general-information>
       <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
       <pull-request-changes data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
           base-url="[[selectedPull.head.repo.html_url]]" project="[[project]]" show-space="[[_showSpace]]"
@@ -176,7 +176,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         diff: String,
         selectedPull: {
           type: Object,
-          observer: '_fetchAjax'
+          observer: '_fetchAjax',
+          notify: true
         },
         orderingPath: {
           type: String,

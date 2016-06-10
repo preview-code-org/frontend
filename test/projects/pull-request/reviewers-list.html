@@ -59,7 +59,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     }
 
     test('reviewers urls are resolved correctly', function(done) {
-      elem.reviewers = [{lgtm: true, avatar_url: 'resources/one.jpg'}, {lgtm: false, avatar_url: 'resources/two.jpg'}];
+      elem.pullrequest = {owner: 'owner', name: 'name', assignees: [{lgtm: true, avatar_url: 'resources/one.jpg'}, {lgtm: false, avatar_url: 'resources/two.jpg'}]};
       flush(function() {
         var reviewers = getReviewers();
         assert.include(getComputedStyle(reviewers[0])['background-image'], 'resources/one.jpg');
@@ -69,7 +69,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     });
 
     test('reviewers are sorted by lgtm', function(done) {
-      elem.reviewers = [{lgtm: false, avatar_url: 'resources/two.jpg'}, {lgtm: true, avatar_url: 'resources/one.jpg'}];
+      elem.pullrequest = {owner: 'owner', name: 'name', assignees: [{lgtm: false, avatar_url: 'resources/two.jpg'}, {lgtm: true, avatar_url: 'resources/one.jpg'}]};
       flush(function() {
         var reviewers = getReviewers();
         assert.include(getComputedStyle(reviewers[0])['background-image'], 'resources/one.jpg');

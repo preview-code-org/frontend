@@ -142,7 +142,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
         <div class="sidebar">
           <pr-status pull-request="[[pullRequest]]" project="[[project]]"></pr-status>
-          <reviewers-list reviewers="[[_getReviewers(pullRequest.assignee)]]"></reviewers-list>
+          <reviewers-list pullrequest="{{pullRequest}}" project="[[project]]"></reviewers-list>
           <tags-list>
             <template is="dom-repeat" items="[[issue.labels]]">
               <tag-list-item backgroundcolor="[[item.color]]">[[item.name]]</tag-list-item>
@@ -170,8 +170,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       properties: {
         comments: Array,
         issue: Object,
-        pullRequest: Object,
-        project: Object
+        project: Object,
+        pullRequest: {
+          type: Object,
+          notify: true
+        }
       },
       observers: [
         '_fireAjax(pullRequest)',
@@ -198,13 +201,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _prHasBeenMerged: function(e) {
         console.log(e);
-      },
-      _getReviewers: function(assignee) {
-        if (!assignee) {
-          return [];
-        }
-        assignee.lgtm = Math.random() > 0.5 ? 'true' : 'false';
-        return [assignee, assignee];
       }
     });
   </script>

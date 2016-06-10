@@ -27,6 +27,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="set-reviewers.html">
 
 <dom-module id="reviewers-list">
   <template>
@@ -35,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display:flex;
         flex-wrap: wrap;
       }
-      .lgtm-true.false {
+      .lgtm.false {
         display: none;
       }
       iron-icon {
@@ -44,10 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         height:16px;
         background-color: var(--primary-action-green);
         border-radius: 13px;
-        margin-left: -13px;
-        margin-top: -13px;
       }
-      .lgtm-true {
+      .lgtm {
         fill: var(--primary-background-color);
       }
       .reviewer {
@@ -60,29 +60,94 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         background-size: 100%;
         margin: 8px auto;
       }
+      .icons {
+        position: relative;
+        top: -10px;
+        left: -10px;
+        width: calc(100% + 20px);
+      }
+      .reviewer:hover paper-icon-button {
+        display: block;
+      }
+      paper-icon-button {
+        display: none;
+        color: white;
+        background-color: var(--primary-action-red);
+        padding: 2px;
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        float: right;
+      }
     </style>
 
+    <github-authenticated-ajax
+      id="removeAssignees"
+      method="DELETE"
+      refurl="[[githubPathPost]]"
+      headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
+      on-response="_removeAssigneesList"
+      ></github-authenticated-ajax>
+
     <template is="dom-repeat" items="[[sortedReviewers]]" as="reviewer">
-      <div class="reviewer" style$="background-image: url([[reviewer.avatar_url]]); ">
-        <iron-icon class$="lgtm-true [[reviewer.lgtm]]", icon="icons:thumb-up"></iron-icon>
+      <div class="reviewer" title$="[[reviewer.login]]" style$="background-image: url([[reviewer.avatar_url]]); ">
+        <div class="icons">
+          <iron-icon class$="lgtm [[reviewer.lgtm]]" icon="icons:thumb-up"></iron-icon>
+          <paper-icon-button on-tap="_removeAssignee" icon="icons:clear"></paper-icon-button>
+        </div>
       </div>
     </template>
+    <set-reviewers pullrequest="{{pullrequest}}" project="[[project]]"></set-reviewers>
 
   </template>
   <script>
     Polymer({
       is: 'reviewers-list',
       properties: {
-        reviewers: Array,
-        sortedReviewers: {
-          type: Array,
-          computed: '_sortReviewers(reviewers)'
+        sortedReviewers: Array,
+        pullrequest: {
+          type: Object,
+          notify: true
+        },
+        project: Object,
+        githubPathPost: {
+          type: String,
+          computed: '_githubPathPost(project, pullrequest)'
         }
       },
-      _sortReviewers: function(rs) {
-        return rs.sort(function(r1, r2) {
-          return r2.lgtm - r1.lgtm;
-        });
+      observers: [
+        '_sortReviewers(pullrequest)'
+      ],
+      listeners: {
+        'resort': '_resort'
+      },
+      _sortReviewers: function(pullrequest) {
+          var rs = pullrequest.assignees;
+          if (pullrequest.assignees) {
+            this.sortedReviewers = rs.sort(function(r1, r2) {
+              return r2.lgtm - r1.lgtm;
+          });
+        }
+      },
+      _githubPathPost: function(project, pullrequest) {
+        if (project !== undefined && pullrequest !== undefined) {
+          return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullrequest.number + '/assignees';
+        }
+      },
+
+      _resort: function() {
+        this._sortReviewers(this.pullrequest);
+      },
+      _removeAssignee: function(e) {
+        console.log(e);
+        this.$.removeAssignees.body = {
+          assignees: [e.path[4].getAttribute('title')]
+        }
+        this.$.removeAssignees.generateRequest();
+      },
+      _removeAssigneesList: function(e) {
+        this.pullrequest.assignees = e.detail.response.assignees;
+        this._resort();
       }
     });
   </script>

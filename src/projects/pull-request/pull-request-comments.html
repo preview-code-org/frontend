@@ -57,7 +57,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         project: Object
       },
       _reverse: function(array) {
-        return array.reverse();
+        if (array) {
+          return array.reverse();
+        }
       }
     });
   </script>
