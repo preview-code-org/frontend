@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../ajax/backend-ajax.html">
 
 <link rel="import" href="../../list-items/list-item-label.html">
 <dom-module id="pr-status">
@@ -42,12 +43,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         white-space: normal;
       }
     </style>
-    <iron-ajax
+    <backend-ajax
       id="setPrStatus"
-      method="POST"
-      url="[[backendPath]]"
-      headers='{"Content-Type": "application/json"}'
-      handle-as="json"></iron-ajax>
+      refurl="[[backendPath]]"></backend-ajax>
 
     <firebase-document
       app-name="preview-code"
@@ -99,7 +97,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         return '/pulls/' + project.owner + '/' + project.name + '/branch/' + pullRequest.number + '/status';
       },
       _updateBackendPath: function(project, pullRequest) {
-        return 'https://localhost:8443/pr/' + project.owner + '/' + project.name + '/' + pullRequest.number + '/status';
+        return 'pr/' + project.owner + '/' + project.name + '/' + pullRequest.number + '/status';
       },
       _updateFirebaseStatus: function(e) {
         if (!e.detail.value) {
