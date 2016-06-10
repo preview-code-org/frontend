@@ -61,6 +61,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       behaviors: [FadeInBehavior],
       _createPR: function() {
         this.fire('create-pr');
+      },
+      getOrdering: function() {
+        return this.$.changes.getOrdering();
       }
     });
   </script>

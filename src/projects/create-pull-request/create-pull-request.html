@@ -191,7 +191,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           title: this.title,
           description: this.description,
           base: this.baseBranch,
-          head: this.headBranch
+          head: this.headBranch,
+          ordering: this.$.diffView.getOrdering()
         };
         this.$.createPull.generateRequest();
       },
