@@ -1,0 +1,58 @@
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="input-dialog.html">
+
+<dom-module id="editable-title">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      h2 {
+        margin-bottom: 1em;
+        margin-top: 0.5em;
+      }
+      paper-icon-button {
+        color: var(--pr-status-color);
+        width: 36px;
+        height: 36px;
+        vertical-align: bottom;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+
+    <h2>[[value]] <paper-icon-button title="Edit title" icon="editor:mode-edit" on-tap="_openDialog" hidden$="[[!editable]]"></paper-icon-button></h2>
+
+    <input-dialog id="dialog" label="[[label]]" value="[[value]]"></input-dialog>
+  </template>
+  <script>
+    Polymer({
+      is: 'editable-title',
+      properties: {
+        editable: {
+          type: Boolean,
+          value: false
+        },
+        label: {
+          type: String,
+          value: 'Enter a title'
+        },
+        value: {
+          type: String,
+          notify: true
+        }
+      },
+      listeners: {
+        'confirm': '_onConfirm'
+      },
+      _onConfirm: function(e) {
+        this.value = e.detail;
+      },
+      _openDialog: function() {
+        this.$.dialog.open();
+      }
+    });
+  </script>
+</dom-module>

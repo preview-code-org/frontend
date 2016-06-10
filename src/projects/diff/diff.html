@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="group.html">
 <link rel="import" href="diff-parser.html">
 <link rel="import" href="hunk-sorter.html">
-<link rel="import" href="input-dialog.html">
+<link rel="import" href="../../util/input-dialog.html">
 <link rel="import" href="order-dialog.html">
 
 <dom-module id="pull-request-diff">
@@ -112,7 +112,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <input-dialog
       id="addGroupDialog"
-      action-title="Add a new group to this pull request"
       label="Enter a title for this group"
       on-confirm="_addGroup"
     ></input-dialog>
@@ -153,7 +152,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'remove': '_hunkRemoved',
         'add': '_hunkAdded',
         'update': '_hunkUpdate',
-        'orderUpdate': '_updateUI'
+        'orderUpdate': '_updateUI',
+        'rename': '_updateUI'
       },
       _openAddGroupDialog: function() {
         this.$.addGroupDialog.open();
@@ -163,7 +163,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _setGroupTitles: function(groups) {
         this._groupTitles = groups.base.map(function(group) {
-          return group.title;
+          return group.info.title;
         });
       },
       jumpToGroup: function(name) {

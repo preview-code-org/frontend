@@ -120,7 +120,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
         for (var i=0, l=groups.length;i<l;i++) {
           var elem = document.createElement('pull-request-space-card');
-          elem.text = groups[i].title;
+          elem.text = groups[i].info.title;
           elem.blockId = i;
           elem.style.right = (i * 100) + 'px';
           container.appendChild(elem);
