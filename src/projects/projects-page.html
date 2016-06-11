@@ -259,7 +259,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Array.prototype.unshift.apply(response, this.pullrequests);
         this.notifyPath('pullrequests', response);
       },
-      _incrementPageAndRetrievePRs: function(e) {
+      _incrementPageAndRetrievePRs: function() {
         if (!this.pullrequests.length) {
           return;
         }
@@ -269,7 +269,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       _computeGithubPath: function(projectTitle, prStateFilter) {
-        if(projectTitle.owner && prStateFilter) {
+        if (projectTitle.owner && prStateFilter) {
           return 'https://api.github.com/repos/' + [[projectTitle.owner]] + '/' + [[projectTitle.name]] + '/pulls?state=' + [[prStateFilter]];
         }
       }

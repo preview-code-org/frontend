@@ -194,9 +194,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.fire('pull-request-list-end-reached');
       },
       _setPRStateFilter: function() {
-        if(this.prStateFilter === 'closed') {
+        if (this.prStateFilter === 'closed') {
           this.prStateFilter = 'open'
-        } else{
+        } else {
           this.prStateFilter = 'closed'
         }
         this.fire('PRStateFilter-updated', this.prStateFilter);

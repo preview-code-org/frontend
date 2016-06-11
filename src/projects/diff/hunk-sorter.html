@@ -181,9 +181,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           delete unsortedHunks[hunkId];
           if (hunk) {
             return hunk;
-          } else {
-            // ?? hunk is in our ordering but does not exist anymore
           }
+
+          // ?? hunk is in our ordering but does not exist anymore
         }.bind(this));
       },
 

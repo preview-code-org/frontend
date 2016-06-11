@@ -85,23 +85,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                   '_postReviewer(reviewer)'],
 
       _fireAjax: function(githubPathGet) {
-        if(githubPathGet !== undefined) {
+        if (githubPathGet !== undefined) {
           this.$.getAssignees.generateRequest();
         }
       },
 
       _githubPathPost: function(project, pullrequest) {
-        if(project !== undefined && pullrequest !== undefined) {
+        if (project !== undefined && pullrequest !== undefined) {
           return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullrequest.number + '/assignees';
         }
       },
       _githubPathGet: function(project) {
-        if(project.owner !== undefined) {
+        if (project.owner !== undefined) {
           return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/assignees'
         }
       },
       _postReviewer: function(reviewer) {
-        if(this.githubPathPost !== undefined && reviewer && this.pullrequest.assignees.indexOf(reviewer) === -1) {
+        if (this.githubPathPost !== undefined && reviewer && this.pullrequest.assignees.indexOf(reviewer) === -1) {
           this.$.postAssignees.body = {
             assignees: [reviewer]
           }
@@ -109,7 +109,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       _setNewAssingees: function(e) {
-        if(e.detail.response !== undefined) {
+        if (e.detail.response !== undefined) {
           this.pullrequest.assignees = e.detail.response.assignees;
           this.fire('resort');
         }
