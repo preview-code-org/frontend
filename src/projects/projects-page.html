@@ -176,9 +176,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         this.activeProject = {
           owner: project.owner.login,
-          name: project.name
+          name: project.name,
+          _actual: project
         };
-        if(this.githubPath) {
+        if (this.githubPath) {
           this.pullRequestPagination = 1;
           this._lastPage = undefined;
           this.$.ajaxPullRequest.generateRequest();
