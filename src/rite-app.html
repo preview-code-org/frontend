@@ -175,6 +175,11 @@ Prism.languages.diff.other = /.+/m;
       'github-token': '_setToken',
       'go-login-github': '_signInWithGitHub'
     },
+    attached: function() {
+      if (this.page.page !== '') {
+        this._signInWithGitHub();
+      }
+    },
     _equals: function(one, other) {
       return one === other;
     },

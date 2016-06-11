@@ -73,9 +73,6 @@ of the GitHub oAuth token.
       },
       attached: function() {
         this._parseSuccesfulResult = this._parseSuccesfulResult.bind(this);
-        if (this.$.auth.auth) {
-          this.signIn();
-        }
       },
       /**
        * Sign in the user with Firebase. It checks if the redirect was succesful.
