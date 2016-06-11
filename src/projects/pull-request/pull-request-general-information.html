@@ -84,7 +84,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .state.closed {
         --tag-color: var(--primary-action-red);
       }
-      .base, .time-open {
+      .head, .time-open {
         margin-right: 1em;
       }
       .line-stats {
@@ -129,10 +129,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <div class="description primary-container">
       <header>
         <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
-        <span><a-user user="[[pullRequest.user]]"></a-user> wants to merge</span>
-        <branch-tag class="head" branch="[[pullRequest.head.label]]"></branch-tag>
-        <span>into</span>
+        <span><a-user user="[[pullRequest.user]]"></a-user> wants to merge into</span>
         <branch-tag class="base" branch="[[pullRequest.base.label]]"></branch-tag>
+        <span>from</span>
+        <branch-tag class="head" branch="[[pullRequest.head.label]]"></branch-tag>
         <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
       </header>
       <section>
