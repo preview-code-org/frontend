@@ -288,7 +288,7 @@ var IronAjaxProperties = (function() {
         this.shared = shared;
         if (this._fireLater) {
           this._fireLater = false;
-          this.$.ajax.generateRequest();
+          this.generateRequest();
         }
       }.bind(this));
     },
@@ -299,6 +299,18 @@ var IronAjaxProperties = (function() {
       if (this.auto && !this.loading) {
         this.generateRequest();
       }
+    },
+    /**
+     * Performs an AJAX request to the specified URL.
+     *
+     * @return {!IronRequestElement}
+     */
+    generateRequest: function() {
+      if (!this.params) {
+        this._fireLater = true;
+        return;
+      }
+      return this.$.ajax.generateRequest();
     },
     /**
      * Static function to insert the oAuth token and make sure all

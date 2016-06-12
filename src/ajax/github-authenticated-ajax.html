@@ -116,19 +116,6 @@ of params with oAuth tokens.
           this._setHeader('If-None-Match', etag);
         }
       },
-      /**
-       * Performs an AJAX request to the specified URL.
-       *
-       * @return {!IronRequestElement}
-       */
-      generateRequest: function() {
-        this._updateIfNoneMatch(this.refurl);
-        if (!this.shared.accessToken) {
-          this._fireLater = true;
-          return;
-        }
-        return this.$.ajax.generateRequest();
-      },
       _onResponse: function(e) {
         shared.headerCache[this.refurl] = e.detail.xhr.getResponseHeader('ETag');
         shared.responseCache[this.refurl] = e.detail.response;
