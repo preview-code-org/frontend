@@ -60,10 +60,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
       header {
         min-height: 2em;
-        margin-bottom: 3em;
       }
       h2.title {
         height: 25px;
+      }
+      markdown-input {
+        margin-bottom: 1em;
+      }
+      markdown-input[disabled] {
+        margin-bottom: 0;
       }
       #hunks {
         width: 100%;
@@ -145,14 +150,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <div class="content" hidden$="[[collapsed]]">
       <header>
         <editable-title id="editTitleDialog" editable="[[editable]]" value="{{group.info.title}}"></editable-title>
-        <markdown-input
-          hidden$="[[hideDescription]]"
-          disabled="[[!editable]]"
-          label="Enter a description for these changes. Markdown is supported."
-          markdown="{{group.info.description}}"
-          project="[[project]]"
-        ></markdown-input>
       </header>
+
+      <markdown-input
+        hidden$="[[hideDescription]]"
+        disabled="[[!editable]]"
+        label="Enter a description for these changes. Markdown is supported."
+        markdown="{{group.info.description}}"
+        project="[[project]]"
+      ></markdown-input>
+
       <dom-repeat-once id="hunks" items="[[group.diff]]" disabled="[[!editable]]"></dom-repeat-once>
       <p class="toggle-comments" hidden$="[[editable]]">
         <span>comments</span>

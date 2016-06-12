@@ -26,7 +26,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../util/marked-github-element.html">
 
@@ -38,13 +38,13 @@ after toggling the preview showing the rendered markdown in real-time.
   <template>
     <style>
       :host {
-        display: block;
+        display: flex;
         padding: 1em;
+        padding-left: 0.5em;
         border: solid 1px transparent;
       }
       :host([disabled]) {
-        border: 0;
-        background-color: transparent;
+        padding: 0;
       }
       :host(.noPreview) {
         border: solid 1px var(--secondary-background-color);
@@ -53,9 +53,10 @@ after toggling the preview showing the rendered markdown in real-time.
       [hidden] {
         display: none !important;
       }
-      paper-textarea,
-      marked-github-element {
+      .edit-area {
+        flex: 1;
         line-height: 1.4em;
+        padding-left: 0.5em;
       }
       paper-textarea {
         --paper-input-container: {
@@ -68,27 +69,23 @@ after toggling the preview showing the rendered markdown in real-time.
         --paper-input-container-focus-color: var(--anchor-color);
       }
 
-      paper-button {
-        transition:
-        font-size: 14px;
+      paper-icon-button {
         margin-top: 1em;
-        background-color: var(--secondary-background-color);
-        color: var(--primary-text-color);
-        --paper-button-ink-color: var(--anchor-hover-color);
       }
-      paper-button:hover,
-      paper-button[active] {
-        color: var(--primary-background-color);
-        background-color: var(--anchor-color);
+      paper-icon-button:hover,
+      paper-icon-button[active] {
+        color: var(--anchor-color);
       }
       marked-github-element {
         margin-top: 16px;
         min-height: 50px;
       }
     </style>
-    <paper-textarea hidden$="[[!_hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
-    <marked-github-element hidden$="[[_hidePreview]]" markdown="[[markdown]]" project="[[project]]"></marked-github-element>
-    <paper-button toggles raised hidden$="[[disabled]]" active="{{_previewToggle}}">[[_toggleText]]</paper-button>
+    <div class="edit-area">
+      <paper-textarea hidden$="[[!_hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
+      <marked-github-element hidden$="[[_hidePreview]]" markdown="[[markdown]]" project="[[project]]"></marked-github-element>
+    </div>
+    <paper-icon-button toggles icon="icons:visibility" hidden$="[[disabled]]" active="{{_previewToggle}}" title="Toggle Markdown preview">[[_toggleText]]</paper-icon-button>
   </template>
   <script>
     Polymer({
@@ -105,7 +102,8 @@ after toggling the preview showing the rendered markdown in real-time.
          */
         disabled: {
           type: Boolean,
-          value: false
+          value: false,
+          reflectToAttribute: true
         },
         /**
          * The markdown from the input field to be rendered to markdown HTML.
