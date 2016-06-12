@@ -148,7 +148,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       observers: [
         'chooseProject(projects, projectTitle.*)',
         '_showPullRequest(newPullrequest)',
-        '_hideProjectList(pullRequestSelected, subPage)',
+        '_showProjectList(subPage)',
         '_showPullsList(projectSelected)'
       ],
       listeners: {
@@ -221,8 +221,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _tapHideProjectList: function() {
         this.showProjectsList = !this.projectSelected;
       },
-      _hideProjectList: function(pullRequestSelected) {
-        this.showProjectsList = !pullRequestSelected;
+      _showProjectList: function(subpage) {
+        this.showProjectsList = (!subpage.subpage || subpage.subpage === 'activity');
       },
       _showPullsList: function(projectSelected) {
         this.showPullList = projectSelected;
