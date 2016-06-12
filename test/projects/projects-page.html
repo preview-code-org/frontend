@@ -87,7 +87,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         ];
         projectPage.projectTitle = {name: 'rite-evaluation', owner: 'preview-code'};
-        assert.deepEqual(projectPage.projectTitle, projectPage.activeProject);
+        assert.equal(projectPage.projectTitle.owner, projectPage.activeProject.owner);
+        assert.equal(projectPage.projectTitle.name, projectPage.activeProject.name);
       });
 
       test('hide project list when pull request is selected', function() {
