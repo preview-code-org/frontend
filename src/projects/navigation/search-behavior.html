@@ -57,8 +57,8 @@ var SearchBehavior = {
       }
       searchWord = searchWord.toLowerCase();
       return list.filter(function(data) {
-        for(var i = 0; i < getFields(data).length; i++) {
-          if(getFields(data)[i].toLowerCase().indexOf(searchWord) > -1) {
+        for (var i = 0; i < getFields(data).length; i++) {
+          if (getFields(data)[i].toLowerCase().indexOf(searchWord) > -1) {
             return true;
           }
         }
