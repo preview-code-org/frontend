@@ -218,12 +218,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             toX: points.rightX,
             toY: points.rightY
           };
-          // Arrow points to the left, so swap the values to make sure the Arrow
-          // points in the correct direction
         }
 
         points = this._calculateAnchorPoints(toRect, fromRect, dx, dy, containerRect);
 
+        // Arrow points to the left, so swap the values to make sure the Arrow
+        // points in the correct direction
         return {
           fromX: points.rightX,
           fromY: points.rightY,
@@ -254,7 +254,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       // Recalc the canvas if we are currently dragging
       _recalcCanvas: function(forced) {
         if (this.dragging || forced) {
-          var fromRect, coordinates;
           // Update the width and height in case the frame was not calculated
           // yet on stamping, or the window was resized.
           var containerRect = this.containerRect;
@@ -264,13 +263,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
           for (var i=0, l=this._blocks.length;i<l;i++) {
             var fromBlock = this._blocks[i];
-            fromRect = fromBlock.getBoundingClientRect();
+            var fromRect = fromBlock.getBoundingClientRect();
 
             for (var j=0, c=fromBlock.connections.length; j<c;j++) {
               var connection = fromBlock.connections[j];
               var toRect = this._blocks[connection.id].getBoundingClientRect();
 
-              coordinates = this._calculateCoordinates(containerRect, fromRect, toRect);
+              var coordinates = this._calculateCoordinates(containerRect, fromRect, toRect);
 
               this._drawArrow(this.ctx, coordinates);
             }
@@ -278,18 +277,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
           // We are currently creating a new connection
           if (this._previousCard) {
-            fromRect = this._previousCard.getBoundingClientRect();
-            coordinates = this._calculateCoordinates(containerRect, fromRect, {
-              top: this._mouseY,
-              bottom: this._mouseY,
-              left: this._mouseX,
-              right: this._mouseX,
-              width: 1,
-              height: 1
-            });
-            this._drawArrow(this.ctx, coordinates);
+            this._drawArrowToMousePosition(containerRect);
           }
         }
+      },
+      _drawArrowToMousePosition: function(containerRect) {
+        var fromRect = this._previousCard.getBoundingClientRect();
+        var coordinates = this._calculateCoordinates(containerRect, fromRect, {
+          top: this._mouseY,
+          bottom: this._mouseY,
+          left: this._mouseX,
+          right: this._mouseX,
+          width: 1,
+          height: 1
+        });
+        this._drawArrow(this.ctx, coordinates);
       },
       _updateElemTrackingPosition: function(rect, lastElem, dy, dx, padding) {
         // Position the element to the new y position based on its original
