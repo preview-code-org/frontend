@@ -70,10 +70,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <github-authenticated-ajax
       id="ajaxPullRequest"
-      refurl=[[githubPath]]
+      refurl="[[pullRequestsApiPath]]"
       headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
       page="[[pullRequestPagination]]"
-      debounce-duration="300"
+      last-response="{{_lastPullRequestsResponse}}"
       on-response="_appendPullRequests"></github-authenticated-ajax>
 
     <github-authenticated-ajax
@@ -124,9 +124,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             return [];
           }
         },
-        githubPath: {
+        pullRequestsApiPath: {
           type: String,
-          computed: '_computeGithubPath(projectTitle, prStateFilter)'
+          computed: '_computepullRequestsApiPath(projectTitle, prStateFilter)'
         },
         showProjectsList: Boolean,
         showPullList: Boolean,
@@ -151,7 +151,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'chooseProject(projects, projectTitle.*)',
         '_showPullRequest(newPullrequest)',
         '_showProjectList(subPage)',
-        '_showPullsList(projectSelected)'
+        '_showPullsList(projectSelected)',
+        '_retrieveNewPullRequests(pullRequestsApiPath)'
       ],
       listeners: {
         'PRStateFilter-updated': '_changePRStateFilter',
@@ -173,6 +174,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return p.owner.login === owner && p.name === name;
         })[0];
         if (!project) {
+          this.activeProject = null;
           return;
         }
 
@@ -183,11 +185,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         };
         ProjectBehavior.setProject(this.activeProject);
 
-        if (this.githubPath) {
-          this.pullRequestPagination = 1;
-          this._lastPage = undefined;
+        this.pullRequestPagination = 1;
+        this._lastPage = undefined;
+      },
+      _retrieveNewPullRequests: function() {
+        this.pullrequests = [];
+        if (this.projectTitle.owner) {
           this.$.ajaxPullRequest.generateRequest();
-          this.pullrequests = [];
         }
       },
       _focusProject: function() {
@@ -243,16 +247,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.push('pullrequests', newPullrequest);
       },
       _appendPullRequests: function(e) {
-        var response = e.detail.response;
-        // Event was fired twice, ignore this one
-        if (this._lastPRResponse === response || !e.detail.response) {
-          return;
-        }
-
-        // To enable pagination, we must retrieve the maximum page
-        // If we do not, GitHub will throw errors when we are fetching too much
-        // For more information see
-        // https://developer.github.com/guides/traversing-with-pagination/#consuming-the-information
+        this._updatePagination(e);
+        var response = e.detail.response.slice();
+        Array.prototype.unshift.apply(response, this.pullrequests);
+        this.notifyPath('pullrequests', response);
+      },
+      // To enable pagination, we must retrieve the maximum page
+      // If we do not, GitHub will throw errors when we are fetching too much
+      // For more information see
+      // https://developer.github.com/guides/traversing-with-pagination/#consuming-the-information
+      _updatePagination: function(e) {
         var pagination = e.detail.xhr.getResponseHeader('Link');
         if (pagination) {
           var lastPage = pagination.match('page=(\\d+)>; rel="last"');
@@ -260,9 +264,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             this._lastPage = lastPage[1];
           }
         }
-        this._lastPRResponse = response;
-        Array.prototype.unshift.apply(response, this.pullrequests);
-        this.notifyPath('pullrequests', response);
       },
       _incrementPageAndRetrievePRs: function() {
         if (!this.pullrequests.length) {
@@ -273,9 +274,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.$.ajaxPullRequest.generateRequest();
         }
       },
-      _computeGithubPath: function(projectTitle, prStateFilter) {
+      _computepullRequestsApiPath: function(projectTitle, prStateFilter) {
         if (projectTitle.owner && prStateFilter) {
-          return 'https://api.github.com/repos/' + [[projectTitle.owner]] + '/' + [[projectTitle.name]] + '/pulls?state=' + [[prStateFilter]];
+          return 'https://api.github.com/repos/' + projectTitle.owner + '/' + projectTitle.name + '/pulls?state=' + prStateFilter;
         }
       }
     });

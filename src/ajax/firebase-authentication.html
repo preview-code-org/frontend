@@ -88,9 +88,7 @@ of the GitHub oAuth token.
           if (!result.credential) {
             if (this.signedIn && this._tokens.GitHub) {
               this.fire('github-token', this._tokens.GitHub);
-              return;
-            }
-            if (shouldRedirect) {
+            } else if (shouldRedirect) {
               this._redirectToGitHub();
             }
           } else {

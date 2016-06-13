@@ -118,10 +118,11 @@ of params with oAuth tokens.
         }
       },
       _onResponse: function(e) {
-        shared.headerCache[this.refurl] = e.detail.xhr.getResponseHeader('ETag');
-        shared.responseCache[this.refurl] = e.detail.response;
-        this._setLastResponse(shared.responseCache[this.refurl]);
-        this.fire('response', e.detail, {
+        shared.headerCache[this.refurl + 'page' + this.page] = e.detail.xhr.getResponseHeader('ETag');
+        shared.responseCache[this.refurl + 'page' + this.page] = e.detail.response;
+        this._setLastResponse(shared.responseCache[this.refurl + 'page' + this.page]);
+        e.stopPropagation();
+        this.fire('response', Object.create(e.detail), {
           bubbles: this.bubbles
         });
       },
@@ -129,19 +130,21 @@ of params with oAuth tokens.
         shared.headerCache[this.refurl] = e.detail.request.xhr.getResponseHeader('ETag');
         // Cache responses to save the rate limit of the GitHub api
         if (e.detail.request.status === 304) {
-          this._setLastResponse(shared.responseCache[this.refurl]);
-          // Modify the original request to remove the error and make it a proper respond
-          var request = e.detail.request;
-          // Inject our last response
-          request._setResponse(this.lastResponse);
-          this.fire('response', Object.create(request), {
-            bubbles: this.bubbles
-          });
+          this._retrievePreviousRequestFromCache(e);
         } else {
           this.fire('error', e.detail, {
             bubbles: this.bubbles
           });
         }
+      },
+      _retrievePreviousRequestFromCache: function(e) {
+        this._setLastResponse(shared.responseCache[this.refurl + 'page' + this.page]);
+        // Inject our last response
+        this.lastRequest._setResponse(this.lastResponse);
+        console.log(this.lastRequest, this.lastRequest.response);
+        this.fire('response', Object.create(this.lastRequest), {
+          bubbles: this.bubbles
+        });
       }
     });
   })();
