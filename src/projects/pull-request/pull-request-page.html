@@ -33,7 +33,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../info-header.html">
 <link rel="import" href="pull-request-general-information.html">
 <link rel="import" href="pull-request-changes.html">
@@ -124,12 +123,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       refurl="[[selectedPull._links.self.href]]"
       on-response="_mergeSinglePRWithSelectedPull"></github-authenticated-ajax>
 
-    <firebase-document
-        app-name="preview-code"
-        path="[[orderingPath]]"
-        data="{{ordering}}"
-        ></firebase-document>
-
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
 
     <info-header title="[[selectedPull.title]]" collapsed="[[_showSpace]]">
@@ -157,8 +150,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <pull-request-general-information data-route="overview" class="overview"
         pull-request="{{selectedPull}}" project="[[project]]"></pull-request-general-information>
       <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
-      <pull-request-changes data-route="diff" diff="[[diff]]" ordering="[[ordering]]"
-          base-url="[[selectedPull.head.repo.html_url]]" project="[[project]]" show-space="[[_showSpace]]"
+      <pull-request-changes data-route="diff" diff="[[diff]]" base-url="[[selectedPull.head.repo.html_url]]"
+          project="[[project]]" show-space="[[_showSpace]]"
           sha="[[selectedPull.head.sha]]"></pull-request-changes>
 
       <span data-route="404">
@@ -178,10 +171,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: Object,
           observer: '_fetchAjax',
           notify: true
-        },
-        orderingPath: {
-          type: String,
-          computed: '_computeOrderingPath(project, selectedPull)'
         },
         _showSpace: {
           type: Boolean,
@@ -222,9 +211,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             this.set('selectedPull.' + f, actualPr[f]);
           }
         }
-      },
-      _computeOrderingPath: function(project, selectedPull) {
-        return ('ordering/' + project.owner + '/' + project.name + '/' + selectedPull.number).toLowerCase();
       },
       _scrollTo: function(e) {
         this.scrollTop = e.detail.top;

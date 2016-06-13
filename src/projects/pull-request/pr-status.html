@@ -94,7 +94,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.retrievedStatus = e.detail.value;
       },
       _updateStatusPath: function(project, pullRequest) {
-        return '/pulls/' + project.owner + '/' + project.name + '/branch/' + pullRequest.number + '/status';
+        return '/' + project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/status';
       },
       _updateBackendPath: function(project, pullRequest) {
         return 'pr/' + project.owner + '/' + project.name + '/' + pullRequest.number + '/status';

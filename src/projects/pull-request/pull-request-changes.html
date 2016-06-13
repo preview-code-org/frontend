@@ -66,8 +66,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <pull-request-space id="space" data-route="space"
         groups="[[orderedGroups]]" hidden$="[[!showSpace]]"></pull-request-space>
     <pull-request-diff id="diff" data-route="diff" diff="[[diff]]"
-        ordering="[[ordering]]" ordered-groups="{{orderedGroups}}"
-        base-url="[[baseUrl]]" sha="[[sha]]" project="[[project]]"></pull-request-diff>
+        ordered-groups="{{orderedGroups}}" base-url="[[baseUrl]]"
+        sha="[[sha]]" project="[[project]]"></pull-request-diff>
 
   </template>
   <script>
@@ -76,7 +76,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       properties: {
         project: Object,
         diff: String,
-        ordering: Array,
         baseUrl: String,
         sha: String,
         orderedGroups: Array,
