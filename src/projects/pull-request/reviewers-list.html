@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../project-behavior.html">
 <link rel="import" href="set-reviewers.html">
 
 <dom-module id="reviewers-list">
@@ -97,19 +98,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
       </div>
     </template>
-    <set-reviewers pullrequest="{{pullrequest}}" project="[[project]]"></set-reviewers>
+    <set-reviewers pullrequest="{{pullrequest}}"></set-reviewers>
 
   </template>
   <script>
     Polymer({
       is: 'reviewers-list',
+      behaviors: [ProjectBehavior],
       properties: {
         sortedReviewers: Array,
         pullrequest: {
           type: Object,
           notify: true
         },
-        project: Object,
         githubPathPost: {
           type: String,
           computed: '_githubPathPost(project, pullrequest)'
@@ -122,10 +123,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'resort': '_resort'
       },
       _sortReviewers: function(pullrequest) {
-          var rs = pullrequest.assignees;
-          if (pullrequest.assignees) {
-            this.sortedReviewers = rs.sort(function(r1, r2) {
-              return r2.lgtm - r1.lgtm;
+        if (!pullrequest) {
+          return [];
+        }
+        var rs = pullrequest.assignees;
+        if (pullrequest.assignees) {
+          this.sortedReviewers = rs.sort(function(r1, r2) {
+            return r2.lgtm - r1.lgtm;
           });
         }
       },
@@ -139,7 +143,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this._sortReviewers(this.pullrequest);
       },
       _removeAssignee: function(e) {
-        console.log(e);
         this.$.removeAssignees.body = {
           assignees: [e.path[4].getAttribute('title')]
         }

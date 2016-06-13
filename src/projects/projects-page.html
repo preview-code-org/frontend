@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../list-items/list-tab.html">
 <link rel="import" href="../list-items/preview-list.html">
+<link rel="import" href="project-behavior.html">
 <link rel="import" href="navigation/list-navigation.html">
 <link rel="import" href="pull-request/pull-request-page.html">
 <link rel="import" href="no-project-selected.html">
@@ -100,8 +101,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         on-tap="_tapHideProjectList">
       <no-project-selected data-route="no-selected"></no-project-selected>
       <project-overview-page data-route="overview" tabindex="0"
-          project="[[activeProject]]" route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
-      <pull-request-page data-route="pr" selected-pull="{{selectedPull}}" route="{{prTail}}" project="[[projectTitle]]"></pull-request-page>
+          route="{{nameTail}}" pullrequests="[[pullrequests]]"></project-overview-page>
+      <pull-request-page data-route="pr" selected-pull="{{selectedPull}}" route="{{prTail}}"></pull-request-page>
     </iron-pages>
   </template>
   <script>
@@ -179,6 +180,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           name: project.name,
           _actual: project
         };
+        ProjectBehavior.setProject(this.activeProject);
+
         if (this.githubPath) {
           this.pullRequestPagination = 1;
           this._lastPage = undefined;

@@ -101,7 +101,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <img class="icon" src="[[item.author.avatar_url]]" alt="[[item.author.login]] avatar"/>
         </div>
         <div class$="container [[showWholeMessage]]" on-tap="_showWholeCommit">
-          <marked-github-element class="message" markdown="[[item.commit.message]]" project="[[project]]"></marked-github-element>
+          <marked-github-element class="message" markdown="[[item.commit.message]]"></marked-github-element>
         </div>
       </div>
     </div>
@@ -112,7 +112,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'pull-request-commit',
       behaviors: [ToDateStringBehavior, SubstituteRenderedGitHubMarkdownBehavior],
       properties: {
-        project: Object,
         item: Object,
         showWholeMessage: {
           type: Boolean,

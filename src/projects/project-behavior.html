@@ -1,0 +1,27 @@
+<script>
+/*exported ProjectBehavior*/
+var ProjectBehavior = (function() {
+  var instances = [];
+
+  return {
+    properties: {
+      project: Object
+    },
+    attached: function() {
+      instances.push(this);
+    },
+    detached: function() {
+      var index = instances.indexOf(this);
+      if (!index) {
+        return;
+      }
+      instances.splice(index, 1);
+    },
+    setProject: function(project) {
+      for (var i=0, l=instances.length;i<l;i++) {
+        instances[i].project = project;
+      }
+    }
+  };
+})();
+</script>

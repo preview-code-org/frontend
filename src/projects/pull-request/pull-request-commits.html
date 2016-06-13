@@ -46,7 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       last-response="{{commits}}"></github-authenticated-ajax>
 
     <template is="dom-repeat" items="{{commits}}" index-as="index">
-      <pull-request-commit item="[[item]]" project="[[project]]"></pull-request-commit>
+      <pull-request-commit item="[[item]]"></pull-request-commit>
     </template>
   </template>
   <script>
@@ -54,8 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'pull-request-commits',
       properties: {
         pullRequest: Object,
-        commits: Array,
-        project: Object
+        commits: Array
       },
       observers: [
         '_fireAjax(pullRequest)'

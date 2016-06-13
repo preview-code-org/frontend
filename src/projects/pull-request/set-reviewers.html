@@ -27,10 +27,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../ajax/github-authenticated-ajax.html">
+<link rel="import" href="../project-behavior.html">
 
 <dom-module id="set-reviewers">
   <template>
@@ -64,12 +65,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <script>
     Polymer({
       is: 'set-reviewers',
+      behaviors: [ProjectBehavior],
       properties: {
         pullrequest: {
           type: Object,
           notify: true
         },
-        project: Object,
         reviewer: String,
         githubPathPost: {
           type: String,

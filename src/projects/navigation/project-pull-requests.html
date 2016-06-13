@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <link rel="import" href="../../list-items/preview-list.html">
 <link rel="import" href="../pull-request/pull-request-page.html">
+<link rel="import" href="../project-behavior.html">
 <link rel="import" href="project-pull-request-list-item.html">
 <link rel="import" href="search-box.html">
 <link rel="import" href="search-behavior.html">
@@ -124,12 +125,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </preview-list>
   </template>
   <script>
-  /*global SearchBehavior*/
+  /*global SearchBehavior,ProjectBehavior*/
     Polymer({
       is: 'project-pull-requests',
-      behaviors: [SearchBehavior],
+      behaviors: [SearchBehavior, ProjectBehavior],
       properties: {
-        project: Object,
         route: Object,
         selectedPull: Object,
         pullrequests: {

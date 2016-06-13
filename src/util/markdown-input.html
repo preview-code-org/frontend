@@ -83,7 +83,7 @@ after toggling the preview showing the rendered markdown in real-time.
     </style>
     <div class="edit-area">
       <paper-textarea hidden$="[[!_hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
-      <marked-github-element hidden$="[[_hidePreview]]" markdown="[[markdown]]" project="[[project]]"></marked-github-element>
+      <marked-github-element hidden$="[[_hidePreview]]" markdown="[[markdown]]"></marked-github-element>
     </div>
     <paper-icon-button toggles icon="icons:visibility" hidden$="[[disabled]]" active="{{_previewToggle}}" title="Toggle Markdown preview">[[_toggleText]]</paper-icon-button>
   </template>
@@ -91,11 +91,6 @@ after toggling the preview showing the rendered markdown in real-time.
     Polymer({
       is: 'markdown-input',
       properties: {
-        /**
-         * The project required to generate GitHub Markdown.
-         * @type {Object}
-         */
-        project: Object,
         /**
          * If the toggle button should be hidden.
          * @type {Boolean}
