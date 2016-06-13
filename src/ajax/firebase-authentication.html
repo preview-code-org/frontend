@@ -82,7 +82,7 @@ of the GitHub oAuth token.
        * Else it checks for local storage if the token existed and signed in
        * with the Firebase session and fires `github-token` again.
        */
-      signIn: function() {
+      signIn: function(shouldRedirect) {
         this.$.auth.auth.getRedirectResult().then(function(result) {
           this.loading = false;
           if (!result.credential) {
@@ -90,7 +90,9 @@ of the GitHub oAuth token.
               this.fire('github-token', this._tokens.GitHub);
               return;
             }
-            this._redirectToGitHub();
+            if (shouldRedirect) {
+              this._redirectToGitHub();
+            }
           } else {
             this._parseSuccesfulResult(result);
           }

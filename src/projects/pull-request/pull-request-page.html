@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../info-header.html">
+<link rel="import" href="../project-behavior.html">
 <link rel="import" href="pull-request-general-information.html">
 <link rel="import" href="pull-request-changes.html">
 <link rel="import" href="pull-request-commits.html">
@@ -151,8 +152,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pull-request="{{selectedPull}}" project="[[project]]"></pull-request-general-information>
       <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
       <pull-request-changes data-route="diff" diff="[[diff]]" base-url="[[selectedPull.head.repo.html_url]]"
-          project="[[project]]" show-space="[[_showSpace]]"
-          sha="[[selectedPull.head.sha]]"></pull-request-changes>
+          show-space="[[_showSpace]]" sha="[[selectedPull.head.sha]]"></pull-request-changes>
 
       <span data-route="404">
         Oops you hit a 404!
@@ -161,11 +161,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </iron-pages>
   </template>
   <script>
+  /*global ProjectBehavior*/
     Polymer({
       is: 'pull-request-page',
+      behaviors: [ProjectBehavior],
       properties: {
         route: Object,
-        project: Object,
         diff: String,
         selectedPull: {
           type: Object,

@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../../ajax/backend-ajax.html">
 <link rel="import" href="../diff/diff.html">
+<link rel="import" href="../project-behavior.html">
 <link rel="import" href="create-pull-request-description.html">
 <link rel="import" href="create-pull-diff.html">
 
@@ -129,10 +130,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ></project-create-pull-diff>
   </template>
   <script>
+  /*global ProjectBehavior*/
     Polymer({
       is: 'project-create-pull-request',
+      behaviors: [ProjectBehavior],
       properties: {
-        project: Object,
         title: String,
         description: String,
         contributors: Array,

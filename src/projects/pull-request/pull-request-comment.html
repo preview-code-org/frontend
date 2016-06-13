@@ -75,7 +75,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <a-user user="[[author]]"></a-user>
         <list-item-label class="time" type="info" icon="device:access-time" title$="Posted [[_timeString]] ago">[[_timeString]] ago</list-item-label>
       </div>
-      <marked-github-element markdown="[[text]]" project="[[project]]"></marked-github-element>
+      <marked-github-element markdown="[[text]]"></marked-github-element>
     </div>
 
   </template>
@@ -88,7 +88,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         text: String,
         author: Object,
         date: String,
-        project: Object,
         _timeString: {
           type: String,
           computed: 'toDateString(date)'

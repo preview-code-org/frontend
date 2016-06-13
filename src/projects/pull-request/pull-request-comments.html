@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <preview-list hide-end-indicator>
       <template is="dom-repeat" items="[[orderedComments]]">
         <pull-request-comment text="[[item.body]]" author="[[item.user]]"
-          date="[[item.created_at]]" project="[[project]]"></pull-request-comment>
+          date="[[item.created_at]]"></pull-request-comment>
       </template>
     </preview-list>
   </template>
@@ -53,8 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         orderedComments: {
           type: Array,
           computed: '_reverse(comments)'
-        },
-        project: Object
+        }
       },
       _reverse: function(array) {
         if (array) {

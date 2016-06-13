@@ -176,15 +176,13 @@ Prism.languages.diff.other = /.+/m;
       'go-login-github': '_signInWithGitHub'
     },
     attached: function() {
-      if (this.page.page !== '') {
-        this._signInWithGitHub();
-      }
+      this.$.firebase.signIn(this.page.page !== '');
     },
     _equals: function(one, other) {
       return one === other;
     },
     _signInWithGitHub: function() {
-      this.$.firebase.signIn();
+      this.$.firebase.signIn(true);
     },
     _setToken: function(e) {
       this.$.authenticatedAjax.storeToken(e.detail);

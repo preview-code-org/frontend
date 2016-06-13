@@ -153,7 +153,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           disabled="[[!editable]]"
           label="Enter a description for these changes. Markdown is supported."
           markdown="{{group.info.description}}"
-          project="[[project]]"
         ></markdown-input>
 
         <dom-repeat-once id="hunks" items="[[group.diff]]" disabled="[[!editable]]"></dom-repeat-once>
@@ -163,7 +162,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <template is="dom-repeat" items="[[group.comments]]" as="comment">
               <pull-request-comment
               text="[[comment.body]]" author="[[comment.user]]"
-              date="[[comment.timeopened]]" project="[[project]]"></pull-request-comment>
+              date="[[comment.timeopened]]"></pull-request-comment>
             </template>
             <pull-request-add-comments comments="{{group.comments}}"></pull-request-add-comments>
           </div>
@@ -195,7 +194,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: false,
           reflectToAttribute: true
         },
-        project: Object,
         _isAlreadyInitialized: Boolean
       },
       observers: [

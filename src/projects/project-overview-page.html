@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="create-pull-request/create-pull-request.html">
+<link rel="import" href="project-behavior.html">
 <link rel="import" href="project-activity.html">
 <link rel="import" href="info-header.html">
 
@@ -102,8 +103,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 attr-for-selected="data-route"
                 fallback-selection="404">
       <project-activity data-route="activity"></project-activity>
-      <project-create-pull-request data-route="createpull"
-          project="[[project]]"></project-create-pull-request>
+      <project-create-pull-request data-route="createpull"></project-create-pull-request>
       <span data-route="404">
         Oops you hit a 404!
         <a href="/">Head back home</a>
@@ -113,10 +113,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   </template>
   <script>
+  /*global ProjectBehavior*/
     Polymer({
       is: 'project-overview-page',
+      behaviors: [ProjectBehavior],
       properties: {
-        project: Object,
         route: Object,
         page: Object
       }
