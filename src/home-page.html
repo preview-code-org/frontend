@@ -40,9 +40,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       div{
         margin-top:2%;
       }
-      .button {
-        color:grey;
+      paper-button {
+        color: grey;
         background-color: white;
+        pointer-events: painted !important;
       }
       .button-container {
         display: block;
@@ -50,9 +51,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .logo {
         height: 100px;
         border-radius: 50px;
-      }
-      a {
-        display: inline-block;
       }
       .about {
         margin-top:5%;
@@ -72,14 +70,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <img class="logo" src="https://blueseptember.org.au/wp-content/uploads/2015/07/Blue-square.jpg" />
     </div>
     <div class="button-container">
-      <paper-button raised class="button" on-tap="_loginWithGithub">
+      <paper-button raised on-tap="_loginWithGithub">
         <img height=30px src="https://assets-cdn.github.com/images/modules/logos_page/Octocat.png" /> Login with Github
       </paper-button>
-      <a href="/projects" tabindex="-1">
-        <paper-button raised class="button">
-          <img height=30px src="https://pbs.twimg.com/profile_images/615675308243488768/_d8TRzzL.png" /> Login with Bitbucket
-        </paper-button>
-      </a>
+      <paper-button raised disabled title="Support coming soon!">
+        <img height=30px src="https://pbs.twimg.com/profile_images/615675308243488768/_d8TRzzL.png" /> Login with Bitbucket
+      </paper-button>
     </div>
     <div class="about">
       <h2>About us</h2>
