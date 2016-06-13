@@ -27,7 +27,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../util/collapse-icon.html">
+<link rel="import" href="../../util/collapsible-content.html">
 <link rel="import" href="../../bower_components/prism-element/prism-theme-default.html">
 <link rel="import" href="hunk-ghost.html">
 
@@ -47,12 +47,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         -ms-transition: all 0.3s ease;
         -o-transition: all 0.3s ease;
         transition: all 0.3s ease;
-        border: solid 1px var(--secondary-background-color);
-        background-color: var(--tertiary-background-color);
       }
-      header {
-        background-color: var(--secondary-background-color);
+      .header {
         padding: 0.5em;
+      }
+      collapsible-content {
+        --collapse-header: {
+          background-color: var(--secondary-background-color);
+        }
       }
       pre {
         margin: 0;
@@ -78,6 +80,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .content {
         display: flex;
         align-items: stretch;
+        border: solid 1px var(--secondary-background-color);
+        background-color: var(--tertiary-background-color);
       }
       .lines {
         display: flex;
@@ -99,18 +103,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
 
-    <header>
-      [[hunk.file]]
-      <a href$="[[hunk.fileUrl]]" target="_blank">Full file</a>
-      <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
-    </header>
-    <div class="content" hidden$="[[collapsed]]">
-      <div class="lines">
-        <div id="beforeColumn"></div>
-        <div id="afterColumn"></div>
+    <collapsible-content collapse="{{collapsed}}">
+      <div class="header">
+        [[hunk.file]]
+        <a href$="[[hunk.fileUrl]]" target="_blank">Full file</a>
       </div>
-      <pre><code id="codeView"></code></pre>
-    </div>
+      <div class="content">
+        <div class="lines">
+          <div id="beforeColumn"></div>
+          <div id="afterColumn"></div>
+        </div>
+        <pre><code id="codeView"></code></pre>
+      </div>
+    </collapsible-content>
 
     <hunk-ghost id="ghost" hunk-text="[[hunk.file]]"></hunk-ghost>
   </template>

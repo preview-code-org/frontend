@@ -30,42 +30,55 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <html>
 <head>
   <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
-  <title>hide-content-tests</title>
+  <title>collapsible-content-tests</title>
 
   <script src='../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
   <script src='../../src/bower_components/web-component-tester/browser.js'></script>
   <script src='../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
 
   <!-- Import the element to test -->
-  <link rel='import' href='../../src/util/hide-content.html'>
+  <link rel='import' href='../../src/util/collapsible-content.html'>
 
 </head>
 <body>
   <test-fixture id='basic'>
     <template>
-      <hide-content></hide-content>
+      <collapsible-content></collapsible-content>
     </template>
   </test-fixture>
 
   <script>
-    suite('<hide-content>', function() {
+    suite('<collapsible-content>', function() {
       var elem;
 
       setup(function() {
         elem = fixture('basic');
       });
 
-      test('tapping hide comments hides content', function() {
-        var icon = Polymer.dom(elem.root).querySelector('.hide-comments-icon');
+      test('tapping button toggles property', function() {
+        var icon = Polymer.dom(elem.root).querySelector('#toggle-collapse-btn');
         MockInteractions.tap(icon);
-        assert.equal(elem.showContent, false);
+        assert.isTrue(elem.collapse);
       });
 
-      test('tapping icon twice shows content again', function() {
-        var icon = Polymer.dom(elem.root).querySelector('.hide-comments-icon');
+      test('tapping twice toggles property again', function() {
+        var icon = Polymer.dom(elem.root).querySelector('#toggle-collapse-btn');
         MockInteractions.tap(icon);
         MockInteractions.tap(icon);
-        assert.equal(elem.showContent, true);
+        assert.isFalse(elem.collapse);
+      });
+
+      test('tapping button hides content', function() {
+        var icon = Polymer.dom(elem.root).querySelector('#toggle-collapse-btn');
+        MockInteractions.tap(icon);
+        assert.isTrue(Polymer.dom(elem.root).querySelector('#content').hasAttribute('hidden'));
+      });
+
+      test('tapping twice shows content again', function() {
+        var icon = Polymer.dom(elem.root).querySelector('#toggle-collapse-btn');
+        MockInteractions.tap(icon);
+        MockInteractions.tap(icon);
+        assert.isFalse(Polymer.dom(elem.root).querySelector('#content').hasAttribute('hidden'));
       });
     });
   </script>

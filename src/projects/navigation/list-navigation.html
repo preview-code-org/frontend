@@ -60,14 +60,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
       }
-      .collapsable {
+      .collapsible {
         position: fixed;
         left: var(--sidebar-width);
         transition: left 0.4s ease;
         z-index: 2;
         height: 100%;
       }
-      .collapsable::before {
+      .collapsible::before {
         content: '';
         transition: all 0.4s ease;
         opacity: 0;
@@ -78,15 +78,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pointer-events: none;
         will-change: opacity;
       }
-      .collapsable.both-list::before {
+      .collapsible.both-list::before {
         opacity: 0.35;
       }
-      .collapsable.one-list .project-list.true,
-      .collapsable.both-list .project-list.true,
-      .collapsable.one-list .pull-list {
+      .collapsible.one-list .project-list.true,
+      .collapsible.both-list .project-list.true,
+      .collapsible.one-list .pull-list {
         left: 0;
       }
-      .collapsable.both-list .pull-list.true {
+      .collapsible.both-list .pull-list.true {
         left: var(--project-list-width);
       }
       search-box {
@@ -120,7 +120,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <list-tab selected="{{showPullList}}" hidden$="[[!projectSelected]]" icon="editor:merge-type">Pull Requests</list-tab>
       </div>
     </div>
-    <div class$="collapsable [[listClass]]">
+    <div class$="collapsible [[listClass]]">
       <div class$="project-list [[showProjectsList]]">
         <preview-list>
           <search-box value="{{searchWord}}"></search-box>

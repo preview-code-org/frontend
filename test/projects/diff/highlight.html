@@ -66,7 +66,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var diffElem;
 
         setup(function() {
-          replace('collapse-icon').with('stub-collapse-icon');
           diffElem = fixture('basic');
           diffElem.hunk = diff;
         });
@@ -97,18 +96,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             return line.startsWith('-');
           });
           assert.equal(emptyAfterLines.length, afterLines.length);
-        });
-
-        test('Hides diff when collapsed', function() {
-            diffElem.collapsed = true;
-            var display = getComputedStyle(get('.content')).display;
-            assert.equal('none', display);
-        });
-
-        test('Shows diff when not collapsed', function() {
-            diffElem.collapsed = false;
-            var display = getComputedStyle(get('.content')).display;
-            assert.notEqual('none', display);
         });
 
         var getChildrenForId = function(id) {

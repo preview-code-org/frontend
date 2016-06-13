@@ -84,32 +84,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.notEqual(display, 'none');
     });
 
-    test('hides diffs when collapsed', function() {
-      groupElem.collapsed = true;
-      var display = getComputedStyle(get('.content')).display;
-      assert.equal(display, 'none');
-    });
-
     test('hides description when no descripion was provided', function() {
       var display = getComputedStyle(get('markdown-input')).display;
       assert.equal(display, 'none');
     });
 
-    test('shows default title when no title was provided', function() {
-      var title = get('h2');
-      assert.equal(title.innerHTML, 'Unsorted changes');
-    });
-
     test('shows title when collapsed', function() {
       var group = {
-        title: 'someTitle',
+        info: {
+          title: 'someTitle',
+          descripion: ''
+        },
         diff: [],
         comments: []
       }
       groupElem.group = group;
       groupElem.collapsed = true;
-      var title = get('h2');
-      assert.equal(title.innerHTML, 'someTitle');
+      var title = get('editable-title');
+      assert.equal(title.value, 'someTitle');
     });
 
     var get = function(elem) {

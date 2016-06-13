@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/Sortable/Sortable.html">
 <link rel="import" href="../../util/markdown-input.html">
 <link rel="import" href="../../util/editable-title.html">
-<link rel="import" href="../../util/collapse-icon.html">
+<link rel="import" href="../../util/collapsible-content.html">
 <link rel="import" href="../../util/dom-repeat-once.html">
 <link rel="import" href="../pull-request/pull-request-add-comments.html">
 <link rel="import" href="../pull-request/pull-request-comment.html">
@@ -143,37 +143,34 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         opacity: 1;
       }
     </style>
-    <collapse-icon collapsed="{{collapsed}}"></collapse-icon>
-    <div class="collapsedContent" hidden$="[[!collapsed]]">
-      <h2>[[group.info.title]]</h2>
-    </div>
-    <div class="content" hidden$="[[collapsed]]">
-      <header>
+    <collapsible-content collapse="{{collapsed}}">
+      <div class="header">
         <editable-title id="editTitleDialog" editable="[[editable]]" value="{{group.info.title}}"></editable-title>
-      </header>
+      </div>
+      <div class="content">
+        <markdown-input
+          hidden$="[[hideDescription]]"
+          disabled="[[!editable]]"
+          label="Enter a description for these changes. Markdown is supported."
+          markdown="{{group.info.description}}"
+          project="[[project]]"
+        ></markdown-input>
 
-      <markdown-input
-        hidden$="[[hideDescription]]"
-        disabled="[[!editable]]"
-        label="Enter a description for these changes. Markdown is supported."
-        markdown="{{group.info.description}}"
-        project="[[project]]"
-      ></markdown-input>
-
-      <dom-repeat-once id="hunks" items="[[group.diff]]" disabled="[[!editable]]"></dom-repeat-once>
-      <p class="toggle-comments" hidden$="[[editable]]">
-        <span>comments</span>
-        <collapse-icon collapsed="{{collapseComments}}"></collapse-icon>
-      </p>
-      <div class="group-comment" hidden$="[[hideComments]]">
-        <template is="dom-repeat" items="[[group.comments]]" as="comment">
-          <pull-request-comment
+        <dom-repeat-once id="hunks" items="[[group.diff]]" disabled="[[!editable]]"></dom-repeat-once>
+        <collapsible-content class="toggle-comments" collapse="{{collapseComments}}" hidden$="[[editable]]">
+          <span class="header">comments</span>
+          <div class="group-comment" hidden$="[[hideComments]]">
+            <template is="dom-repeat" items="[[group.comments]]" as="comment">
+              <pull-request-comment
               text="[[comment.body]]" author="[[comment.user]]"
               date="[[comment.timeopened]]" project="[[project]]"></pull-request-comment>
-        </template>
-        <pull-request-add-comments comments="{{group.comments}}"></pull-request-add-comments>
+            </template>
+            <pull-request-add-comments comments="{{group.comments}}"></pull-request-add-comments>
+          </div>
+        </collapsible-content>
       </div>
-    </div>
+    </collapsible-content>
+
   </template>
   <script>
     Polymer({
@@ -206,7 +203,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         '_groupChanged(group, editable)'
       ],
       attached: function() {
-        if (!this.editable && !this.group.info.description) {
+        if (!this.editable && (!this.group || !this.group.info.description)) {
           this.hideDescription = true;
         }
         this.initSortable();

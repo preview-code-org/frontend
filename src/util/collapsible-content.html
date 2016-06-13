@@ -26,49 +26,62 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<!doctype html>
-<html>
-<head>
-  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
-  <title>collapse-icon-tests</title>
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
-  <script src='../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
-  <script src='../../src/bower_components/web-component-tester/browser.js'></script>
-  <script src='../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
-
-  <!-- Import the element to test -->
-  <link rel='import' href='../../src/util/collapse-icon.html'>
-
-</head>
-<body>
-  <test-fixture id='basic'>
-    <template>
-      <collapse-icon></collapse-icon>
-    </template>
-  </test-fixture>
-
+<!--
+Hide or show the content by clicking on the arrow.
+-->
+<dom-module id="collapsible-content">
+  <template>
+    <style>
+      :host {
+        display:block;
+        @apply(--collapsible-content);
+      }
+      #toggle-collapse-btn {
+        transform: rotate(0.5turn);
+        transition: transform 0.2s ease;
+        @apply(--collapse-icon);
+      }
+      #toggle-collapse-btn.hide.true {
+        transform: rotate(0turn);
+      }
+      ::content .header {
+        flex: 1;
+      }
+      header {
+        display: flex;
+        @apply(--collapse-header);
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+    <header>
+      <content select=".header"></content>
+      <paper-icon-button id="toggle-collapse-btn" icon="icons:arrow-downward" class$="hide [[collapse]]" on-tap="_toggleCollapse"></paper-icon-button>
+    </header>
+    <span id="content" hidden$="[[collapse]]">
+      <content></content>
+    </span>
+  </template>
   <script>
-    suite('<collapse-icon>', function() {
-      var elem;
-
-      setup(function() {
-        elem = fixture('basic');
-      });
-
-      test('tapping icon collapses', function() {
-        var icon = Polymer.dom(elem.root).querySelector('.collapse-icon');
-        MockInteractions.tap(icon);
-        assert.equal(elem.collapsed, true);
-      });
-
-      test('tapping icon twice uncollapses', function() {
-        var icon = Polymer.dom(elem.root).querySelector('.collapse-icon');
-        MockInteractions.tap(icon);
-        MockInteractions.tap(icon);
-        assert.equal(elem.collapsed, false);
-      });
+    Polymer({
+      is: 'collapsible-content',
+      properties: {
+        /**
+         * If the content should be hidden or not.
+         * @type {Boolean}
+         */
+        collapse: {
+          type: Boolean,
+          value: false,
+          notify: true
+        }
+      },
+      _toggleCollapse: function() {
+        this.collapse = !this.collapse;
+      }
     });
   </script>
-
-</body>
-</html>
+</dom-module>
