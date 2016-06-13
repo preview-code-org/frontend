@@ -42,30 +42,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display: none !important;
       }
       :host {
+        background-color: var(--primary-background-color);
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         overflow: hidden;
         display: block;
         margin: 2em 0;
         padding: 1em 2em;
-        background-color: var(--primary-background-color);
-        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
-        box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         -webkit-transition: all 0.3s ease;
         -moz-transition: all 0.3s ease;
         -ms-transition: all 0.3s ease;
         -o-transition: all 0.3s ease;
         transition: all 0.3s ease;
       }
-      :host([collapsed]) {
-        height: 3em !important;
-      }
       header {
         min-height: 2em;
       }
-      h2.title {
-        height: 25px;
-      }
       markdown-input {
-        margin-bottom: 1em;
+        margin: 1em 0;
       }
       markdown-input[disabled] {
         margin-bottom: 0;
@@ -79,8 +73,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         box-sizing: border-box;
         margin-top: 1em;
         display: block;
-        border: dashed 3px #ccc;
         color: #ccc;
+        border: dashed 3px #ccc;
         padding: 3em 1em;
         text-align: center;
       }
@@ -88,9 +82,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         content: "Drag some diffs here!";
         font-size: 1.4em;
         font-weight: 600;
-      }
-      .toggle-comments {
-        background-color: var(--secondary-background-color);
       }
       .hunk {
         width: 100%;
@@ -101,8 +92,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         transition: all 0.4s;
         margin-bottom: 1em;
       }
-      pull-request-diff-highlight {
+      pull-request-diff-highlight.edit-mode {
         margin: -2em 0 0 0 !important;
+      }
+      pull-request-diff-highlight {
         position: relative;
         z-index: 0;
       }
@@ -123,11 +116,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         width: calc(100% - 50px);
         height: 2em;
         opacity: 0;
-      }
-      .drag-handle[editable] {
         cursor: pointer;
       }
-      .drag-handle[editable]::before {
+      .drag-handle::before {
         content: "";
         position: relative;
         margin: 0 auto;
@@ -138,7 +129,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         border-radius: 1em;
         top: 12px;
       }
-      .drag-handle[editable]:hover,
+      .drag-handle:hover,
       .hunk-ghost .drag-handle {
         opacity: 1;
       }
@@ -158,14 +149,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <dom-repeat-once id="hunks" items="[[group.diff]]" disabled="[[!editable]]"></dom-repeat-once>
         <collapsible-content class="toggle-comments" collapse="{{collapseComments}}" hidden$="[[editable]]">
           <span class="header">comments</span>
-          <div class="group-comment" hidden$="[[hideComments]]">
-            <template is="dom-repeat" items="[[group.comments]]" as="comment">
-              <pull-request-comment
-              text="[[comment.body]]" author="[[comment.user]]"
-              date="[[comment.timeopened]]"></pull-request-comment>
-            </template>
-            <pull-request-add-comments comments="{{group.comments}}"></pull-request-add-comments>
-          </div>
+          <template is="dom-repeat" items="[[group.comments]]" as="comment">
+            <pull-request-comment
+            text="[[comment.body]]" author="[[comment.user]]"
+            date="[[comment.timeopened]]"></pull-request-comment>
+          </template>
+          <pull-request-add-comments comments="{{group.comments}}"></pull-request-add-comments>
         </collapsible-content>
       </div>
     </collapsible-content>
@@ -183,10 +172,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         collapseComments: {
           type: Boolean,
           value: true
-        },
-        hideComments: {
-          type: Boolean,
-          computed: '_shouldHideComments(collapseComments, editable)'
         },
         hideDescription: Boolean,
         collapsed: {
@@ -241,14 +226,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _createDraggableHunk: function(hunk, editable) {
         var container = document.createElement('div');
         container.setAttribute('class', 'hunk');
-        var dragHandle = document.createElement('div');
-        dragHandle.setAttribute('class', 'drag-handle');
-        if (editable) {
-          dragHandle.setAttribute('editable', 'true');
-        }
         var hunkElem = document.createElement('pull-request-diff-highlight');
         hunkElem.set('hunk', hunk);
-        container.appendChild(dragHandle);
+        if (editable) {
+          var dragHandle = document.createElement('div');
+          dragHandle.setAttribute('class', 'drag-handle');
+          container.appendChild(dragHandle);
+          hunkElem.setAttribute('class', 'edit-mode');
+        } else {
+          hunkElem.approvable = true;
+        }
         container.appendChild(hunkElem);
         return container;
       },
@@ -270,9 +257,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             newIndex: e.newIndex
           });
         }
-      },
-      _shouldHideComments: function(collapsed, editable) {
-        return collapsed || editable;
       },
       _resetCollapsed: function() {
         this.collapsed = false;

@@ -37,38 +37,48 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       :host {
         display:flex;
         flex-wrap: wrap;
+        padding: 6px
+      }
+      [hidden] {
+        display: none !important;
       }
       .lgtm.false {
-        display: none;
+        transform: scale(0);
       }
-      iron-icon {
+      .lgtm {
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+        transform: scale(1);
+        fill: var(--primary-background-color);
         padding: 4px;
         width:16px;
         height:16px;
         background-color: var(--primary-action-green);
         border-radius: 13px;
       }
-      .lgtm {
-        fill: var(--primary-background-color);
-      }
       .reviewer {
-        -webkit-box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
-        box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
-        border-radius: 9px;
-        width: 52px;
-        height: 52px;
-        background-repeat: no-repeat;
-        background-size: 100%;
-        margin: 8px auto;
+        width: 40px;
+        height: 40px;
+        padding: 6px;
       }
-      .icons {
-        position: relative;
-        top: -10px;
-        left: -10px;
-        width: calc(100% + 20px);
+      :host([small]) .reviewer {
+        width: 32px;
+        height: 32px;
       }
       .reviewer:hover paper-icon-button {
         display: block;
+      }
+      .reviewer .image {
+        -webkit-box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
+        border-radius: 9px;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        width: 100%;
+        height: 100%;
       }
       paper-icon-button {
         display: none;
@@ -78,8 +88,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         width: 24px;
         height: 24px;
         border-radius: 12px;
-        float: right;
       }
+      .icons {
+         position: relative;
+         display: flex;
+         justify-content: space-between;
+         top: -10px;
+         left: -10px;
+         width: calc(100% + 20px);
+       }
+
     </style>
 
     <github-authenticated-ajax
@@ -91,14 +109,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ></github-authenticated-ajax>
 
     <template is="dom-repeat" items="[[sortedReviewers]]" as="reviewer">
-      <div class="reviewer" title$="[[reviewer.login]]" style$="background-image: url([[reviewer.avatar_url]]); ">
-        <div class="icons">
-          <iron-icon class$="lgtm [[reviewer.lgtm]]" icon="icons:thumb-up"></iron-icon>
-          <paper-icon-button on-tap="_removeAssignee" icon="icons:clear"></paper-icon-button>
+      <div class="reviewer" title$="[[reviewer.login]]">
+        <div class="image" style$="background-image: url([[reviewer.avatar_url]]); ">
+          <div class="icons">
+            <iron-icon class$="lgtm [[reviewer.lgtm]]" icon="icons:thumb-up"></iron-icon>
+            <paper-icon-button hidden$="[[!editable]]" title$="Unassign [[reviewer.login]]"  on-tap="_removeAssignee" icon="icons:clear"></paper-icon-button>
+         </div>
         </div>
       </div>
     </template>
-    <set-reviewers pullrequest="{{pullrequest}}"></set-reviewers>
+    <set-reviewers hidden="[[!editable]]" pullrequest="{{pullrequest}}"></set-reviewers>
 
   </template>
   <script>
@@ -107,6 +127,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'reviewers-list',
       behaviors: [ProjectBehavior],
       properties: {
+        small: {
+          type: Boolean,
+          value: false
+        },
+        editable: {
+          type: Boolean,
+          value: false
+        },
         sortedReviewers: Array,
         pullrequest: {
           type: Object,
@@ -145,7 +173,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _removeAssignee: function(e) {
         this.$.removeAssignees.body = {
-          assignees: [e.path[4].getAttribute('title')]
+          assignees: [e.model.reviewer.login]
         }
         this.$.removeAssignees.generateRequest();
       },

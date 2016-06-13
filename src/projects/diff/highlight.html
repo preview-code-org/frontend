@@ -27,8 +27,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../util/collapsible-content.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/prism-element/prism-theme-default.html">
+<link rel="import" href="../../util/collapsible-content.html">
+<link rel="import" href="../pull-request/reviewers-list.html">
 <link rel="import" href="hunk-ghost.html">
 
 <dom-module id='pull-request-diff-highlight'>
@@ -47,14 +49,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         -ms-transition: all 0.3s ease;
         -o-transition: all 0.3s ease;
         transition: all 0.3s ease;
+        border: solid 1px var(--secondary-background-color);
+        background-color: var(--primary-background-color);
       }
       .header {
+        display: flex;
+        align-items: center;
         padding: 0.5em;
       }
       collapsible-content {
         --collapse-header: {
-          background-color: var(--secondary-background-color);
-        }
+          background-color: var(--tertiary-background-color);
+        };
       }
       pre {
         margin: 0;
@@ -80,8 +86,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .content {
         display: flex;
         align-items: stretch;
-        border: solid 1px var(--secondary-background-color);
-        background-color: var(--tertiary-background-color);
       }
       .lines {
         display: flex;
@@ -101,12 +105,47 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         font-size: 12px;
         text-align: center;
       }
+      paper-button {
+        border: solid 1px var(--secondary-background-color);
+        background-color: var(--tertiary-background-color);
+        border-top: none;
+        margin: 0;
+        font-size: 14px;
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 8px;
+        position: relative;
+        top: -1px;
+      }
+      iron-icon {
+        width: 20px;
+        height: 20px;
+      }
+      reviewers-list {
+        margin-left: 0.5em;
+      }
+      paper-icon-button {
+        margin-left: auto;
+        -webkit-box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
+        border-radius: 8px;
+        width: 32px;
+        height: 32px;
+      }
+      paper-icon-button:hover {
+        color: var(--primary-action-green);
+      }
+      paper-icon-button[active] {
+        color: var(--primary-background-color);
+        background-color: var(--primary-action-green);
+      }
     </style>
 
     <collapsible-content collapse="{{collapsed}}">
       <div class="header">
-        [[hunk.file]]
-        <a href$="[[hunk.fileUrl]]" target="_blank">Full file</a>
+        <span>[[hunk.file]] <a href$="[[hunk.fileUrl]]" target="_blank">Full file</a></span>
+        <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
+          hidden$="[[!approvable]]" toggles active="{{_approved}}"></paper-icon-button>
+        <reviewers-list small pullrequest="[[pullRequest]]"></reviewers-list>
       </div>
       <div class="content">
         <div class="lines">
@@ -125,8 +164,38 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'pull-request-diff-highlight',
 
       properties: {
+        pullRequest: {
+          type: Object,
+          value: {
+            assignees: [{
+              avatar_url: "https://avatars.githubusercontent.com/u/5946422?v=3",
+              login: "txsmith",
+              lgtm: false
+            },
+            {
+              avatar_url: "https://avatars.githubusercontent.com/u/5946438?v=3",
+              login: "eanker",
+              lgtm: true
+            },
+            {
+              avatar_url: "https://avatars.githubusercontent.com/u/5948271?v=3",
+              login: "TimvdLippe",
+              lgtm: false
+            }]
+          }
+        },
+
         hunk: Object,
         collapsed: Boolean,
+        approvable: {
+          type: Boolean,
+          value: false
+        },
+        _approved: {
+          type: Boolean,
+          value: false,
+          observer: '_onApproveChange'
+        },
         _hasRendered: Boolean
       },
       observers: [
@@ -178,6 +247,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _resetCollapsed: function() {
         this.collapsed = false;
+      },
+      _onApproveChange: function(isApproved) {
+        if (this.hunk) {
+
+        }
       }
     });
   </script>

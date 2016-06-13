@@ -68,20 +68,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     });
 
     test('hides comments by default', function() {
-      var display = getComputedStyle(get('.group-comment')).display;
-      assert.equal(display, 'none');
-    });
-
-    test('hides comments when group is editable', function() {
-      groupElem.editable = true;
-      var groupComment = getComputedStyle(get('.group-comment'));
-      assert.equal(groupComment.display, 'none');
+      assert.isTrue(get('.toggle-comments').collapse);
     });
 
     test('shows comments when collapseComments is false', function() {
       groupElem.collapseComments = false;
-      var display = getComputedStyle(get('.group-comment')).display;
-      assert.notEqual(display, 'none');
+      assert.isFalse(get('.toggle-comments').collapse);
     });
 
     test('hides description when no descripion was provided', function() {
