@@ -28,7 +28,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../ajax/backend-ajax.html">
 <link rel="import" href="../../util/markdown-input.html">
+<link rel="import" href="../project-behavior.html">
 
 <dom-module id="pull-request-add-comments">
   <template>
@@ -50,30 +52,67 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         width: 150px;
       }
     </style>
+    <backend-ajax
+      id="postPRComment"
+      refurl="[[backendPath]]/pr"
+      on-response="_setGeneralComments"
+      ></backend-ajax>
+
+    <backend-ajax
+     id="postGroupComment"
+     refurl="[[backendPath]]/group"
+     on-response="_setGroupComments"
+     ></backend-ajax>
+
     <markdown-input markdown="{{newtext}}" label="Leave a comment."></markdown-input>
     <paper-button raised class="button" on-tap="_addComment">New comment</paper-button>
   </template>
   <script>
+  /*global ProjectBehavior*/
     Polymer({
       is: 'pull-request-add-comments',
+      behaviors: [ProjectBehavior],
       properties: {
         newtext: {
           type: String,
           value: ''
         },
-        comments: Array
+        comments: {
+          type: Array,
+          notify: true
+        },
+        backendPath: {
+          type: String,
+          computed: '_updateBackendPath(project, number)'
+        },
+        number: Number,
+        group: Object
       },
       _addComment: function() {
-        var newComment = {};
         if (this.newtext.replace(/\s/g, '') !== '') {
-          newComment.body = this.newtext;
-          newComment.user = {
-            login: 'Eva'
+          if (this.group === undefined) {
+            this.$.postPRComment.body = {
+              body: this.newtext
+            },
+            this.$.postPRComment.generateRequest();
+          } else {
+            this.$.postGroupComment.body = {
+              body: this.newtext,
+              id: this.group.id
+            },
+            this.$.postGroupComment.generateRequest();
           }
-          newComment.timeopened = 12345678;
-          this.push('comments', newComment);
           this.newtext = '';
         }
+      },
+      _updateBackendPath: function(project, number) {
+        return project.owner + '/' + project.name + '/pulls/' + number + '/comments';
+      },
+      _setGeneralComments: function(e) {
+        this.push('comments', e.detail.response);
+      },
+      _setGroupComments: function(e) {
+        this.push('comments', {groupID: this.group.id, comment: e.detail.response});
       }
     });
   </script>

@@ -91,11 +91,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" additions="{{additions}}" deletions="{{deletions}}" hunks="{{hunks}}"></diff-parser>
-    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}"></hunk-sorter>
+    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}" ></hunk-sorter>
+    <add-comments groups="[[orderGroups]]"></add-comments>
 
     <div id="hunkGroups">
       <template is="dom-repeat" items="[[orderedGroups]]">
-        <pull-request-group group="[[item]]" editable="[[editable]]"></pull-request-group>
+        <pull-request-group group="[[item]]" editable="[[editable]]" number="[[number]]"
+        url="[[baseUrl]]" group-comments="{{groupComments}}" ></pull-request-group>
       </template>
     </div>
 
@@ -127,6 +129,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         baseUrl: String,
         sha: String,
+        number: Number,
         additions: Number,
         deletions: Number,
         diff: String,
@@ -141,7 +144,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           notify: true
         },
         _groupTitles: Array,
-        _sortable: Object
+        _sortable: Object,
+        groupComments: {
+          type: Array,
+          notify: true
+        }
       },
       observers: [
         '_setGroupTitles(orderedGroups.*)'

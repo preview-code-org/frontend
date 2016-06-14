@@ -27,12 +27,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/Sortable/Sortable.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../util/markdown-input.html">
 <link rel="import" href="../../util/editable-title.html">
 <link rel="import" href="../../util/collapsible-content.html">
 <link rel="import" href="../../util/dom-repeat-once.html">
 <link rel="import" href="../pull-request/pull-request-add-comments.html">
 <link rel="import" href="../pull-request/pull-request-comment.html">
+<link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="highlight.html">
 
 <dom-module id="pull-request-group">
@@ -145,20 +147,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           label="Enter a description for these changes. Markdown is supported."
           markdown="{{group.info.description}}"
         ></markdown-input>
-
         <dom-repeat-once id="hunks" items="[[group.diff]]" disabled="[[!editable]]"></dom-repeat-once>
         <collapsible-content class="toggle-comments" collapse="{{collapseComments}}" hidden$="[[editable]]">
           <span class="header">comments</span>
-          <template is="dom-repeat" items="[[group.comments]]" as="comment">
+          <template is="dom-repeat" items="[[comments]]" as="comment">
             <pull-request-comment
             text="[[comment.body]]" author="[[comment.user]]"
-            date="[[comment.timeopened]]"></pull-request-comment>
+            date="[[comment.created_at]]"></pull-request-comment>
           </template>
-          <pull-request-add-comments comments="{{group.comments}}"></pull-request-add-comments>
+          <pull-request-add-comments comments="{{groupComments}}"
+          group="[[group]]" number="[[number]]"></pull-request-add-comments>
         </collapsible-content>
       </div>
     </collapsible-content>
-
   </template>
   <script>
     Polymer({
@@ -179,11 +180,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: false,
           reflectToAttribute: true
         },
-        _isAlreadyInitialized: Boolean
+        _isAlreadyInitialized: Boolean,
+        number: Number,
+        url: String,
+        groupComments: {
+          type: Array,
+          notify: true
+        },
+        comments: {
+          type: Array,
+          notfiy: true,
+          value: function() {
+            return [];
+          }
+        }
       },
       observers: [
         '_resetCollapsed(group)',
-        '_groupChanged(group, editable)'
+        '_groupChanged(group, editable)',
+        '_updateComments(groupComments.*, group)'
       ],
       attached: function() {
         if (!this.editable && (!this.group || !this.group.info.description)) {
@@ -261,6 +276,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _resetCollapsed: function() {
         this.collapsed = false;
         this.collapseComments = true;
+      },
+      _updateComments: function(groupComments, group) {
+        if (group) {
+          var newComments = [];
+          for (var i = 0;i< groupComments.base.length; i++) {
+            // if(groupComments.base[i].groupID === group.id){
+              newComments.push(groupComments.base[i].comment);
+            // }
+          }
+          this.comments = newComments;
+        }
       }
     });
   </script>

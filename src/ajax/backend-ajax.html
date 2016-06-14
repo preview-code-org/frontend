@@ -84,6 +84,7 @@ of params with oAuth tokens.
           observer: '_maybeFire'
         }
       },
+
       _generateParams: function(shared) {
         var accessToken = shared.accessToken;
         if (!accessToken) {
@@ -95,6 +96,7 @@ of params with oAuth tokens.
       },
       _onResponse: function(e) {
         this._setLastResponse(e.detail.response);
+        e.stopPropagation();
         this.fire('response', e.detail, {
           bubbles: this.bubbles
         });

@@ -1,0 +1,92 @@
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../ajax/github-authenticated-ajax.html">
+<link rel="import" href="../project-behavior.html">
+
+<dom-module id="get-comments">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <github-authenticated-ajax
+      id="githubComments"
+      refurl="[[commentsGhPath]]"
+      per-page="250"
+      on-response="_divideComments">
+    </github-authenticated-ajax>
+
+    <firebase-document
+      app-name="preview-code"
+      path="[[commentsFbPath]]"
+      data="{{fbComments}}"
+      ></firebase-document>
+
+  </template>
+
+  <script>
+  /*global ProjectBehavior*/
+    Polymer({
+      is: 'get-comments',
+      behaviors: [ProjectBehavior],
+      properties: {
+        commentsFbPath: {
+          type: String,
+          computed: '_computeCommentsFbPath(project, number)'
+        },
+        commentsGhPath: {
+          type: String,
+          computed: '_computeCommentsGhPath(project, number)'
+        },
+        number: String,
+        fbComments: Object,
+        generalComments: {
+          notify: true,
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+        groupComments: {
+          notify: true,
+          type: Array,
+          value: function() {
+            return [];
+          }
+        }
+      },
+      observers: [
+        '_fireAjax(project, number, fbComments)'
+      ],
+      _fireAjax: function(project, number, fbComments) {
+        this.$.githubComments.generateRequest();
+      },
+      _computeCommentsFbPath: function(project, number) {
+        return '/' + project.owner + '/' + project.name + '/pulls/' + number + '/groupcomments';
+
+      },
+      _computeCommentsGhPath: function(project, number) {
+        return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + number + '/comments';
+      },
+      _divideComments: function(e) {
+        if (e.detail.response) {
+          this._flushComments();
+          var comments = e.detail.response;
+          for (var i = 0; i < comments.length; i++ ) {
+            var groupID = this.fbComments[comments[i].id];
+            if (groupID) {
+              this.push('groupComments', {groupID: groupID, comment: comments[i]});
+            } else {
+              this.push('generalComments', comments[i]);
+            }
+          }
+        }
+      },
+      _flushComments: function() {
+        this.generalComments = [];
+        this.groupComments = [];
+      }
+    });
+  </script>
+</dom-module>

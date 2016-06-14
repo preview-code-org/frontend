@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <!-- Import the element to test -->
   <link rel='import' href='../../../src/projects/pull-request/pull-request-add-comments.html'>
+  <link rel='import' href='../../../src/ajax/backend-ajax.html'>
 
 </head>
 <body>
@@ -55,11 +56,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       elem.comments = [];
       elem.newtext = 'New comment!';
       button = Polymer.dom(elem.root).querySelector('paper-button');
-    });
 
-    test('adds comment with correct body when clicking on button', function() {
-      MockInteractions.tap(button);
-      assert.equal(elem.comments[0].body, 'New comment!');
+      stub('backend-ajax', {
+        generateRequest: function() {
+
+        }
+      });
     });
 
     test('resets new text after posting comment', function() {

@@ -153,7 +153,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         backendPath: {
           type: String,
-          computed: '_updateBackendPath(title, project, headBranch, baseBranch)'
+          computed: '_updateBackendPath(title, project)'
         }
       },
       observers: [
@@ -187,12 +187,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _createPullRequest: function() {
         this.$.createPull.body = {
           title: this.title,
-          description: this.description
+          description: this.description,
+          base: this.baseBranch,
+          head: this.headBranch
         };
         this.$.createPull.generateRequest();
       },
-      _updateBackendPath: function(title, project, headBranch, baseBranch) {
-        return 'project/' + project.owner + '/' + project.name + '/createPR/' + headBranch + '/' + baseBranch;
+      _updateBackendPath: function(title, project) {
+        return project.owner + '/' + project.name + '/pulls/';
       },
       _madePulls: function() {
         if (this.number.number !== 0) {

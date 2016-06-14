@@ -76,18 +76,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         elem.pullRequest = examplePull;
       });
 
-      test('triggers ajax for comments when PR changes', function(done) {
-        stub('github-authenticated-ajax', {
-          generateRequest: function() {
-            if (this.id === 'ajaxComments') {
-              done();
-            }
-          }
-        });
-
-        elem.pullRequest = {};
-      });
-
       test('triggers ajax for issues when PR changes', function(done) {
         stub('github-authenticated-ajax', {
           generateRequest: function() {
@@ -98,10 +86,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         });
 
         elem.pullRequest = {};
-      });
-
-      test('has comments section', function() {
-        assert.isOk(get('pull-request-comments'));
       });
 
       test('has add comments buttom', function() {
