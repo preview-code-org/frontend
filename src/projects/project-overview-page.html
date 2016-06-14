@@ -103,7 +103,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 attr-for-selected="data-route"
                 fallback-selection="404">
       <project-activity data-route="activity"></project-activity>
-      <project-create-pull-request data-route="createpull"></project-create-pull-request>
+      <project-create-pull-request data-route="createpull" github-user="[[githubUser]]"></project-create-pull-request>
       <span data-route="404">
         Oops you hit a 404!
         <a href="/">Head back home</a>
@@ -118,6 +118,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'project-overview-page',
       behaviors: [ProjectBehavior],
       properties: {
+        githubUser: Object,
         route: Object,
         page: Object
       }

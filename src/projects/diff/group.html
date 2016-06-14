@@ -227,17 +227,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       _groupChanged: function(group, editable, githubUser) {
-        if (group) {
-          this.$.hunks.reset(function(hunk) {
-            return this._createDraggableHunk(hunk, editable, githubUser);
-          }.bind(this));
-          this.async(function() {
-            // Force a recalc to make sure that the `:empty` pseudo selector
-            // is correctly cleared after stamping groups to the hunks section
-            this.$.hunks.style.zoom = this.$.hunks.style.zoom ? '0.999999' : '1';
-          }, 1);
-          this.displayTitle = this.group.info.title;
-        }
+        this.$.hunks.reset(function(hunk) {
+          return this._createDraggableHunk(hunk, editable, githubUser);
+        }.bind(this));
+        this.async(function() {
+          // Force a recalc to make sure that the `:empty` pseudo selector
+          // is correctly cleared after stamping groups to the hunks section
+          this.$.hunks.style.zoom = this.$.hunks.style.zoom ? '0.999999' : '1';
+        }, 1);
+        this.displayTitle = this.group.info.title;
       },
       _createDraggableHunk: function(hunk, editable, githubUser) {
         var container = document.createElement('div');

@@ -127,6 +127,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       project="[[project]]"
       title="[[title]]"
       description="[[description]]"
+      github-user="[[githubUser]]"
       ></project-create-pull-diff>
   </template>
   <script>
@@ -135,6 +136,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'project-create-pull-request',
       behaviors: [ProjectBehavior],
       properties: {
+        githubUser: Object,
         title: String,
         description: String,
         contributors: Array,

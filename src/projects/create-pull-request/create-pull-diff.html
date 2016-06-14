@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../util/fade-in-behavior.html">
 <link rel="import" href="../diff/diff.html">
+<link rel="import" href="../info-header.html">
 
 <dom-module id="project-create-pull-diff">
   <template>
@@ -37,26 +38,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display: none;
         padding: 2em 0;
       }
-      .title {
-        @apply(--primary-container);
-      }
-      h2 {
-        margin-top: 0;
-      }
-      h3 {
-        margin-bottom: 0;
-      }
       paper-button {
         @apply(--green-action-button);
       }
     </style>
-    <div class="title">
-      <h2>Describe your changes</h2>
-      <h3>You can drag the different groups and diff views separately.</h3>
-
-      <paper-button on-tap="_createPR" raised>Create pull request</paper-button>
-    </div>
-    <pull-request-diff editable diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]"></pull-request-diff>
+    <info-header title="Describe your changes">
+      <span class="subtitle">You can drag the diff sections to re-order them for reviewers.</span>
+    </info-header>
+    <pull-request-diff id="changes" editable diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" github-user="[[githubUser]]"></pull-request-diff>
+    <paper-button on-tap="_createPR" raised>Create pull request</paper-button>
   </template>
   <script>
   /*global FadeInBehavior*/
@@ -65,7 +55,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       properties: {
         diff: String,
         baseUrl: String,
-        sha: String
+        sha: String,
+        githubUser: Object
       },
       behaviors: [FadeInBehavior],
       _createPR: function() {

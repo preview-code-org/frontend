@@ -188,7 +188,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         _canUserApprove: {
           type: Boolean,
-          computed: '_getCanUserApprove(pullRequest, githubUser, approvable)'
+          computed: '_getCanUserApprove(githubUser, approvable)'
         },
         _approved: {
           type: Boolean,
@@ -264,8 +264,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
 
-      _getCanUserApprove: function(pullRequest, githubUser, isApprovable) {
-        var isAssignee = pullRequest.assignees.filter(function(assignee) {
+      _getCanUserApprove: function(githubUser, isApprovable) {
+        if (!this.pullRequest) {
+          return false;
+        }
+        var isAssignee = this.pullRequest.assignees.filter(function(assignee) {
           return assignee.login === githubUser.login;
         }).length > 0;
         return isAssignee && isApprovable;
