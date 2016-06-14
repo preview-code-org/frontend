@@ -159,7 +159,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _hunksToMap: function(hunks) {
         var allHunks = {};
         hunks.forEach(function(hunk) {
-          allHunks[this._getHunkId(hunk)] = hunk;
+          hunk.id = this._getHunkId(hunk)
+          allHunks[hunk.id] = hunk;
         }.bind(this));
         return allHunks;
       },
@@ -197,11 +198,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       _getHunkId: function(hunk) {
-        return hunk.file + ',' +
+        return btoa(hunk.file + ',' +
           hunk.linesChanged.startLineBefore + ',' +
           hunk.linesChanged.rangeBefore + ',' +
           hunk.linesChanged.startLineAfter + ',' +
-          hunk.linesChanged.rangeAfter;
+          hunk.linesChanged.rangeAfter);
       },
 
       _createGroupFromOrdering: function(ordering, diff) {

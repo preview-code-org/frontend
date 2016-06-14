@@ -67,12 +67,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         groups="[[orderedGroups]]" hidden$="[[!showSpace]]"></pull-request-space>
     <pull-request-diff id="diff" data-route="diff" diff="[[diff]]"
         ordered-groups="{{orderedGroups}}" base-url="[[baseUrl]]"
-        sha="[[sha]]" number="[[number]]" group-comments="{{groupComments}}"></pull-request-diff>
+        sha="[[sha]]" pull-request="[[pullRequest]]" github-user="[[githubUser]]"
+        group-comments="{{groupComments}}"></pull-request-diff>
   </template>
   <script>
     Polymer({
       is: 'pull-request-changes',
       properties: {
+        githubUser: Object,
         diff: String,
         baseUrl: String,
         sha: String,
@@ -87,7 +89,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: Boolean,
           value: false,
           reflectToAttribute: true
-        }
+        },
+        pullRequest: Object
       },
       observers: [
         '_resizeSpace(showSpace)'

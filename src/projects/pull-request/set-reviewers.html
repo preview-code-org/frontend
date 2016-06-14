@@ -68,14 +68,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'set-reviewers',
       behaviors: [ProjectBehavior],
       properties: {
-        pullrequest: {
+        pullRequest: {
           type: Object,
           notify: true
         },
         reviewer: String,
         githubPathPost: {
           type: String,
-          computed: '_githubPathPost(project, pullrequest)'
+          computed: '_githubPathPost(project, pullRequest)'
         },
         githubPathGet: {
           type: String,
@@ -92,9 +92,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
 
-      _githubPathPost: function(project, pullrequest) {
-        if (project !== undefined && pullrequest !== undefined) {
-          return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullrequest.number + '/assignees';
+      _githubPathPost: function(project, pullRequest) {
+        if (project !== undefined && pullRequest !== undefined) {
+          return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullRequest.number + '/assignees';
         }
       },
       _githubPathGet: function(project) {
@@ -103,7 +103,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       _postReviewer: function(reviewer) {
-        if (this.githubPathPost !== undefined && reviewer && this.pullrequest.assignees.indexOf(reviewer) === -1) {
+        if (this.githubPathPost !== undefined && reviewer && this.pullRequest.assignees.indexOf(reviewer) === -1) {
           this.$.postAssignees.body = {
             assignees: [reviewer]
           }
@@ -112,7 +112,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _setNewAssingees: function(e) {
         if (e.detail.response !== undefined) {
-          this.pullrequest.assignees = e.detail.response.assignees;
+          this.pullRequest.assignees = e.detail.response.assignees;
           this.fire('resort');
         }
       }

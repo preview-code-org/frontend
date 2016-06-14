@@ -136,6 +136,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         opacity: 1;
       }
     </style>
+
     <collapsible-content collapse="{{collapsed}}">
       <div class="header">
         <editable-title id="editTitleDialog" editable="[[editable]]" value="{{group.info.title}}"></editable-title>
@@ -156,7 +157,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             date="[[comment.created_at]]"></pull-request-comment>
           </template>
           <pull-request-add-comments comments="{{groupComments}}"
-          group="[[group]]" number="[[number]]"></pull-request-add-comments>
+          group="[[group]]" number="[[pullRequest.number]]"></pull-request-add-comments>
         </collapsible-content>
       </div>
     </collapsible-content>
@@ -165,11 +166,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Polymer({
       is: 'pull-request-group',
       properties: {
+        githubUser: Object,
         editable: {
           type: Boolean,
           value: false
         },
         group: Object,
+        pullRequest: Object,
         collapseComments: {
           type: Boolean,
           value: true
@@ -181,8 +184,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           reflectToAttribute: true
         },
         _isAlreadyInitialized: Boolean,
-        number: Number,
-        url: String,
         groupComments: {
           type: Array,
           notify: true
@@ -197,7 +198,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       observers: [
         '_resetCollapsed(group)',
-        '_groupChanged(group, editable)',
+        '_groupChanged(group, editable, githubUser)',
         '_updateComments(groupComments.*, group)'
       ],
       attached: function() {
@@ -225,10 +226,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.updateStyles();
         }
       },
-      _groupChanged: function(group, editable) {
+      _groupChanged: function(group, editable, githubUser) {
         if (group) {
           this.$.hunks.reset(function(hunk) {
-            return this._createDraggableHunk(hunk, editable);
+            return this._createDraggableHunk(hunk, editable, githubUser);
           }.bind(this));
           this.async(function() {
             // Force a recalc to make sure that the `:empty` pseudo selector
@@ -238,11 +239,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.displayTitle = this.group.info.title;
         }
       },
-      _createDraggableHunk: function(hunk, editable) {
+      _createDraggableHunk: function(hunk, editable, githubUser) {
         var container = document.createElement('div');
         container.setAttribute('class', 'hunk');
         var hunkElem = document.createElement('pull-request-diff-highlight');
-        hunkElem.set('hunk', hunk);
+        hunkElem.githubUser = githubUser
+        hunkElem.pullRequest = this.pullRequest;
+        hunkElem.hunk = hunk;
         if (editable) {
           var dragHandle = document.createElement('div');
           dragHandle.setAttribute('class', 'drag-handle');

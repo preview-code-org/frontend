@@ -155,8 +155,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pull-request="{{selectedPull}}" project="[[project]]" comments={{generalComments}}></pull-request-general-information>
       <pull-request-commits data-route="commits" pull-request="[[selectedPull]]" project="[[project]]"></pull-request-commits>
       <pull-request-changes data-route="diff" diff="[[diff]]" base-url="[[selectedPull.head.repo.html_url]]"
-          show-space="[[_showSpace]]" sha="[[selectedPull.head.sha]]" number="[[selectedPull.number]]"
-          group-comments="{{groupComments}}"></pull-request-changes>
+          show-space="[[_showSpace]]" sha="[[selectedPull.head.sha]]" pull-request="{{selectedPull}}"
+          github-user="[[githubUser]]" group-comments="{{groupComments}}"></pull-request-changes>
       <span data-route="404">
         Oops you hit a 404!
         <a href="/">Head back home</a>
@@ -169,6 +169,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'pull-request-page',
       behaviors: [ProjectBehavior],
       properties: {
+        githubUser: Object,
         route: Object,
         diff: String,
         selectedPull: {

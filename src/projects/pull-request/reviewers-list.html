@@ -42,16 +42,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       [hidden] {
         display: none !important;
       }
-      .lgtm.false {
-        transform: scale(0);
+      .lgtm.true {
+        transform: scale(1);
       }
       .lgtm {
+        transform: scale(0);
         -webkit-transition: all 0.3s ease;
         -moz-transition: all 0.3s ease;
         -ms-transition: all 0.3s ease;
         -o-transition: all 0.3s ease;
         transition: all 0.3s ease;
-        transform: scale(1);
         fill: var(--primary-background-color);
         padding: 4px;
         width:16px;
@@ -112,13 +112,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <div class="reviewer" title$="[[reviewer.login]]">
         <div class="image" style$="background-image: url([[reviewer.avatar_url]]); ">
           <div class="icons">
-            <iron-icon class$="lgtm [[reviewer.lgtm]]" icon="icons:thumb-up"></iron-icon>
+            <iron-icon class$="lgtm [[reviewer.approved]]" icon="icons:thumb-up"></iron-icon>
             <paper-icon-button hidden$="[[!editable]]" title$="Unassign [[reviewer.login]]"  on-tap="_removeAssignee" icon="icons:clear"></paper-icon-button>
          </div>
         </div>
       </div>
     </template>
-    <set-reviewers hidden="[[!editable]]" pullrequest="{{pullrequest}}"></set-reviewers>
+    <set-reviewers hidden$="[[!editable]]" pull-request="{{pullRequest}}"></set-reviewers>
 
   </template>
   <script>
@@ -135,41 +135,49 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: Boolean,
           value: false
         },
-        sortedReviewers: Array,
-        pullrequest: {
+        sortedReviewers: {
+          type: Array,
+          computed: '_sortReviewers(pullRequest, approvals)'
+        },
+        pullRequest: {
           type: Object,
           notify: true
         },
         githubPathPost: {
           type: String,
-          computed: '_githubPathPost(project, pullrequest)'
+          computed: '_githubPathPost(project, pullRequest)'
+        },
+        approvals: {
+          type: Object,
+          value: function() {
+            return {};
+          }
         }
       },
-      observers: [
-        '_sortReviewers(pullrequest)'
-      ],
       listeners: {
         'resort': '_resort'
       },
-      _sortReviewers: function(pullrequest) {
-        if (!pullrequest) {
-          return [];
-        }
-        var rs = pullrequest.assignees;
-        if (pullrequest.assignees) {
-          this.sortedReviewers = rs.sort(function(r1, r2) {
-            return r2.lgtm - r1.lgtm;
+      _sortReviewers: function(pullRequest, approvals) {
+        if (pullRequest.assignees) {
+          return pullRequest.assignees.map(function(assignee) {
+            return {
+              login: assignee.login,
+              approved: approvals[assignee.id],
+              avatar_url: assignee.avatar_url
+            };
           });
         }
       },
-      _githubPathPost: function(project, pullrequest) {
-        if (project !== undefined && pullrequest !== undefined) {
-          return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullrequest.number + '/assignees';
+      _githubPathPost: function(project, pullRequest) {
+        if (project !== undefined && pullRequest !== undefined) {
+          return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullRequest.number + '/assignees';
         }
       },
 
       _resort: function() {
-        this._sortReviewers(this.pullrequest);
+        var a = this.approvals;
+        this.set('approvals', []);
+        this.set('approvals', a);
       },
       _removeAssignee: function(e) {
         this.$.removeAssignees.body = {
@@ -178,7 +186,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.removeAssignees.generateRequest();
       },
       _removeAssigneesList: function(e) {
-        this.pullrequest.assignees = e.detail.response.assignees;
+        this.pullRequest.assignees = e.detail.response.assignees;
         this._resort();
       }
     });

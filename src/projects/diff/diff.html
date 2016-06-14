@@ -96,8 +96,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <div id="hunkGroups">
       <template is="dom-repeat" items="[[orderedGroups]]">
-        <pull-request-group group="[[item]]" editable="[[editable]]" number="[[number]]"
-        url="[[baseUrl]]" group-comments="{{groupComments}}" ></pull-request-group>
+        <pull-request-group group="[[item]]" editable="[[editable]]"
+          pull-request="[[pullRequest]]" group-comments="{{groupComments}}"
+          github-user="[[githubUser]]"></pull-request-group>
       </template>
     </div>
 
@@ -123,6 +124,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Polymer({
       is: 'pull-request-diff',
       properties: {
+        githubUser: Object,
         editable: {
           type: Boolean,
           value: false
@@ -148,7 +150,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         groupComments: {
           type: Array,
           notify: true
-        }
+        },
+        pullRequest: Object
       },
       observers: [
         '_setGroupTitles(orderedGroups.*)'

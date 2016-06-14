@@ -29,8 +29,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/prism-element/prism-theme-default.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../util/collapsible-content.html">
+<link rel="import" href="../../ajax/backend-ajax.html">
 <link rel="import" href="../pull-request/reviewers-list.html">
+<link rel="import" href="../project-behavior.html">
 <link rel="import" href="hunk-ghost.html">
 
 <dom-module id='pull-request-diff-highlight'>
@@ -140,12 +143,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
 
+    <backend-ajax
+      id="approveAjax"
+      refurl="[[_backendApprovalPath]]"></backend-ajax>
+
+    <firebase-document
+      app-name="preview-code"
+      path="[[_firebaseApprovalPath]]"
+      on-data-changed="_onFirebaseApprovalsChange"
+      ></firebase-document>
+
     <collapsible-content collapse="{{collapsed}}">
       <div class="header">
         <span>[[hunk.file]] <a href$="[[hunk.fileUrl]]" target="_blank">Full file</a></span>
         <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
-          hidden$="[[!approvable]]" toggles active="{{_approved}}"></paper-icon-button>
-        <reviewers-list small pullrequest="[[pullRequest]]"></reviewers-list>
+          hidden$="[[!_canUserApprove]]" toggles active="{{_approved}}"></paper-icon-button>
+        <reviewers-list small pull-request="[[pullRequest]]" approvals="[[_approvals]]"></reviewers-list>
       </div>
       <div class="content">
         <div class="lines">
@@ -160,47 +173,41 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </template>
 
   <script>
+  /*global ProjectBehavior*/
     Polymer({
       is: 'pull-request-diff-highlight',
-
+      behaviors: [ProjectBehavior],
       properties: {
-        pullRequest: {
-          type: Object,
-          value: {
-            assignees: [{
-              avatar_url: "https://avatars.githubusercontent.com/u/5946422?v=3",
-              login: "txsmith",
-              lgtm: false
-            },
-            {
-              avatar_url: "https://avatars.githubusercontent.com/u/5946438?v=3",
-              login: "eanker",
-              lgtm: true
-            },
-            {
-              avatar_url: "https://avatars.githubusercontent.com/u/5948271?v=3",
-              login: "TimvdLippe",
-              lgtm: false
-            }]
-          }
-        },
-
+        githubUser: Object,
         hunk: Object,
+        pullRequest: Object,
         collapsed: Boolean,
         approvable: {
           type: Boolean,
           value: false
+        },
+        _canUserApprove: {
+          type: Boolean,
+          computed: '_getCanUserApprove(pullRequest, githubUser, approvable)'
         },
         _approved: {
           type: Boolean,
           value: false,
           observer: '_onApproveChange'
         },
-        _hasRendered: Boolean
+        _approvals: Object,
+        _hasRendered: Boolean,
+        _backendApprovalPath: {
+          type: String,
+          computed: '_getBackendApprovalPath(project, pullRequest)'
+        },
+        _firebaseApprovalPath: {
+          type: String,
+          computed: '_getFirebaseApprovalPath(project, pullRequest)'
+        },
       },
       observers: [
-        '_observeLinesChanged(hunk.linesChanged, hunk.changes)',
-        '_resetCollapsed(hunk.changes)'
+        '_observeLinesChanged(hunk.linesChanged, hunk.changes)'
       ],
       _observeLinesChanged: function(linesChanged, code) {
         var lines = code.split('\n');
@@ -245,12 +252,38 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var event = this.fire('syntax-highlight', {code: code, lang: 'diff'});
         return event.detail.code || code;
       },
-      _resetCollapsed: function() {
-        this.collapsed = false;
+
+      _getBackendApprovalPath: function(project, pullRequest) {
+        if (project && pullRequest) {
+          return 'pr/' + project.owner + '/' + project.name + '/' + pullRequest.number + '/approve';
+        }
+      },
+      _getFirebaseApprovalPath: function(project, pullRequest) {
+        if (project && pullRequest) {
+          return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/hunkApprovals';
+        }
+      },
+
+      _getCanUserApprove: function(pullRequest, githubUser, isApprovable) {
+        var isAssignee = pullRequest.assignees.filter(function(assignee) {
+          return assignee.login === githubUser.login;
+        }).length > 0;
+        return isAssignee && isApprovable;
       },
       _onApproveChange: function(isApproved) {
-        if (this.hunk) {
-
+        if (this.hunk && (!this._approvals || isApproved !== this._approvals[this.githubUser.id])) {
+          this.$.approveAjax.body = {
+            hunkId: this.hunk.id,
+            isApproved: isApproved,
+            githubLogin: this.githubUser.id
+          };
+          this.$.approveAjax.generateRequest();
+        }
+      },
+      _onFirebaseApprovalsChange: function(e) {
+        if (this.hunk && e.detail.value[this.hunk.id]) {
+          this._approvals = e.detail.value[this.hunk.id];
+          this._approved = !!this._approvals[this.githubUser.id];
         }
       }
     });

@@ -381,11 +381,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     });
 
     var getHunkId = function(hunk) {
-      return hunk.file + ',' +
+      return btoa(hunk.file + ',' +
         hunk.linesChanged.startLineBefore + ',' +
         hunk.linesChanged.rangeBefore + ',' +
         hunk.linesChanged.startLineAfter + ',' +
-        hunk.linesChanged.rangeAfter;
+        hunk.linesChanged.rangeAfter);
     }
   });
 

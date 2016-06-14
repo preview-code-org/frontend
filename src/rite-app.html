@@ -117,6 +117,12 @@ Prism.languages.diff.other = /.+/m;
     <github-authenticated-ajax id="authenticatedAjax"></github-authenticated-ajax>
     <firebase-authentication id="firebase" loading="{{firebaseLoading}}"></firebase-authentication>
 
+    <github-authenticated-ajax
+      id="ajaxGithubUser"
+      refurl="https://api.github.com/user"
+      last-response="{{githubUser}}"
+      ></github-authenticated-ajax>
+
     <prism-highlighter></prism-highlighter>
 
     <paper-header-panel>
@@ -148,7 +154,7 @@ Prism.languages.diff.other = /.+/m;
         </template>
         <template is="iron-lazy-page" data-route="projects"
                   path="projects/projects-page.html">
-          <projects-page route="{{tail}}"></projects-page>
+          <projects-page route="{{tail}}" github-user="[[githubUser]]"></projects-page>
         </template>
         <template is="iron-lazy-page" data-route="pull-requests"
                   path="my-pull-requests-page.html">
@@ -169,7 +175,8 @@ Prism.languages.diff.other = /.+/m;
       firebaseLoading: {
         type: Boolean,
         value: false
-      }
+      },
+      githubUser: Object
     },
     listeners: {
       'github-token': '_setToken',
@@ -187,6 +194,7 @@ Prism.languages.diff.other = /.+/m;
     _setToken: function(e) {
       this.$.authenticatedAjax.storeToken(e.detail);
       this.set('page.page', 'projects');
+      this.$.ajaxGithubUser.generateRequest();
     }
   });
   </script>
