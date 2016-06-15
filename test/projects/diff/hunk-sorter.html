@@ -206,17 +206,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     });
 
     test('can add hunk to default group', function() {
-      sorter.rawHunks = [];
+      sorter.rawHunks = [testDiffs[0]];
       var id = sorter.groups[0].id;
       sorter.addHunkToGroup(testDiffs[1], id, 0);
-      assert.equal(1, sorter.groups[0].diff.length);
+      assert.equal(2, sorter.groups[0].diff.length);
     });
 
     test('adds hunk to default group in ordering', function() {
-      sorter.rawHunks = [];
+      sorter.rawHunks = [testDiffs[0]];
       var id = sorter.groups[0].id;
       sorter.addHunkToGroup(testDiffs[1], id, 0);
-      assert.equal(1, sorter.getOrdering()[0].diff.length);
+      assert.equal(2, sorter.getOrdering()[0].diff.length);
     });
 
     test('adds hunk to correct location in group', function() {
