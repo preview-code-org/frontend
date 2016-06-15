@@ -41,6 +41,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <style>
       :host {
         outline: none;
+        display: block;
+      }
+      @keyframes fadein {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+      }
+      [hidden] {
+        display: none !important;
       }
       .indicator.true {
         background-color: var(--primary-action-red);
@@ -58,10 +66,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .icon-passed:not(.success) {
         display: none;
       }
-      .main iron-icon {
+      .main iron-icon, .ci-placeholder {
         width: 20px;
         height: 20px;
         margin-top: -4px;
+        display: inline-block;
+      }
+      .main iron-icon {
+        animation: fadein 1s;
+      }
+      .main span {
+        line-height: 24px;
+      }
+      .main a {
+        text-decoration: none;
+      }
+      .main .labels {
+        height: 24px;
       }
     </style>
 
@@ -81,16 +102,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
       <div class="main">
         <list-item-label type="title">
-        <a href$="{{_cistatus.target_url}}" target="_blank"><iron-icon title="CI passed" class$="icon-passed [[_cistatus.state]]" icon="icons:check-circle"></iron-icon></a>
-        <a href$="{{_cistatus.target_url}}" target="_blank"><iron-icon title="CI failed" class$="icon-failed [[_cistatus.state]]" icon="icons:cancel"></iron-icon></a>
+          <span class="ci-placeholder" hidden$="[[_hasCIStatus]]"></span>
+          <span hidden$="[[!_hasCIStatus]]">
+            <a href$="{{_cistatus.target_url}}" target="_blank">
+              <iron-icon title="CI passed" class$="icon-passed [[_cistatus.state]]" icon="icons:check-circle"></iron-icon>
+            </a>
+            <a href$="{{_cistatus.target_url}}" target="_blank">
+              <iron-icon title="CI failed" class$="icon-failed [[_cistatus.state]]" icon="icons:cancel"></iron-icon>
+            </a>
+          </span>
           <span title$="[[pr.title]]">[[pr.title]]</span>
         </list-item-label>
         <list-item-label type="subtitle">[[pr.user.login]]</list-item-label>
-        <list-item-label type="box" title="Status" hidden$="[[_hasLabels(showStatus, issue)]]">[[_getLabelNames(issue.labels)]]</list-item-label>
+        <span class="labels">
+          <list-item-label type="box" title="Status" hidden$="[[_shouldHideLabels]]">[[_getLabelNames(issue.labels)]]</list-item-label>
+        </span>
       </div>
       <div class="info">
         <list-item-label type="info" title$="Last updated [[_updatedAtString]] ago" icon="device:access-time">[[_updatedAtString]]</list-item-label>
-        <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">2</list-item-label>
+        <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.assignees.length]]</list-item-label>
         <!-- <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.assignee.login]]</list-item-label> -->
       </div>
     </column-list-item>
@@ -114,6 +144,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         showStatus: Boolean,
         selected: Boolean,
         statuses: Array,
+        _shouldHideLabels: {
+          type: Boolean,
+          value: true,
+          computed: '_hasNoLabels(showStatus, issue)'
+        },
         _cistatus: {
           type: String,
           computed: '_getCIStatus(statuses)'
@@ -121,14 +156,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         _updatedAtString: {
           type: String,
           computed: 'toDateString(pr.updated_at)'
+        },
+        _hasCIStatus: {
+          type: Boolean,
+          value: false,
+          computed: '_has(_cistatus)'
         }
       },
       observers: [
         '_fireAjax(pr)',
         '_setStatus(pr, issue)'
       ],
-      _hasLabels: function(showStatus, issue) {
+      _hasNoLabels: function(showStatus, issue) {
         return !showStatus || !issue.labels.length;
+      },
+      _has: function(value) {
+        return !!value;
       },
       _getLabelNames: function(labels) {
         return labels.map(function(label) {
