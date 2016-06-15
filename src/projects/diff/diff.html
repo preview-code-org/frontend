@@ -91,8 +91,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" additions="{{additions}}" deletions="{{deletions}}" hunks="{{hunks}}"></diff-parser>
-    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}" ></hunk-sorter>
-    <add-comments groups="[[orderGroups]]"></add-comments>
+    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}" pull-request="[[pullRequest]]"></hunk-sorter>
+    <add-comments groups="[[orderedGroups]]"></add-comments>
 
     <div id="hunkGroups">
       <template is="dom-repeat" items="[[orderedGroups]]">
@@ -200,6 +200,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var groups = this.orderedGroups;
         this.set('orderedGroups', []);
         this.set('orderedGroups', groups);
+      },
+      getOrdering: function() {
+        return this.$.sorter.getOrdering();
       }
     });
   </script>
