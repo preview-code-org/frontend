@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>diff test</title>
+
+    <script src="../../../src/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../src/bower_components/web-component-tester/browser.js"></script>
+    <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+    <!-- Step 1: import the element to test -->
+    <link rel="import" href="../../../src/projects/diff/diff.html">
+
+  </head>
+  <body>
+<pull-request-diff editable></pull-request-diff>
+  <test-fixture id="basic">
+    <template>
+      <pull-request-diff editable></pull-request-diff>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<pull-request-diff> tests', function() {
+      var element;
+      var hunks = [
+        {
+          file: 'header',
+          fileUrl: 'url',
+          diffId: 'diffId',
+          changes: 'changes',
+          linesChanged: {
+            startLineBefore: 0,
+            rangeBefore: 1,
+            startLineAfter: 2,
+            rangeAfter: 3
+          },
+          sha: 'sha'
+        },
+        {
+          file: 'header2',
+          fileUrl: 'url2',
+          diffId: 'diffId2',
+          changes: 'changes2',
+          linesChanged: {
+            startLineBefore: 0,
+            rangeBefore: 1,
+            startLineAfter: 2,
+            rangeAfter: 3
+          },
+          sha: 'sha2'
+        }
+      ];
+
+      setup(function() {
+        element = fixture('basic');
+        element.hunks = hunks;
+      });
+
+      test('adds group with popup', function(done) {
+        element.addEventListener('iron-overlay-opened', function() {
+          var dialog = element.$.addGroupDialog;
+          dialog.$.input.value = 'New group!';
+          MockInteractions.tap(dialog.$.ok);
+        });
+        element.addEventListener('iron-overlay-closed', function() {
+          var groups = element.orderedGroups;
+          assert.equal(groups.length, 2);
+          assert.equal(groups[0].info.title, 'New group!');
+          done();
+        });
+        MockInteractions.tap(element.$$('[icon="icons:add"]'));
+      });
+
+      test('updates orderedGroups when hunk is moved', function() {
+        element.fire('update', {
+          oldIndex: 0,
+          newIndex: 1,
+          groupId: element.orderedGroups[0].id
+        });
+        assert.equal(element.orderedGroups[0].diff[0].diffId, 'diffId2');
+      });
+
+    });
+  </script>
+
+  </body>
+</html>
