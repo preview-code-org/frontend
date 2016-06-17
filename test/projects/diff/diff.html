@@ -56,19 +56,39 @@
         element.hunks = hunks;
       });
 
-      test('adds group with popup', function(done) {
-        element.addEventListener('iron-overlay-opened', function() {
+      function addGroup() {
+        element.$.addGroupDialog.addEventListener('iron-overlay-opened', function() {
           var dialog = element.$.addGroupDialog;
           dialog.$.input.value = 'New group!';
           MockInteractions.tap(dialog.$.ok);
         });
-        element.addEventListener('iron-overlay-closed', function() {
+        MockInteractions.tap(element.$$('[icon="icons:add"]'));
+      }
+
+      test('adds group with popup', function(done) {
+        element.$.addGroupDialog.addEventListener('iron-overlay-closed', function() {
           var groups = element.orderedGroups;
           assert.equal(groups.length, 2);
           assert.equal(groups[0].info.title, 'New group!');
           done();
         });
-        MockInteractions.tap(element.$$('[icon="icons:add"]'));
+        addGroup();
+      });
+
+      test('reorders group using dialog', function(done) {
+        var dialog = element.$.orderGroupDialog;
+        dialog.addEventListener('iron-overlay-opened', function() {
+          dialog.fire('order', {
+            oldIndex: 1,
+            newIndex: 0
+          });
+          assert.equal(element.orderedGroups[0].info.title, 'Unsorted changes');
+          done();
+        });
+        element.addEventListener('iron-overlay-closed', function() {
+          MockInteractions.tap(element.$$('[icon="icons:list"]'));
+        });
+        addGroup();
       });
 
       test('updates orderedGroups when hunk is moved', function() {
@@ -79,6 +99,48 @@
         });
         assert.equal(element.orderedGroups[0].diff[0].diffId, 'diffId2');
       });
+
+      test('adds a new hunk to orderedGroups', function() {
+        element.fire('add', {
+          hunk: hunks[0],
+          groupId: element.orderedGroups[0].id,
+          newIndex: 1
+        });
+        var groupHunks = element.orderedGroups[0].diff;
+        assert.equal(groupHunks.length, 3);
+        assert.equal(groupHunks[1].file, hunks[0].file);
+      });
+
+      test('removes hunk from orderedGroups', function() {
+        element.fire('remove', {
+          hunk: hunks[0],
+          groupId: element.orderedGroups[0].id
+        });
+        var groupHunks = element.orderedGroups[0].diff;
+        assert.equal(groupHunks.length, 1);
+        assert.equal(groupHunks[0].file, hunks[1].file);
+      });
+
+      test('creates ordering from groups and hunks', function() {
+        var ordering = element.getOrdering();
+        assert.equal(ordering.length, 1);
+        assert.equal(ordering[0].info.title, 'Unsorted changes');
+        assert.equal(ordering[0].diff.length, 2);
+      })
+
+      // TODO(Tim): re-enable test when jumping has been fixed with space
+      // test('fires offset when jumping to group', function(done) {
+      //   addGroup();
+      //   element.addEventListener('scroll-to', function(e) {
+      //     console.log(e.detail);
+      //     done();
+      //   });
+      //   element.$.addGroupDialog.addEventListener('iron-overlay-closed', function() {
+      //     flush(function() {
+      //       element.jumpToGroup('Unsorted changes');
+      //     });
+      //   });
+      // });
 
     });
   </script>
