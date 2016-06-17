@@ -28,6 +28,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../util/collapsible-content.html">
+<link rel="import" href="../../../util/editable-title.html">
+<link rel="import" href="../../../util/markdown-input.html">
+<link rel="import" href="../../diff/hunk-file.html">
 
 <dom-module id="pull-request-space-card">
   <template>
@@ -35,14 +39,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       :host {
         display: block;
         position: absolute;
-        width: 100px;
-        height: 100px;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         -khtml-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
+        max-width: 400px;
+      }
+      [hidden] {
+        display: none !important;
       }
       paper-card {
         display: block;
@@ -51,9 +57,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           padding: 0;
         }
       }
+      .hunks {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .hunks hunk-file {
+        margin: 5px;
+      }
+      hunk-file {
+        --background-color: var(--pr-status-color);
+      }
     </style>
     <paper-card>
-      <div class="card-content" on-tap="_throwCardTap">[[text]]</div>
+      <div class="card-content">
+        <collapsible-content collapse="{{collapsed}}">
+          <div class="header">
+            <editable-title id="editTitleDialog" editable="[[editable]]" value="{{group.info.title}}"></editable-title>
+          </div>
+          <div class="content">
+            <markdown-input
+              hidden$="[[hideDescription]]"
+              disabled="[[!editable]]"
+              label="Enter a description for these changes. Markdown is supported."
+              markdown="{{group.info.description}}"
+            ></markdown-input>
+
+            <div class="hunks">
+              <template is="dom-repeat" items="[[group.diff]]">
+                <hunk-file on-tap="_jumpToHunk" hunk="[[item]]"></hunk-file>
+              </template>
+            </div>
+          </div>
+        </collapsible-content>
+
+      </div>
       <div class="card-actions">
         <paper-button on-tap="_linkFromOrTo">[[linkText]]</paper-button>
       </div>
@@ -64,20 +101,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'pull-request-space-card',
       properties: {
         blockId: Number,
-        text: String,
+        group: Object,
         linkText: {
           type: String,
           value: 'Link'
+        },
+        editable: {
+          type: Boolean,
+          value: false
+        },
+        collapsed: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
         },
         connections: {
           type: Array,
           value: function() {
             return [];
           }
-        }
+        },
+        hideDescription: {
+          type: Boolean,
+          value: true,
+          computed: '_shouldHideDescription(editable, group)'
+        },
       },
       listeners: {
         'track': '_throwCardTracking'
+      },
+      _shouldHideDescription: function(editable, group) {
+        return !editable && (!group || !group.info.description);
       },
       _throwCardTracking: function(e) {
         this.fire('card-tracking', {
@@ -88,9 +142,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _linkFromOrTo: function() {
         this.fire('linked-from-or-to', this);
       },
-      _throwCardTap: function() {
-        this.fire('jump-to-group', {
-          name: this.text
+      _jumpToHunk: function(e) {
+        this.fire('jump-to-hunk', {
+          groupId: this.group.id,
+          hunkId: e.model.item.id
         });
       }
     });

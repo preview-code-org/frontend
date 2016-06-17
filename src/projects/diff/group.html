@@ -245,6 +245,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var container = document.createElement('div');
         container.setAttribute('class', 'hunk');
         var hunkElem = document.createElement('pull-request-diff-highlight');
+        hunkElem.setAttribute('id', 'hunk-' + hunk.id.split('=').join(''));
         hunkElem.githubUser = githubUser
         hunkElem.pullRequest = this.pullRequest;
         hunkElem.hunk = hunk;
@@ -292,6 +293,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
           this.comments = newComments;
         }
+      },
+      jumpToHunk: function(hunkId) {
+        var hunkElem = this.$$('#hunk-'+hunkId.split('=').join(''));
+        hunkElem.flash();
+        return hunkElem.offsetTop + this.offsetTop;
       }
     });
   </script>

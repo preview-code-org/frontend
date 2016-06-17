@@ -99,17 +99,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       var GROUP_REGEX = new RegExp(GROUP_EXPRESSION, 'g');
 
       function getFileHeader(file, fromFile, toFile) {
-        if (fromFile !== toFile) {
-          // Newly created file
-          if (file[1] === '/dev/null') {
-            return toFile;
-            // File was renamed
-          } else if (file[2] !== '/dev/null') {
-            return 'from ' + fromFile + ' to ' + toFile;
-          }
+        // File was newly created`
+        if (file[1] === '/dev/null') {
+          return {name: toFile, created: true};
+        // File was deleted
+        } else if (file[2] === '/dev/null') {
+          return {name: fromFile, deleted: true};
+        // File was renamed
+        } else if (fromFile !== toFile) {
+          return {name: toFile, moved: true, from: fromFile};
+        } else {
+          return {name: toFile};
         }
-        // Removed or updated file
-        return fromFile;
       }
 
       return function(diff) {
@@ -123,7 +124,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             this.incrementLineModificationCounter(group[6]);
 
             var fileHeader = getFileHeader(file, file[1].substring(2), file[2].substring(2));
-            var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileHeader;
+
+            var fileNameUrl = fileHeader.moved ? 'from'+fileHeader.from+'to'+fileHeader.name : fileHeader.name
+            var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileNameUrl;
 
             // Default range fields to 1 when they are not present in the hunk.
             var linesChanged = {

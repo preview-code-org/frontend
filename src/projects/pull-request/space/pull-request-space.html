@@ -59,13 +59,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         _blocks: {
           type: Array,
-          valu: function() {
+          value: function() {
             return [];
           }
-        },
-        _padding: {
-          type: Number,
-          value: 5
         }
       },
       get canvas() {
@@ -118,13 +114,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         while (container.firstChild) {
           container.removeChild(container.firstChild);
         }
-        for (var i=0, l=groups.length;i<l;i++) {
+        for (var i=0, l=groups.length; i<l; i++) {
           var elem = document.createElement('pull-request-space-card');
-          elem.text = groups[i].info.title;
+          elem.group = groups[i];
           elem.blockId = i;
           elem.style.right = (i * 100) + 'px';
           container.appendChild(elem);
           elem._originalPosition = elem.getBoundingClientRect();
+          // elem.style.width = elem._originalPosition.width + 'px';
+          elem.style.right = 'auto';
           this._blocks.push(elem);
         }
       },
@@ -293,22 +291,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         });
         this._drawArrow(this.ctx, coordinates);
       },
-      _updateElemTrackingPosition: function(rect, lastElem, dy, dx, padding) {
+      _updateElemTrackingPosition: function(rect, lastElem, dy, dx) {
         // Position the element to the new y position based on its original
         // position, the delta from the original position.
         //
-        // The position is bounded to the container rectangle with a padding
+        // The position is bounded to the container rectangle
         var newTop = lastElem._originalPosition.top + dy;
-        var bottomBoundary = rect.bottom - lastElem._originalPosition.height - padding;
+        var bottomBoundary = rect.bottom - lastElem._originalPosition.height;
         var topBoundedToBottom = Math.min(newTop, bottomBoundary);
-        var topBoundedtoYAndBottom = Math.max(rect.top + padding, topBoundedToBottom) - rect.top;
+        var topBoundedtoYAndBottom = Math.max(rect.top, topBoundedToBottom) - rect.top;
         lastElem.style.top = topBoundedtoYAndBottom + 'px';
 
         // Same for the x position as pointed out above
         var newLeft = lastElem._originalPosition.left + dx;
-        var rightBoundary = rect.right - lastElem._originalPosition.width - padding;
+        var rightBoundary = rect.right - lastElem._originalPosition.width;
         var leftBoundedtoRight = Math.min(newLeft, rightBoundary);
-        var leftBoundedToLeftAndRight = Math.max(rect.left + padding, leftBoundedtoRight) - rect.left;
+        var leftBoundedToLeftAndRight = Math.max(rect.left, leftBoundedtoRight) - rect.left;
         lastElem.style.left = leftBoundedToLeftAndRight + 'px';
       },
       _handleCardTracking: (function() {
@@ -329,7 +327,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               break;
 
             case 'track':
-              this._updateElemTrackingPosition(rect, lastElem, event.dy, event.dx, this._padding);
+              this._updateElemTrackingPosition(rect, lastElem, event.dy, event.dx);
               break;
 
             case 'end':

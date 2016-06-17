@@ -229,7 +229,7 @@ var actualDiffs = [
 var testDiffs = [
   {
     index: '1',
-    file: 'a',
+    file: {name: 'a', created: true},
     diffId: '@@ -0,0 +1 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n+one line",
@@ -238,7 +238,7 @@ var testDiffs = [
   },
   {
     index: '2',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1 +1,2 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n one line\n" +
@@ -248,7 +248,7 @@ var testDiffs = [
   },
   {
     index: '3',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1,2 +1,3 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n one line\n" +
@@ -259,7 +259,7 @@ var testDiffs = [
   },
   {
     index: '4',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1,3 +1,5 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n one line\n" +
@@ -272,7 +272,7 @@ var testDiffs = [
   },
   {
     index: '5',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1,5 +1,5 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n one line\n" +
@@ -286,7 +286,7 @@ var testDiffs = [
   },
   {
     index: '6',
-    file: 'b',
+    file: {name: 'b'},
     diffId: '@@ -1,5 +1,5 @@',
     fileUrl: 'base/blob/sha/b',
     changes: "\n one line\n" +
@@ -300,7 +300,7 @@ var testDiffs = [
   },
   {
     index: '7',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1,5 +1,4 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n one line\n" +
@@ -313,7 +313,7 @@ var testDiffs = [
   },
   {
     index: '8',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1,4 +1,3 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n one line\n" +
@@ -325,7 +325,7 @@ var testDiffs = [
   },
   {
     index: '9',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1,3 +1,3 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n-one line\n" +
@@ -337,7 +337,7 @@ var testDiffs = [
   },
   {
     index: '10',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1,3 +1,2 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n-line inbetween\n" +
@@ -348,7 +348,7 @@ var testDiffs = [
   },
   {
     index: '11',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -1,2 +0,0 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n-another line\n" +
@@ -358,7 +358,7 @@ var testDiffs = [
   },
   {
     index: '12',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -3,8 +3,6 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
@@ -374,7 +374,7 @@ var testDiffs = [
   },
   {
     index: '13',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -340,6 +338,8 @@',
     fileUrl: 'base/blob/sha/a',
     changes: '\n Sed malesuada orci non pulvinar dictum.\n' +
@@ -390,7 +390,7 @@ var testDiffs = [
   },
   {
     index: '14',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -343,3 +341,5 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
@@ -403,7 +403,7 @@ var testDiffs = [
   },
   {
     index: '15',
-    file: 'a',
+    file: {name: 'a'},
     diffId: '@@ -341,5 +343,3 @@',
     fileUrl: 'base/blob/sha/a',
     changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +

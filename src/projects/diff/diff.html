@@ -95,7 +95,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <div id="hunkGroups">
       <template is="dom-repeat" items="[[orderedGroups]]">
-        <pull-request-group group="[[item]]" editable="[[editable]]"
+        <pull-request-group id$="group-[[item.id]]" group="[[item]]" editable="[[editable]]"
           pull-request="[[pullRequest]]" group-comments="{{groupComments}}"
           github-user="[[githubUser]]"></pull-request-group>
       </template>
@@ -174,11 +174,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return group.info.title;
         });
       },
-      jumpToGroup: function(name) {
-        var group = this.$$('pull-request-group[display-title="' + name + '"]');
-        this.fire('scroll-to', {
-          top: group.offsetTop - 60
-        })
+      jumpToHunk: function(groupId, hunkId) {
+        var scrollTop = Math.min(
+                          this.$$('#group-'+groupId).jumpToHunk(hunkId) - 40,
+                          this.scrollHeight - this.getClientRects()[0].height
+                        );
+        var timingFn = function(t, b, c, d) {
+          t /= d;
+          return -c * t*(t-2) + b;
+        };
+
+        var startTime = Date.now();
+        var currentScrollTop = this.scrollTop;
+        var deltaScrollTop = scrollTop - currentScrollTop;
+        var duration = 300;
+        var updateFrame = function() {
+          var now = Date.now();
+          var elapsedTime = now - startTime;
+          if (elapsedTime < duration) {
+            var newScroll = timingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
+            this.scrollTop = newScroll;
+            requestAnimationFrame(updateFrame);
+          } else {
+            this.scrollTop = scrollTop;
+          }
+        }.bind(this);
+
+        updateFrame();
       },
       _addGroup: function(e) {
         this.$.sorter.addGroup(e.detail);

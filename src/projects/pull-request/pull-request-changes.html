@@ -96,13 +96,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         '_resizeSpace(showSpace)'
       ],
       listeners: {
-        'jump-to-group': 'jumpToGroup'
+        'jump-to-hunk': 'jumpToHunk'
       },
       _resizeSpace: function() {
         this.$.space.updateAfterResize();
       },
-      jumpToGroup: function(e) {
-        this.$.diff.jumpToGroup(e.detail.name);
+      jumpToHunk: function(e) {
+        this.$.diff.jumpToHunk(e.detail.groupId, e.detail.hunkId);
       }
     });
   </script>

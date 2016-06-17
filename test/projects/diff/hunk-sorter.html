@@ -381,7 +381,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     });
 
     var getHunkId = function(hunk) {
-      return btoa(hunk.file + ',' +
+      return btoa(hunk.file.name + ',' +
         hunk.linesChanged.startLineBefore + ',' +
         hunk.linesChanged.rangeBefore + ',' +
         hunk.linesChanged.startLineAfter + ',' +

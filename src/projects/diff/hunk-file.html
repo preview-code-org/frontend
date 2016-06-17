@@ -1,0 +1,101 @@
+<link rel="import" href="../../../bower_components/paper-ripple/paper-ripple.html">
+<dom-module id="hunk-file">
+  <template>
+    <style>
+      :host {
+        cursor: pointer;
+        font-family: 'Roboto Mono';
+        font-size: 0.8em;
+        font-weight: 300;
+      }
+      .file, .full-path {
+        display: inline-block;
+        position: relative;
+        color: white;
+        background-color: var(--auto-color, --edited-file-color);
+        padding: 5px;
+        border-radius: 5px;
+      }
+      .full-path {
+        left: 0;
+        top: 0;
+        display: none;
+        position: absolute;
+        z-index: 1;
+        animation: fadein 0.3s;
+      }
+      .prefix:hover .full-path {
+        animation: fadein 0.3s;
+        display: block;
+      }
+      @keyframes fadein {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+      }
+      @keyframes fadeout {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+      }
+      .prefix {
+        background-color: rgba(255, 255, 255, 0.35);
+        border-radius: 4px;
+      }
+    </style>
+
+    <div class="file" deleted="[[hunk.file.deleted]]" created="[[hunk.file.created]]">
+      <paper-ripple></paper-ripple>
+      <span class="prefix">[[filePrefex]]
+        <div class="full-path">
+          <paper-ripple></paper-ripple>
+          [[hunk.file.name]]
+        </div>
+      </span>
+      [[fileName]]
+      <content></content>
+    </div>
+
+
+  </template>
+  <script>
+    Polymer({
+      is: 'hunk-file',
+      properties: {
+        hunk: Object,
+        filePath: {
+          type: Array,
+          computed: '_getHunkFilePath(hunk)'
+        },
+        fileName: {
+          type: String,
+          computed: '_getHunkFileName(filePath)'
+        },
+        filePrefex: {
+          type: String,
+          computed: '_getHunkFilePrefix(filePath)'
+        }
+      },
+      observers: [
+        '_setColor(hunk)'
+      ],
+      _setColor: function(hunk) {
+        if (hunk.file.created) {
+          this.customStyle['--auto-color'] = 'var(--new-file-color)';
+        } else if (hunk.file.deleted) {
+          this.customStyle['--auto-color'] = 'var(--deleted-file-color)';
+        } else {
+          this.customStyle['--auto-color'] = 'var(--background-color)';
+        }
+        this.updateStyles();
+      },
+      _getHunkFilePath: function(hunk) {
+        return hunk.file.name.split('/');
+      },
+      _getHunkFileName: function(filePath) {
+        return filePath[filePath.length - 1];
+      },
+      _getHunkFilePrefix: function(filePath) {
+        return filePath.length > 1 ? '../' : ''
+      }
+    });
+  </script>
+</dom-module>

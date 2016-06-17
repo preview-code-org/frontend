@@ -28,12 +28,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/prism-element/prism-theme-default.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../util/collapsible-content.html">
 <link rel="import" href="../../ajax/backend-ajax.html">
 <link rel="import" href="../pull-request/reviewers-list.html">
 <link rel="import" href="../project-behavior.html">
+<link rel="import" href="hunk-file.html">
 <link rel="import" href="hunk-ghost.html">
 
 <dom-module id='pull-request-diff-highlight'>
@@ -141,6 +143,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         color: var(--primary-background-color);
         background-color: var(--primary-action-green);
       }
+      :host(.flash) {
+        -webkit-box-shadow: 0 0 0px 8px rgba(255, 222, 60, 0.55);
+        box-shadow: 0 0 0px 8px rgba(255, 222, 60, 0.55);
+      }
+      hunk-file {
+        --background-color: var(--pr-status-color);
+      }
+      hunk-file iron-icon {
+        height: 16px;
+        transform: scaleX(-1);
+        vertical-align: top;
+      }
     </style>
 
     <backend-ajax
@@ -155,7 +169,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <collapsible-content collapse="{{collapsed}}">
       <div class="header">
-        <span>[[hunk.file]] <a href$="[[hunk.fileUrl]]" target="_blank">Full file</a></span>
+        <span><a href$="[[hunk.fileUrl]]" target="_blank">
+          <hunk-file title="View file on GitHub" hunk="[[hunk]]"><iron-icon icon="reply"></iron-icon></hunk-file>
+        </a></span>
         <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
           hidden$="[[!_canUserApprove]]" toggles active="{{_approved}}"></paper-icon-button>
         <reviewers-list small pull-request="[[pullRequest]]" approvals="[[_approvals]]"></reviewers-list>
@@ -169,7 +185,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
     </collapsible-content>
 
-    <hunk-ghost id="ghost" hunk-text="[[hunk.file]]"></hunk-ghost>
+    <hunk-ghost id="ghost" hunk-text="[[hunk.file.name]]"></hunk-ghost>
   </template>
 
   <script>
@@ -288,6 +304,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this._approvals = e.detail.value[this.hunk.id];
           this._approved = !!this._approvals[this.githubUser.id];
         }
+      },
+
+      flash: function() {
+        this.toggleClass('flash', true);
+        setTimeout(function() {
+          this.toggleClass('flash', false);
+        }.bind(this), 800);
       }
     });
   </script>
