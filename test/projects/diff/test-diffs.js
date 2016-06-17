@@ -26,6 +26,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+/*exported actualDiffs,testDiffs*/
 var actualDiffs = [
   {
     file: 1,
@@ -223,6 +224,35 @@ var actualDiffs = [
     ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
     '-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
     '-Nulla ac justo non tellus convallis suscipit.'
+  },
+
+  {
+    file: 15,
+    expected: [15],
+    diff: 'diff --git a/a b/b\n' +
+    'index efe6276..6114b7a 100644\n' +
+    '--- a/a\n' +
+    '+++ b/b\n' +
+    '@@ -341,5 +343,3 @@ Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+    ' Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
+    ' Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+    ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
+    '-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
+    '-Nulla ac justo non tellus convallis suscipit.'
+  },
+  {
+    file: 16,
+    expected: [16],
+    diff: 'diff --git a/a /dev/null\n' +
+    'index efe6276..6114b7a 100644\n' +
+    '--- a/a\n' +
+    '+++ /dev/null\n' +
+    '@@ -341,5 +343,3 @@ Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+    '-Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
+    '-Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+    '-Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
+    '-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
+    '-Nulla ac justo non tellus convallis suscipit.'
   }
 ]
 
@@ -232,7 +262,7 @@ var testDiffs = [
     file: {name: 'a', created: true},
     diffId: '@@ -0,0 +1 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n+one line",
+    changes: '\n+one line',
     linesChanged: { startLineBefore: 0, rangeBefore: 0,
       startLineAfter: 1,  rangeAfter: 1 }
   },
@@ -241,8 +271,8 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1 +1,2 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n one line\n" +
-    "+line two",
+    changes: '\n one line\n' +
+    '+line two',
     linesChanged: { startLineBefore: 1, rangeBefore: 1,
       startLineAfter: 1,  rangeAfter: 2 }
   },
@@ -251,9 +281,9 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1,2 +1,3 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n one line\n" +
-    "+line inbetween\n" +
-    " line two",
+    changes: '\n one line\n' +
+    '+line inbetween\n' +
+    ' line two',
     linesChanged: { startLineBefore: 1, rangeBefore: 2,
       startLineAfter: 1,  rangeAfter: 3 }
   },
@@ -262,11 +292,11 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1,3 +1,5 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n one line\n" +
-    " line inbetween\n" +
-    "+another line\n" +
-    "+hello world\n" +
-    " line two",
+    changes: '\n one line\n' +
+    ' line inbetween\n' +
+    '+another line\n' +
+    '+hello world\n' +
+    ' line two',
     linesChanged: { startLineBefore: 1, rangeBefore: 3,
       startLineAfter: 1,  rangeAfter: 5 }
   },
@@ -275,12 +305,12 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1,5 +1,5 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n one line\n" +
-    " line inbetween\n" +
-    " another line\n" +
-    "-hello world\n" +
-    "+replace a line\n" +
-    " line two",
+    changes: '\n one line\n' +
+    ' line inbetween\n' +
+    ' another line\n' +
+    '-hello world\n' +
+    '+replace a line\n' +
+    ' line two',
     linesChanged: { startLineBefore: 1, rangeBefore: 5,
       startLineAfter: 1,  rangeAfter: 5 }
   },
@@ -289,12 +319,12 @@ var testDiffs = [
     file: {name: 'b'},
     diffId: '@@ -1,5 +1,5 @@',
     fileUrl: 'base/blob/sha/b',
-    changes: "\n one line\n" +
-    " line inbetween\n" +
-    "-another line\n" +
-    " replace a line\n" +
-    "+another line\n" +
-    " line two",
+    changes: '\n one line\n' +
+    ' line inbetween\n' +
+    '-another line\n' +
+    ' replace a line\n' +
+    '+another line\n' +
+    ' line two',
     linesChanged: { startLineBefore: 1, rangeBefore: 5,
       startLineAfter: 1,  rangeAfter: 5 }
   },
@@ -303,11 +333,11 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1,5 +1,4 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n one line\n" +
-    " line inbetween\n" +
-    "-replace a line\n" +
-    " another line\n" +
-    " line two",
+    changes: '\n one line\n' +
+    ' line inbetween\n' +
+    '-replace a line\n' +
+    ' another line\n' +
+    ' line two',
     linesChanged: { startLineBefore: 1, rangeBefore: 5,
       startLineAfter: 1,  rangeAfter: 4 }
   },
@@ -316,10 +346,10 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1,4 +1,3 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n one line\n" +
-    " line inbetween\n" +
-    " another line\n" +
-    "-line two",
+    changes: '\n one line\n' +
+    ' line inbetween\n' +
+    ' another line\n' +
+    '-line two',
     linesChanged: { startLineBefore: 1, rangeBefore: 4,
       startLineAfter: 1,  rangeAfter: 3 }
   },
@@ -328,10 +358,10 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1,3 +1,3 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n-one line\n" +
-    " line inbetween\n" +
-    " another line\n" +
-    "+add last",
+    changes: '\n-one line\n' +
+    ' line inbetween\n' +
+    ' another line\n' +
+    '+add last',
     linesChanged: { startLineBefore: 1, rangeBefore: 3,
       startLineAfter: 1,  rangeAfter: 3 }
   },
@@ -340,9 +370,9 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1,3 +1,2 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n-line inbetween\n" +
-    " another line\n" +
-    " add last",
+    changes: '\n-line inbetween\n' +
+    ' another line\n' +
+    ' add last',
     linesChanged: { startLineBefore: 1, rangeBefore: 3,
       startLineAfter: 1,  rangeAfter: 2 }
   },
@@ -351,8 +381,8 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -1,2 +0,0 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n-another line\n" +
-    "-add last",
+    changes: '\n-another line\n' +
+    '-add last',
     linesChanged: { startLineBefore: 1, rangeBefore: 2,
       startLineAfter: 0,  rangeAfter: 0 }
   },
@@ -361,14 +391,14 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -3,8 +3,6 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
-    " Maecenas sit amet turpis condimentum enim volutpat imperdiet.\n" +
-    " Vestibulum at sem convallis, congue erat porttitor, mattis dui.\n" +
-    "-Donec scelerisque massa in dignissim egestas.\n" +
-    "-Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n" +
-    " Integer non turpis eu quam bibendum pulvinar vel non ante.\n" +
-    " Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n" +
-    " Nulla ac justo non tellus convallis suscipit.",
+    changes: '\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
+    ' Maecenas sit amet turpis condimentum enim volutpat imperdiet.\n' +
+    ' Vestibulum at sem convallis, congue erat porttitor, mattis dui.\n' +
+    '-Donec scelerisque massa in dignissim egestas.\n' +
+    '-Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+    ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
+    ' Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
+    ' Nulla ac justo non tellus convallis suscipit.',
     linesChanged: { startLineBefore: 3, rangeBefore: 8,
       startLineAfter: 3,  rangeAfter: 6 }
   },
@@ -393,11 +423,11 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -343,3 +341,5 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
-    " Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n" +
-    " Integer non turpis eu quam bibendum pulvinar vel non ante.\n" +
-    "+Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n" +
-    "+Nulla ac justo non tellus convallis suscipit.",
+    changes: '\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
+    ' Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+    ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
+    '+Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
+    '+Nulla ac justo non tellus convallis suscipit.',
     linesChanged: { startLineBefore: 343, rangeBefore: 3,
       startLineAfter: 341,  rangeAfter: 5 }
   },
@@ -406,12 +436,40 @@ var testDiffs = [
     file: {name: 'a'},
     diffId: '@@ -341,5 +343,3 @@',
     fileUrl: 'base/blob/sha/a',
-    changes: "\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n" +
-    " Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n" +
-    " Integer non turpis eu quam bibendum pulvinar vel non ante.\n" +
-    "-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n" +
-    "-Nulla ac justo non tellus convallis suscipit.",
+    changes: '\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
+    ' Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+    ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
+    '-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
+    '-Nulla ac justo non tellus convallis suscipit.',
+    linesChanged: { startLineBefore: 341, rangeBefore: 5,
+      startLineAfter: 343,  rangeAfter: 3 }
+  },
+  {
+    index: '16',
+    file: {name: 'b', moved: true, from: 'a'},
+    diffId: '@@ -341,5 +343,3 @@',
+    fileUrl: 'base/blob/sha/fromatob',
+    changes: '\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
+    ' Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+    ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
+    '-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
+    '-Nulla ac justo non tellus convallis suscipit.',
     linesChanged: { startLineBefore: 341, rangeBefore: 5,
       startLineAfter: 343,  rangeAfter: 3 }
   }
 ];
+
+var testDiffsWithDelete = testDiffs.slice();
+testDiffsWithDelete.push({
+  index: '17',
+  file: {name: 'a', deleted: true},
+  diffId: '@@ -341,5 +343,3 @@',
+  fileUrl: 'base/blob/sha/a',
+  changes: '\n-Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
+  '-Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
+  '-Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
+  '-Etiam vel nibh aliquam, dignissim nunc vel, ultrices sapien.\n' +
+  '-Nulla ac justo non tellus convallis suscipit.',
+  linesChanged: { startLineBefore: 341, rangeBefore: 5,
+    startLineAfter: 343,  rangeAfter: 3 }
+});

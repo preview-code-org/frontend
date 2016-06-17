@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <title>diff-highlight-tests</title>
   <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
   <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
   <script src='test-diffs.js'></script>
 
   <!-- Import the element to test -->
@@ -57,6 +58,115 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           done();
         }
         document.body.appendChild(elem);
+      });
+
+      suite('general functionality', function() {
+        var elem;
+        setup(function() {
+          elem = fixture('basic');
+        });
+
+        test('disables flash after timeout', function(done) {
+          elem.addEventListener('stopped-flashing', function() {
+            assert.equal(elem.classList.contains('flash'), false);
+            done();
+          });
+          elem.flash();
+          assert.equal(elem.classList.contains('flash'), true);
+        });
+      });
+
+      suite('users approve', function() {
+        var elem, button;
+
+        Polymer({
+          is: 'mocked-firebase-document',
+          properties: {
+            path: {
+              type: String,
+              observer: '_updatePath'
+            },
+            data: {
+              type: Object,
+              notify: true
+            }
+          },
+          _updatePath: function(newPath) {
+            assert.equal(newPath, 'owner/name/pulls/42/hunkApprovals');
+            this.data = {
+              hunkId: ['user2']
+            };
+          }
+        });
+
+        setup(function() {
+          replace('firebase-document').with('mocked-firebase-document');
+          elem = fixture('basic');
+          elem.pullRequest = {
+            assignees: [{login: 'user1'}, {login: 'user2'}],
+            number: 42
+          };
+          elem.hunk = {id: 'hunkId', file: {
+            name: 'hunk'
+          }};
+          elem.approvable = true;
+          elem.githubUser = {login: 'user2'};
+          button = elem.$$('[icon="icons:thumb-up"]');
+        });
+
+        test('as reviewer', function() {
+          assert.equal(button.hidden, false);
+        });
+
+        test('not when not approvable', function() {
+          elem.approvable = false;
+          assert.equal(button.hidden, true);
+        });
+
+        test('not when no reviewer', function() {
+          elem.githubUser = {login: 'user3'};
+          assert.equal(button.hidden, true);
+        });
+
+        test('in revewer list', function() {
+          assert.equal(button.hidden, false);
+        });
+
+        suite('with backend interaction', function() {
+          var server;
+          var responseHeaders = {
+             json: {
+              'Content-Type': 'application/json',
+              'ETag': 'susdiwp36ljsdl'
+            }
+          };
+          var finished;
+
+          setup(function() {
+            elem.project = {
+              owner: 'owner',
+              name: 'name'
+            };
+            elem.$.approveAjax.storeToken('token');
+            server = sinon.fakeServer.create();
+            server.respondWith(
+              'POST',
+              /.*\/pr\/owner\/name\/42\/approve.*/,
+              function(xhr) {
+                assert.equal(xhr.requestBody, '{"hunkId":"hunkId","isApproved":true}');
+                finished();
+              }
+            );
+            elem.addEventListener('change', function() {
+              server.respond();
+            });
+          });
+
+          test('posts data when reviewer approves', function(done) {
+            finished = done;
+            MockInteractions.tap(button);
+          });
+        });
       });
     });
 

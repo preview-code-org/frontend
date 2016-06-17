@@ -58,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             var hunks = diffElem.hunks;
             for (var j=0, l=hunks.length;j<l;j++) {
               var expectedIndex = diff.expected ? diff.expected[j] : actualDiffs.indexOf(diff);
-              assert.deepEqual(hunks[j][field], testDiffs[expectedIndex][field]);
+              assert.deepEqual(hunks[j][field], testDiffsWithDelete[expectedIndex][field]);
             }
           }
 

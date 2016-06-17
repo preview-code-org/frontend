@@ -310,6 +310,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.toggleClass('flash', true);
         setTimeout(function() {
           this.toggleClass('flash', false);
+          this.fire('stopped-flashing');
         }.bind(this), 800);
       }
     });

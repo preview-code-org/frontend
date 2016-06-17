@@ -239,7 +239,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       _groupExists: function(id) {
-        return this._searchGroup('id').bind(this)(id);
+        return this._searchGroup('id')(id);
       },
 
       _searchGroup: function(field) {
@@ -247,7 +247,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return this.groups.filter(function(g) {
             return g[field] === entry;
           }).length > 0;
-        }
+        }.bind(this);
       },
 
       _doForGroup: function(groupId, f) {

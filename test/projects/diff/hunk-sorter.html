@@ -133,6 +133,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.equal(3, sorter.getOrdering().length);
     });
 
+    test('remove ignores incorrect group', function() {
+      sorter.rawHunks = [testDiffs[0]];
+      sorter.addGroup('01');
+      sorter.removeGroup('non-existing');
+      assert.equal(2, sorter.getOrdering().length);
+    });
+
     test('can remove middle group', function() {
       sorter.rawHunks = [testDiffs[0]];
       sorter.addGroup('01');
@@ -336,6 +343,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.deepEqual(testDiffs[1], sorter.groups[0].diff[0]);
     });
 
+    test('does not move hunk for same position', function() {
+      sorter.rawHunks = testDiffs;
+      var id = sorter.groups[0].id;
+      sorter.moveHunk(id, 0, 0);
+      assert.deepEqual(testDiffs[0], sorter.groups[0].diff[0]);
+    });
+
     test('does not move hunk outside bounds in ordering', function() {
       sorter.rawHunks = testDiffs;
       var id = sorter.groups[0].id;
@@ -371,6 +385,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.deepEqual(idLast, sorter.groups[2].id);
     });
 
+    test('does not move group for same position', function() {
+      sorter.rawHunks = testDiffs;
+      var idFirst = sorter.addGroup('new-group');
+      var idLast = sorter.addGroup('new-group2');
+      sorter.moveGroup(0, 0);
+      assert.deepEqual(idFirst, sorter.getOrdering()[1].id);
+      assert.deepEqual(idLast, sorter.getOrdering()[0].id);
+    });
+
     test('does not move group outside bounds inside ordering', function() {
       sorter.rawHunks = testDiffs;
       var idFirst = sorter.addGroup('new-group');
@@ -378,6 +401,86 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.moveGroup(0, 10);
       assert.deepEqual(idFirst, sorter.getOrdering()[0].id);
       assert.deepEqual(idLast, sorter.getOrdering()[2].id);
+    });
+
+    suite('interacts with Firebase', function() {
+      var data = {
+        "groups" : [ {
+          "diff" : [ "YSwzNDAsNiwzMzgsOA==" ],
+          "id" : "c1987394-4733-4d18-ba7f-c78eee2f112f",
+          "info" : {
+            "description" : "Some description",
+            "title" : "First group!"
+          }
+        }, {
+          "diff" : [ "YSwzNDMsMywzNDEsNQ==" ],
+          "id" : "c1987394-4733-4d18-ba7f-c78eee2f113f",
+          "info" : {
+            "description" : "World",
+            "title" : "Hello"
+          }
+        } ],
+        "lastChanged" : "14 June on some time you do not want to know"
+      }
+
+      Polymer({
+        is: 'mocked-firebase-document',
+        properties: {
+          path: {
+            type: String,
+            observer: '_updatePath'
+          },
+          data: {
+            type: Object,
+            notify: true
+          }
+        },
+        _updatePath: function(newPath) {
+          assert.equal(newPath, 'owner/name/pulls/42/ordering');
+          this.data = data;
+        }
+      });
+
+      setup(function() {
+        replace('firebase-document').with('mocked-firebase-document');
+        sorter = fixture('basic');
+        sorter.rawHunks = testDiffs;
+        sorter.project = {
+          owner: 'owner',
+          name: 'name'
+        };
+      });
+
+      test('sorts hunks according to ordering', function() {
+        sorter.pullRequest = {
+          number: 42
+        };
+        var ordered = sorter.getOrdering();
+        var firstGroup = ordered[0];
+        assert.equal(firstGroup.info.description, 'Some description');
+        assert.equal(firstGroup.info.title, 'First group!');
+        assert.equal(firstGroup.diff.length, 1);
+        assert.equal(firstGroup.diff[0], 'YSwzNDAsNiwzMzgsOA==');
+        var secondGroup = ordered[1];
+        assert.equal(secondGroup.info.description, 'World');
+        assert.equal(secondGroup.info.title, 'Hello');
+        assert.equal(secondGroup.diff.length, 1);
+        assert.equal(secondGroup.diff[0], 'YSwzNDMsMywzNDEsNQ==');
+      });
+
+      test('does not sort when there are no groups stored', function() {
+        var oldData = data;
+        data = {
+          groups: [],
+          lastChanged: 'yesterday'
+        };
+        sorter.pullRequest = {
+          number: 42
+        };
+        data = oldData;
+        var ordered = sorter.getOrdering();
+        assert.equal(ordered.length, 1);
+      });
     });
 
     var getHunkId = function(hunk) {
