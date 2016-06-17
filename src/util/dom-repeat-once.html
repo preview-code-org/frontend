@@ -57,7 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         this.innerHTML = '';
         for (var i = 0, l = this.items.length; i < l; i++) {
-          this.appendChild(getItemElem(this.items[i]));
+          Polymer.dom(this).appendChild(getItemElem(this.items[i]));
         }
       }
     });
