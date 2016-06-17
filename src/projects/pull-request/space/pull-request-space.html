@@ -119,7 +119,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           elem.group = groups[i];
           elem.blockId = i;
           elem.style.right = (i * 100) + 'px';
-          container.appendChild(elem);
+          Polymer.dom(container).appendChild(elem);
           elem._originalPosition = elem.getBoundingClientRect();
           // elem.style.width = elem._originalPosition.width + 'px';
           elem.style.right = 'auto';

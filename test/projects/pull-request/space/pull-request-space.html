@@ -1,0 +1,161 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>pull-request-space tests</title>
+
+    <script src="../../../../src/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../../src/bower_components/web-component-tester/browser.js"></script>
+    <script src='../../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+    <!-- Step 1: import the element to test -->
+    <link rel="import" href="../../../../src/projects/pull-request/space/pull-request-space.html">
+
+  </head>
+  <body>
+
+  <test-fixture id="basic">
+    <style>
+      pull-request-space {
+        width: 2000px;
+        height: 2000px;
+      }
+    </style>
+    <template>
+      <pull-request-space></pull-request-space>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<pull-request-space> tests', function() {
+      var elem, cards;
+
+      setup(function() {
+        elem = fixture('basic');
+        elem.groups = [
+          {
+            id: 'group1',
+            info: {
+              title: 'Group 1',
+              description: 'A description'
+            }
+          },
+          {
+            id: 'group2',
+            info: {
+              title: 'Group 2',
+              description: 'A description'
+            }
+          }
+        ];
+      });
+
+      test('drags card around', function(done) {
+        elem.addEventListener('track', function(e) {
+          if (e.detail.state === 'end') {
+            var rect = cards[0].getBoundingClientRect();
+            var parentRect = elem.getBoundingClientRect();
+            assert.equal(rect.top - parentRect.top, 50);
+            assert.equal(rect.left - parentRect.left, 50);
+            done();
+          }
+        });
+        flush(function() {
+          cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
+          MockInteractions.track(cards[0], 50, 50);
+        });
+      });
+
+      test('resetting group removes old cards', function(done) {
+        flush(function() {
+          elem.groups = [];
+          flush(function() {
+            var cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
+            assert.equal(cards.length, 0);
+            done();
+          });
+        });
+      })
+
+      function getImageData() {
+        var ctx = elem.$.canvas.getContext('2d');
+        var leftCardRect = cards[1].getBoundingClientRect();
+        return imageData = ctx.getImageData(leftCardRect.left + leftCardRect.width, leftCardRect.top, 250, leftCardRect.height).data;
+      }
+
+      test('draws arrows', function(done) {
+        flush(function() {
+          cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
+          MockInteractions.track(cards[0], 250, 0);
+          MockInteractions.tap(cards[0].$$('paper-button'));
+          MockInteractions.tap(cards[1].$$('paper-button'));
+          var imageData = getImageData();
+          // Verify that the image data has pixels drawn
+          assert.equal(imageData.filter(function(pixel) {
+            return pixel > 0;
+          }).length > 0, true);
+          done();
+        });
+      });
+
+      test('clicking same card again cancels arrow drawing', function(done) {
+        flush(function() {
+          cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
+          MockInteractions.track(cards[0], 250, 0);
+          MockInteractions.tap(cards[0].$$('paper-button'));
+          MockInteractions.tap(cards[0].$$('paper-button'));
+          var imageData = getImageData();
+          // Verify that the image data has no pixels drawn
+          assert.equal(imageData.filter(function(pixel) {
+            return pixel > 0;
+          }).length > 0, false);
+          done();
+        });
+      });
+
+      test('clicking escape cancels arrow drawing', function(done) {
+        flush(function() {
+          cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
+          MockInteractions.track(cards[0], 250, 0);
+          MockInteractions.tap(cards[0].$$('paper-button'));
+          MockInteractions.pressAndReleaseKeyOn(document, 27);
+          var imageData = getImageData();
+          // Verify that the image data has no pixels drawn
+          assert.equal(imageData.filter(function(pixel) {
+            return pixel > 0;
+          }).length > 0, false);
+          done();
+        });
+      })
+    });
+  </script>
+
+  </body>
+</html>
