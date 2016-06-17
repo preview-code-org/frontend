@@ -55,10 +55,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     var request;
     var server;
     var responseHeaders = {
-       json: { 'Content-Type': 'application/json',
-               'ETag': 'susdiwp36ljsdl'}
+       json: {
+        'Content-Type': 'application/json',
+        'ETag': 'susdiwp36ljsdl'
+      }
     };
     var token = 'token';
+
     setup(function() {
       server = sinon.fakeServer.create();
       server.respondWith(
@@ -66,14 +69,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          /https:\/\/api\.github\.com\/repos\/.+\/issues\/[0-9]+\/comments.*/, [
            200,
            responseHeaders.json,
-           '[{body: "hi", id: 226514321},{body: "hi", id: 226514322},{body: "hi", id: 226514478}]'
+           '[{"body": "one", "id": 226514321},{"body": "two", "id": 226514322},{"body": "three", "id": 226514478}]'
          ]);
       elem = fixture('basic');
+      elem.$.githubComments.storeToken(token);
     });
 
-  teardown(function() {
-    server.restore();
-  });
+    teardown(function() {
+      server.restore();
+    });
 
     suite('testSuite', function() {
 
@@ -81,21 +85,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         elem.generalComments = ['test'];
         elem.groupComments = ['test'];
         elem._flushComments();
-        assert.deepEqual([], elem.generalComments);
-        assert.deepEqual([], elem.groupComments);
+        assert.deepEqual(elem.generalComments, []);
+        assert.deepEqual(elem.groupComments, []);
       });
 
-      test('comments correctly distrubted when function is called', function(done) {
-        elem.fbComments = {226514321: '6be9ab4f-7e1c-4b96-861d-80f766368371', 226514478: '6be9ab4f-7e1c-4b96-861d-80f766368371'};
+      test('comments correctly distributed when function is called', function(done) {
+        elem.project = {
+          owner: 'owner',
+          name: 'name'
+        };
+        elem.number = 15;
+        elem.fbComments = {
+          226514321: '6be9ab4f-7e1c-4b96-861d-80f766368371',
+          226514478: '6be9ab4f-7e1c-4b96-861d-80f766368371'
+        };
         elem.$.githubComments.generateRequest();
-        // var ajax = elem.getElementsByTagName('github-authenticated-ajax')[0];
-        // ajax.generateRequest();
-        server.respond();
-        elem.async(function() {
-          assert.deepEqual([226514322], elem.generalComments);
-          assert.deepEqual([226514321,226514478], elem.groupComments);
+        function checkComments() {
+          elem.removeEventListener('added-comments', checkComments);
+          assert.deepEqual(elem.generalComments, [{body: 'two', id: 226514322}]);
+          assert.deepEqual(elem.groupComments[0].comment, {body: 'one', id: 226514321});
+          assert.deepEqual(elem.groupComments[1].comment, {body: 'three', id: 226514478});
           done();
-        })
+        }
+        elem.addEventListener('added-comments', checkComments);
+        server.respond();
       });
     });
   });
