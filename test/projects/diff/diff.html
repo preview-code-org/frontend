@@ -12,7 +12,7 @@
 
   </head>
   <body>
-<pull-request-diff editable></pull-request-diff>
+
   <test-fixture id="basic">
     <template>
       <pull-request-diff editable></pull-request-diff>
@@ -24,7 +24,9 @@
       var element;
       var hunks = [
         {
-          file: 'header',
+          file: {
+            name: 'header'
+          },
           fileUrl: 'url',
           diffId: 'diffId',
           changes: 'changes',
@@ -37,7 +39,9 @@
           sha: 'sha'
         },
         {
-          file: 'header2',
+          file: {
+            name: 'header2'
+          },
           fileUrl: 'url2',
           diffId: 'diffId2',
           changes: 'changes2',
@@ -54,6 +58,7 @@
       setup(function() {
         element = fixture('basic');
         element.hunks = hunks;
+        element.githubUser = {};
       });
 
       function addGroup() {
@@ -128,19 +133,19 @@
         assert.equal(ordering[0].diff.length, 2);
       })
 
-      // TODO(Tim): re-enable test when jumping has been fixed with space
-      // test('fires offset when jumping to group', function(done) {
-      //   addGroup();
-      //   element.addEventListener('scroll-to', function(e) {
-      //     console.log(e.detail);
-      //     done();
-      //   });
-      //   element.$.addGroupDialog.addEventListener('iron-overlay-closed', function() {
-      //     flush(function() {
-      //       element.jumpToGroup('Unsorted changes');
-      //     });
-      //   });
-      // });
+      test('fires offset when jumping to hunk', function(done) {
+        addGroup();
+        element.addEventListener('finished-scrolling', function() {
+          //TODO(Thomas): add verification for scrollTop
+          done();
+        });
+        element.$.addGroupDialog.addEventListener('iron-overlay-closed', function() {
+          flush(function() {
+            var group = element.orderedGroups[1];
+            element.jumpToHunk(group.id, group.diff[0].id);
+          });
+        });
+      });
 
     });
   </script>
