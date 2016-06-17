@@ -216,9 +216,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             this.set('selectedPull.' + f, actualPr[f]);
           }
         }
-      },
-      _scrollTo: function(e) {
-        this.scrollTop = e.detail.top;
+        this.fire('pull-request-upgraded');
       }
     });
   </script>
