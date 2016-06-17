@@ -49,6 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         overflow: hidden;
         display: block;
+        position: relative;
         margin: 2em 0;
         padding: 1em 2em;
         -webkit-transition: all 0.3s ease;
@@ -228,14 +229,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       _groupChanged: function(group, editable, githubUser) {
+        console.log('reset', group, editable, githubUser);
         this.$.hunks.reset(function(hunk) {
           return this._createDraggableHunk(hunk, editable, githubUser);
         }.bind(this));
-        this.async(function() {
-          // Force a recalc to make sure that the `:empty` pseudo selector
-          // is correctly cleared after stamping groups to the hunks section
-          this.$.hunks.style.zoom = this.$.hunks.style.zoom ? '0.999999' : '1';
-        }, 1);
         this.displayTitle = this.group.info.title;
       },
       _shouldHideDescription: function(editable, group) {

@@ -176,9 +176,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       jumpToHunk: function(groupId, hunkId) {
         var scrollTop = Math.min(
-          this.$$('#group-' + groupId).jumpToHunk(hunkId) - 40,
-          this.scrollHeight - this.getClientRects()[0].height
-        );
+                          this.$$('#group-' + groupId).jumpToHunk(hunkId) - 96 - 16,
+                          this.scrollHeight - this.getClientRects()[0].height
+                        );
         var timingFn = function(t, b, c, d) {
           t /= d;
           return -c * t*(t-2) + b;
