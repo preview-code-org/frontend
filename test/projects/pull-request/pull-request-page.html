@@ -71,14 +71,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       };
 
-      var prPageElem;
+      var elem;
 
       setup(function() {
-        prPageElem = fixture('basic');
+        elem = fixture('basic');
       });
 
       test('triggers ajax for diff when PR changes', function(done) {
-        prPageElem.project = {'owner': 'Test', 'name': 'test'}
+        elem.project = {'owner': 'Test', 'name': 'test'}
         stub('github-authenticated-ajax', {
           generateRequest: function() {
             if (this.id === 'ajaxDiff') {
@@ -87,7 +87,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         });
 
-        prPageElem.selectedPull = examplePull;
+        elem.selectedPull = examplePull;
       });
 
       test('has pull-request-general-information', function() {
@@ -102,8 +102,60 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         assert.isOk(get('pull-request-commits'));
       });
 
+      test('opening space also shows diff', function(done) {
+        elem.addEventListener('iron-select', function(e) {
+          if (e.detail.item.tagName.toLowerCase() === 'pull-request-changes') {
+            done();
+          }
+        });
+        elem.set('page.page', 'space');
+      });
+
+      test('opening space fires force hide list', function(done) {
+        elem.addEventListener('force-hide-list', function() {
+          done();
+        });
+        elem.set('page.page', 'space');
+      });
+
+      test('merges selected pull with new data', function(done) {
+        elem.$.ajaxSelf.shared = {
+          accessToken: 'token'
+        };
+        var responseHeaders = {
+          json: {
+            'Content-Type': 'application/json',
+            'ETag': 'susdiwp36ljsdl'
+          }
+        };
+        var server = sinon.fakeServer.create();
+        server.respondWith(
+           'GET',
+           /selected-pull.json.*/, [
+             200,
+             responseHeaders.json,
+             '{"field": "value", "original": "new"}'
+           ]);
+        var pullRequest = {
+          _links: {
+            self: {
+              href: 'selected-pull.json'
+            }
+          },
+          original: 'original'
+        };
+
+        elem.addEventListener('pull-request-upgraded', function() {
+          assert.equal(elem.selectedPull.field, 'value');
+          assert.equal(elem.selectedPull.original, 'original');
+          done();
+        });
+        elem.selectedPull = pullRequest;
+        server.respond();
+      });
+
       var get = function(selector) {
-        return Polymer.dom(prPageElem.root).querySelector(selector);
+        return Polymer.dom(elem.root).querySelector(selector);
       }
     });
   </script>
