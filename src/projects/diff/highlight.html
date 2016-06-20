@@ -271,7 +271,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       _getBackendApprovalPath: function(project, pullRequest) {
         if (project && pullRequest) {
-          return 'pr/' + project.owner + '/' + project.name + '/' + pullRequest.number + '/approve';
+          return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/approve';
         }
       },
       _getFirebaseApprovalPath: function(project, pullRequest) {
