@@ -151,7 +151,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             server = sinon.fakeServer.create();
             server.respondWith(
               'POST',
-              /.*\/pr\/owner\/name\/42\/approve.*/,
+              /.*\/owner\/name\/pulls\/42\/approve.*/,
               function(xhr) {
                 assert.equal(xhr.requestBody, '{"hunkId":"hunkId","isApproved":true}');
                 finished();
