@@ -175,10 +175,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         });
       },
       jumpToHunk: function(groupId, hunkId) {
+        var headerHeight = 48;
+        var additionalMargin = 16;
         var scrollTop = Math.min(
-                          this.$$('#group-' + groupId).jumpToHunk(hunkId) - 96 - 16,
-                          this.scrollHeight - this.getClientRects()[0].height
-                        );
+          this.$$('#group-' + groupId).jumpToHunk(hunkId) - 2*headerHeight - additionalMargin,
+          this.scrollHeight - this.getClientRects()[0].height
+        );
         var timingFn = function(t, b, c, d) {
           t /= d;
           return -c * t*(t-2) + b;
