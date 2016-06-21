@@ -77,9 +77,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       on-response="_appendPullRequests"></github-authenticated-ajax>
 
     <github-authenticated-ajax
+      auto
       id="ajaxCustomPullRequest"
-      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]/pulls/[[pr.pr]]"
-      last-response="{{newPullrequest}}"></github-authenticated-ajax>
+      refurl="[[costumPrPath]]"
+      headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
+      last-response="{{customPR}}"></github-authenticated-ajax>
 
     <github-authenticated-ajax
       auto
@@ -129,13 +131,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: String,
           computed: '_computepullRequestsApiPath(projectTitle, prStateFilter)'
         },
+        costumPrPath: {
+          type: String,
+          computed: '_computeCustomPrPath(projectTitle, pr.pr)'
+        },
         showProjectsList: Boolean,
         showPullList: Boolean,
         selectedPull: {
           type: Object,
-          computed: '_getPullFromId(pullrequests, pr.pr)'
+          computed: '_getPullFromId(pullrequests, pr.pr, customPR)'
         },
-        newPullrequest: Object,
         projects: {
           type: Array,
           value: function() {
@@ -150,7 +155,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       observers: [
         'chooseProject(projects, projectTitle.*)',
-        '_showPullRequest(newPullrequest)',
         '_showProjectList(subPage)',
         '_showPullsList(projectSelected)',
         '_retrieveNewPullRequests(pullRequestsApiPath)'
@@ -198,9 +202,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _focusProject: function() {
         this.$$('project-overview-page').focus();
       },
-      _getPullFromId: function(pullrequests, id) {
+      _getPullFromId: function(pullrequests, id, customPR) {
         if (!id) {
           return;
+        }
+        if(customPR.number === parseInt(id)){
+          return customPR;
         }
         var list = pullrequests.filter(function(pr) {
           return pr.number === parseInt(id);
@@ -210,12 +217,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return list[0];
         }
 
-        if (this._lastId === id) {
+        if (this._lastId === id && this.pullRequest) {
           return;
         }
-        this._lastId = id;
-
-        if (this.$.ajaxCustomPullRequest.refurl.match(id + '$')) {
+        if (this.costumPrPath.match(id + '$')) {
           this.$.ajaxCustomPullRequest.generateRequest();
         }
       },
@@ -242,10 +247,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _changePRStateFilter: function(e) {
         this.prStateFilter = e.detail;
-        this.$.ajaxPullRequest.generateRequest();
-      },
-      _showPullRequest: function(newPullrequest) {
-        this.push('pullrequests', newPullrequest);
       },
       _appendPullRequests: function(e) {
         this._updatePagination(e);
@@ -279,6 +280,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         if (projectTitle.owner && prStateFilter) {
           return 'https://api.github.com/repos/' + projectTitle.owner + '/' + projectTitle.name + '/pulls?state=' + prStateFilter;
         }
+      },
+      _computeCustomPrPath: function(projectTitle, number){
+        return 'https://api.github.com/repos/' + projectTitle.owner + '/' + projectTitle.name + '/pulls/' + number;
       }
     });
   </script>
