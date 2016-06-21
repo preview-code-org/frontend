@@ -40,11 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display: block;
       },
     </style>
-    <github-authenticated-ajax
-      id="getAssignees"
-      refurl="[[githubPathGet]]"
-      last-response="{{assignees}}"
-      ></github-authenticated-ajax>
 
     <github-authenticated-ajax
       id="postAssignees"
@@ -77,29 +72,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: String,
           computed: '_githubPathPost(project, pullRequest)'
         },
-        githubPathGet: {
-          type: String,
-          computed: '_githubPathGet(project)'
-        },
-        assignees: Array
-      },
-      observers: ['_fireAjax(githubPathGet)',
-                  '_postReviewer(reviewer)'],
-
-      _fireAjax: function(githubPathGet) {
-        if (githubPathGet !== undefined) {
-          this.$.getAssignees.generateRequest();
+        assignees: {
+          type: Array,
+          value: function() {
+            return [];
+          },
+          computed: '_computeProjectAssignees(project.assignees)'
         }
+      },
+      observers: [
+        '_postReviewer(reviewer)'
+      ],
+      _computeProjectAssignees: function(assignees) {
+        return assignees || [];
       },
 
       _githubPathPost: function(project, pullRequest) {
         if (project !== undefined && pullRequest !== undefined) {
           return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullRequest.number + '/assignees';
-        }
-      },
-      _githubPathGet: function(project) {
-        if (project.owner !== undefined) {
-          return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/assignees'
         }
       },
       _postReviewer: function(reviewer) {

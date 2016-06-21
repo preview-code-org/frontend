@@ -138,6 +138,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <div class="sidebar">
           <pr-status pull-request="[[pullRequest]]"></pr-status>
           <reviewers-list editable pull-request="{{pullRequest}}"></reviewers-list>
+          <set-reviewers hidden$="[[!editable]]" pull-request="{{pullRequest}}"></set-reviewers>
           <tags-list>
             <template is="dom-repeat" items="[[issue.labels]]">
               <tag-list-item backgroundcolor="[[item.color]]">[[item.name]]</tag-list-item>

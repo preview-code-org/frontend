@@ -77,11 +77,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       on-response="_appendPullRequests"></github-authenticated-ajax>
 
     <github-authenticated-ajax
-      auto
       id="ajaxCustomPullRequest"
       refurl="[[costumPrPath]]"
       headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
-      last-response="{{customPR}}"></github-authenticated-ajax>
+      last-response="{{selectedPull}}"></github-authenticated-ajax>
+
+    <github-authenticated-ajax
+      id="ajaxAssignees"
+      refurl="[[activeProject._actual.url]]/assignees"
+      on-response="_insertAssignees"></github-authenticated-ajax>
 
     <github-authenticated-ajax
       auto
@@ -104,7 +108,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <no-project-selected data-route="no-selected"></no-project-selected>
       <project-overview-page data-route="overview" tabindex="0"
           route="{{nameTail}}" pullrequests="[[pullrequests]]" github-user="[[githubUser]]"></project-overview-page>
-      <pull-request-page data-route="pr" selected-pull="{{selectedPull}}" route="{{prTail}}" github-user="[[githubUser]]"></pull-request-page>
+      <pull-request-page data-route="pr" selected-pull="[[selectedPull]]" route="{{prTail}}" github-user="[[githubUser]]"></pull-request-page>
     </iron-pages>
   </template>
   <script>
@@ -133,14 +137,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         costumPrPath: {
           type: String,
-          computed: '_computeCustomPrPath(projectTitle, pr.pr)'
+          computed: '_computeCustomPrPath(pr.pr)',
+          observer: '_fetchPullRequest'
         },
         showProjectsList: Boolean,
         showPullList: Boolean,
-        selectedPull: {
-          type: Object,
-          computed: '_getPullFromId(pullrequests, pr.pr, customPR)'
-        },
         projects: {
           type: Array,
           value: function() {
@@ -189,9 +190,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           _actual: project
         };
         ProjectBehavior.setProject(this.activeProject);
+        this.$.ajaxAssignees.generateRequest();
 
         this.pullRequestPagination = 1;
         this._lastPage = undefined;
+      },
+      _insertAssignees: function(e) {
+        ProjectBehavior.setProjectField('assignees', e.detail.response);
+      },
+      _fetchPullRequest: function(path) {
+        if (path) {
+          this.$.ajaxCustomPullRequest.generateRequest();
+        }
       },
       _retrieveNewPullRequests: function() {
         this.pullrequests = [];
@@ -201,28 +211,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _focusProject: function() {
         this.$$('project-overview-page').focus();
-      },
-      _getPullFromId: function(pullrequests, id, customPR) {
-        if (!id) {
-          return;
-        }
-        if(customPR.number === parseInt(id)){
-          return customPR;
-        }
-        var list = pullrequests.filter(function(pr) {
-          return pr.number === parseInt(id);
-        });
-        if (list.length > 0) {
-          this._lastId = id;
-          return list[0];
-        }
-
-        if (this._lastId === id && this.pullRequest) {
-          return;
-        }
-        if (this.costumPrPath.match(id + '$')) {
-          this.$.ajaxCustomPullRequest.generateRequest();
-        }
       },
       _getCurrentView: function(projectSelected, pullRequestSelected) {
         if (!projectSelected) {
@@ -281,8 +269,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return 'https://api.github.com/repos/' + projectTitle.owner + '/' + projectTitle.name + '/pulls?state=' + prStateFilter;
         }
       },
-      _computeCustomPrPath: function(projectTitle, number){
-        return 'https://api.github.com/repos/' + projectTitle.owner + '/' + projectTitle.name + '/pulls/' + number;
+      _computeCustomPrPath: function(number) {
+        if (number) {
+          return 'https://api.github.com/repos/' + this.projectTitle.owner + '/' + this.projectTitle.name + '/pulls/' + number;
+        }
       }
     });
   </script>

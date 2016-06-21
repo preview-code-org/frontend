@@ -56,9 +56,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         });
 
         this.innerHTML = '';
-        for (var i = 0, l = this.items.length; i < l; i++) {
-          Polymer.dom(this).appendChild(getItemElem(this.items[i]));
+        var stamped = 0;
+        var n = this.items.length;
+        var domApi = Polymer.dom(this);
+        var items = this.items;
+        function appendChildren() {
+          for (var i=0;i<4 && stamped + i < n;i++,stamped++) {
+            domApi.appendChild(getItemElem(items[i]));
+          }
+          if (stamped < n) {
+            requestAnimationFrame(appendChildren);
+          }
         }
+        requestAnimationFrame(appendChildren);
       }
     });
   </script>

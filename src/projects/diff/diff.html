@@ -68,12 +68,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.2);
         --paper-toolbar-background: var(--primary-background-color);
       }
-      .additions {
-        color: var(--addition-color);
-      }
-      .deletions {
-        color: var(--deletion-color);
-      }
       .group-ghost {
         -webkit-box-shadow: 0 8px 16px 0 rgba(0,0,0,0.25);
         box-shadow: 0 8px 16px 0 rgba(0,0,0,0.25);
@@ -90,7 +84,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         will-change: height;
       }
     </style>
-    <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" additions="{{additions}}" deletions="{{deletions}}" hunks="{{hunks}}"></diff-parser>
+    <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" hunks="{{hunks}}"></diff-parser>
     <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}" pull-request="[[pullRequest]]"></hunk-sorter>
 
     <div id="hunkGroups">
@@ -131,8 +125,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         baseUrl: String,
         sha: String,
         number: Number,
-        additions: Number,
-        deletions: Number,
         diff: String,
         hunks: {
           type: Array,

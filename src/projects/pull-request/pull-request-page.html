@@ -120,14 +120,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"></github-authenticated-ajax>
 
-    <github-authenticated-ajax
-      id="ajaxSelf"
-      refurl="[[selectedPull._links.self.href]]"
-      on-response="_mergeSinglePRWithSelectedPull"></github-authenticated-ajax>
-
     <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
     <get-comments groups="{{orderedGroups}}" group-comments="{{groupComments}}"
-    number="[[selectedPull.number]]" general-comments="{{generalComments}}"></get-comments>
+        pull-request="[[selectedPull]]" general-comments="{{generalComments}}"></get-comments>
 
     <info-header title="[[selectedPull.title]]" collapsed="[[_showSpace]]">
       <span class="subtitle"><img src$="[[selectedPull.user.avatar_url]]" width="24px" height="24px" alt$="[[selectedPull.user.login]]"/>[[selectedPull.user.login]]</span>
@@ -205,18 +200,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _fetchAjax: function(pullRequest) {
         if (pullRequest) {
           this.$.ajaxDiff.generateRequest();
-          this.$.ajaxSelf.generateRequest();
         }
-      },
-      _mergeSinglePRWithSelectedPull: function(e) {
-        var f;
-        var actualPr = e.detail.response;
-        for (f in actualPr) {
-          if (!this.selectedPull[f]) {
-            this.set('selectedPull.' + f, actualPr[f]);
-          }
-        }
-        this.fire('pull-request-upgraded');
       }
     });
   </script>

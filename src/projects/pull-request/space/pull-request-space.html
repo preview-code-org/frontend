@@ -111,9 +111,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _createBlocks: function(groups) {
         this._blocks = [];
         var container = this.$.container;
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
+        container.innerHTML = '';
         for (var i=0, l=groups.length; i<l; i++) {
           var elem = document.createElement('pull-request-space-card');
           elem.group = groups[i];
