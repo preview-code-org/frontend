@@ -78,37 +78,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       server.restore();
     });
 
-    suite('testSuite', function() {
+    test('no comments in array, when flushed', function() {
+      elem.generalComments = ['test'];
+      elem.groupComments = ['test'];
+      elem._flushComments();
+      assert.deepEqual(elem.generalComments, []);
+      assert.deepEqual(elem.groupComments, []);
+    });
 
-      test('no comments in array, when flushed', function() {
-        elem.generalComments = ['test'];
-        elem.groupComments = ['test'];
-        elem._flushComments();
-        assert.deepEqual(elem.generalComments, []);
-        assert.deepEqual(elem.groupComments, []);
-      });
-
-      test('comments correctly distributed when function is called', function(done) {
-        elem.project = {
-          owner: 'owner',
-          name: 'name'
-        };
-        elem.number = 15;
-        elem.fbComments = {
-          226514321: '6be9ab4f-7e1c-4b96-861d-80f766368371',
-          226514478: '6be9ab4f-7e1c-4b96-861d-80f766368371'
-        };
-        elem.$.githubComments.generateRequest();
-        function checkComments() {
-          elem.removeEventListener('added-comments', checkComments);
-          assert.deepEqual(elem.generalComments, [{body: 'two', id: 226514322}]);
-          assert.deepEqual(elem.groupComments[0].comment, {body: 'one', id: 226514321});
-          assert.deepEqual(elem.groupComments[1].comment, {body: 'three', id: 226514478});
-          done();
-        }
-        elem.addEventListener('added-comments', checkComments);
-        server.respond();
-      });
+    test('comments correctly distributed when function is called', function(done) {
+      elem.project = {
+        owner: 'owner',
+        name: 'name'
+      };
+      elem.fbComments = {
+        226514321: '6be9ab4f-7e1c-4b96-861d-80f766368371',
+        226514478: '6be9ab4f-7e1c-4b96-861d-80f766368371'
+      };
+      elem.pullRequest = {
+        number: 15
+      };
+      elem.$.githubComments.generateRequest();
+      function checkComments() {
+        elem.removeEventListener('added-comments', checkComments);
+        assert.deepEqual(elem.generalComments, [{body: 'two', id: 226514322}]);
+        assert.deepEqual(elem.groupComments[0].comment, {body: 'one', id: 226514321});
+        assert.deepEqual(elem.groupComments[1].comment, {body: 'three', id: 226514478});
+        done();
+      }
+      elem.addEventListener('added-comments', checkComments);
+      server.respond();
     });
   });
 </script>
