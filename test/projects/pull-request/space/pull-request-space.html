@@ -107,7 +107,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       function getImageData() {
         var ctx = elem.$.canvas.getContext('2d');
         var leftCardRect = cards[1].getBoundingClientRect();
-        return imageData = ctx.getImageData(leftCardRect.left + leftCardRect.width, leftCardRect.top, 250, leftCardRect.height).data;
+        return ctx.getImageData(leftCardRect.left + leftCardRect.width, leftCardRect.top, 250, leftCardRect.height).data;
       }
 
       test('draws arrows', function(done) {

@@ -54,32 +54,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       elem = fixture('basic');
     });
 
-    function getReviewers() {
-      return Polymer.dom(elem.root).querySelectorAll('.reviewer');
-    }
-
-    test('shows reviewers, when reviewers are set', function(){
+    test('shows reviewers, when reviewers are set', function() {
       elem.pullRequest = {
         assignees: [{
           login: 'tnsmith',
           id: 2,
-          avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'},{
+          avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'}, {
           login: 'eanker',
           id: 3,
           avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'}]};
       var result = [{
           approved: undefined,
           avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3',
-          login:'tnsmith' },{
+          login: 'tnsmith'}, {
           approved: undefined,
           avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3',
-          login:'eanker'}]
+          login: 'eanker'}]
       assert.deepEqual(elem.sortedReviewers, result);
     });
 
-    test('shows reviewers, when a lgtm is set', function(){
+    test('shows reviewers, when a lgtm is set', function() {
       elem.approvals = {3: true};
-      elem.pullRequest = {assignees:[{
+      elem.pullRequest = {assignees: [{
                           login: 'eanker',
                           id: 3,
                           avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'}, {
@@ -89,15 +85,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       var result = [{
         approved: true,
         avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3',
-        login:'eanker'},{
+        login: 'eanker'}, {
         approved: undefined,
         avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3',
-        login:'tnsmith' }]
+        login: 'tnsmith'}]
       assert.deepEqual(elem.sortedReviewers, result);
     });
 
-    test('correct github path is set, when project and pull request are set', function(){
-      elem.project = {owner: 'owner', name:'name'};
+    test('correct github path is set, when project and pull request are set', function() {
+      elem.project = {owner: 'owner', name: 'name'};
       elem.pullRequest = {number: 42};
       assert.equal(elem.githubPathPost, 'https://api.github.com/repos/owner/name/issues/42/assignees');
     });
@@ -114,7 +110,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                           assignees: [{
                           login: 'eanker',
                           id: 3,
-                          avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'},{
+                          avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'}, {
                           login: 'tnsmith',
                           id: 2,
                           avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'}]};
@@ -124,16 +120,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
     });
 
-    test('assignees array correctly refreshed, after removing', function(done){
+    test('assignees array correctly refreshed, after removing', function(done) {
       elem.pullRequest = {owner: 'owner', name: 'name'};
       elem.$.removeAssignees.generateRequest();
-      e = set();
+      var e = set();
       elem._removeAssigneesList(e);
       assert.deepEqual(elem.pullRequest.assignees, ['eanker']);
       done();
     })
 
-    var set = function(){
+    var set = function() {
       var e = {test: 'x'};
       e.detail = {test: 'x'};
       e.detail.response = {test: 'x'};

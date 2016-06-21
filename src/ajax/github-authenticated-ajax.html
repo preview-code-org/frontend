@@ -112,7 +112,7 @@ of params with oAuth tokens.
         };
       },
       _updateIfNoneMatch: function(refurl, page) {
-        var etag = shared.headerCache[refurl + 'page' + this.page];
+        var etag = shared.headerCache[refurl + 'page' + page];
         if (etag) {
           this._setHeader('If-None-Match', etag);
         }

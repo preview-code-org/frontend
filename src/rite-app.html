@@ -135,9 +135,6 @@ Prism.languages.diff.other = /.+/m;
             <paper-tab data-route="projects">
               <a href$="[[route.prefix]]/projects">My projects</a>
             </paper-tab>
-            <paper-tab data-route="pull-requests">
-              <a href$="[[route.prefix]]/pull-requests">My pull requests</a>
-            </paper-tab>
           </paper-tabs>
         </template>
       </div>
@@ -155,10 +152,6 @@ Prism.languages.diff.other = /.+/m;
         <template is="iron-lazy-page" data-route="projects"
                   path="projects/projects-page.html">
           <projects-page route="{{tail}}" github-user="[[githubUser]]"></projects-page>
-        </template>
-        <template is="iron-lazy-page" data-route="pull-requests"
-                  path="my-pull-requests-page.html">
-          <my-pull-requests-page></my-pull-requests-page>
         </template>
         <template is="iron-lazy-page" data-route="404">
           Oops you hit a 404!
