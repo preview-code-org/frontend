@@ -90,10 +90,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.githubComments.generateRequest();
       },
       _computeCommentsFbPath: function(pullRequest) {
-        return '/' + this.project.owner + '/' + this.project.name + '/pulls/' + pullRequest.number + '/groupcomments';
+        return '/' + pullRequest.base.repo.owner.login + '/' + pullRequest.base.repo.name + '/pulls/' + pullRequest.number + '/groupcomments';
       },
       _computeCommentsGhPath: function(pullRequest) {
-        return 'https://api.github.com/repos/' + this.project.owner + '/' + this.project.name + '/issues/' + pullRequest.number + '/comments';
+        return 'https://api.github.com/repos/' + pullRequest.base.repo.owner.login + '/' + pullRequest.base.repo.name + '/issues/' + pullRequest.number + '/comments';
       },
       _divideComments: function(e) {
         if (e.detail.response) {
