@@ -154,7 +154,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         '_updateReviewers(pullRequest.approvals)'
       ],
       _updateReviewers: function() {
-        var approvals = this.pullRequest.approvals || [];
+        var approvals = this.pullRequest.approvals || {};
         this.sortedReviewers = this.pullRequest.assignees.map(function(assignee) {
           return {
             login: assignee.login,

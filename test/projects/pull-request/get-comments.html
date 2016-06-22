@@ -87,16 +87,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     });
 
     test('comments correctly distributed when function is called', function(done) {
-      elem.project = {
-        owner: 'owner',
-        name: 'name'
-      };
       elem.fbComments = {
         226514321: '6be9ab4f-7e1c-4b96-861d-80f766368371',
         226514478: '6be9ab4f-7e1c-4b96-861d-80f766368371'
       };
       elem.pullRequest = {
-        number: 15
+        number: 15,
+        base: {
+          repo: {
+            name: 'name',
+            owner: {
+              login: 'login'
+            }
+          }
+        }
       };
       elem.$.githubComments.generateRequest();
       function checkComments() {

@@ -62,13 +62,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           label: 'txsmith:pull-branch'
         },
         base: {
-          label: 'preview-app:master'
+          label: 'preview-app:master',
+          repo: {
+            name: 'name',
+            owner: {
+              login: 'login'
+            }
+          }
         },
         created_at: '2016-05-25T00:31:28Z',
-        assignee: {
+        assignees: [{
           html_url: 'https://example.com/',
           login: 'reviewer'
-        }
+        }]
       };
 
       var elem;
