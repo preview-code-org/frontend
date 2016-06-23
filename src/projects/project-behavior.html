@@ -51,7 +51,17 @@ var ProjectBehavior = (function() {
     setProject: function(project) {
       _project = project;
       for (var i=0, l=instances.length;i<l;i++) {
-        instances[i].project = project;
+        if (instances[i]) {
+          instances[i].project = project;
+        } else {
+          instances.splice(i, 1);
+        }
+      }
+    },
+    setProjectField: function(field, value) {
+      _project[field] = value;
+      for (var i=0, l=instances.length;i<l;i++) {
+        instances[i].set('project.' + field, value);
       }
     }
   };

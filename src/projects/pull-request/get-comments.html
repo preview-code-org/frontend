@@ -59,15 +59,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'get-comments',
       behaviors: [ProjectBehavior],
       properties: {
+        pullRequest: Object,
         commentsFbPath: {
           type: String,
-          computed: '_computeCommentsFbPath(project, number)'
+          computed: '_computeCommentsFbPath(pullRequest)'
         },
         commentsGhPath: {
           type: String,
-          computed: '_computeCommentsGhPath(project, number)'
+          computed: '_computeCommentsGhPath(pullRequest)'
         },
-        number: String,
         generalComments: {
           notify: true,
           type: Array,
@@ -84,17 +84,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       observers: [
-        '_fireAjax(project, number, fbComments)'
+        '_fireAjax(pullRequest, fbComments)'
       ],
-      _fireAjax: function(project, number, fbComments) {
+      _fireAjax: function() {
         this.$.githubComments.generateRequest();
       },
-      _computeCommentsFbPath: function(project, number) {
-        return '/' + project.owner + '/' + project.name + '/pulls/' + number + '/groupcomments';
-
+      _computeCommentsFbPath: function(pullRequest) {
+        return '/' + pullRequest.base.repo.owner.login + '/' + pullRequest.base.repo.name + '/pulls/' + pullRequest.number + '/groupcomments';
       },
-      _computeCommentsGhPath: function(project, number) {
-        return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + number + '/comments';
+      _computeCommentsGhPath: function(pullRequest) {
+        return 'https://api.github.com/repos/' + pullRequest.base.repo.owner.login + '/' + pullRequest.base.repo.name + '/issues/' + pullRequest.number + '/comments';
       },
       _divideComments: function(e) {
         if (e.detail.response) {

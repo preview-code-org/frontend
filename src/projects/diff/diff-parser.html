@@ -35,30 +35,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       diff: String,
       baseUrl: String,
       sha: String,
-      additions: {
-        type: Number,
-        value: 0,
-        notify: true
-      },
-      deletions: {
-        type: Number,
-        value: 0,
-        notify: true
-      },
       hunks: {
         type: Array,
         computed: '_parseDiffToHunks(diff)',
         notify: true
-      }
-    },
-    incrementLineModificationCounter: function(lines) {
-      var deletions = lines.match(/\n\-/g);
-      if (deletions) {
-        this.deletions += deletions.length;
-      }
-      var additions = lines.match(/\n\+/g);
-      if (additions) {
-        this.additions += additions.length;
       }
     },
     _parseDiffToHunks: (function() {
@@ -121,8 +101,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var file, group;
         while ((file = DIFF_REGEX.exec(diff)) !== null) {
           while ((group = GROUP_REGEX.exec(file[3])) !== null) {
-            this.incrementLineModificationCounter(group[6]);
-
             var fileHeader = getFileHeader(file, file[1].substring(2), file[2].substring(2));
 
             var fileNameUrl = fileHeader.moved ? 'from'+fileHeader.from+'to'+fileHeader.name : fileHeader.name

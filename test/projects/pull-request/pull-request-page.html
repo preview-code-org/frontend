@@ -62,23 +62,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           label: 'txsmith:pull-branch'
         },
         base: {
-          label: 'preview-app:master'
+          label: 'preview-app:master',
+          repo: {
+            name: 'name',
+            owner: {
+              login: 'login'
+            }
+          }
         },
         created_at: '2016-05-25T00:31:28Z',
-        assignee: {
+        assignees: [{
           html_url: 'https://example.com/',
           login: 'reviewer'
-        }
+        }]
       };
 
       var elem;
 
       setup(function() {
         elem = fixture('basic');
+        ProjectBehavior.setProject({'owner': 'Test', 'name': 'test'});
       });
 
       test('triggers ajax for diff when PR changes', function(done) {
-        elem.project = {'owner': 'Test', 'name': 'test'}
         stub('github-authenticated-ajax', {
           generateRequest: function() {
             if (this.id === 'ajaxDiff') {
@@ -116,42 +122,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           done();
         });
         elem.set('page.page', 'space');
-      });
-
-      test('merges selected pull with new data', function(done) {
-        elem.$.ajaxSelf.shared = {
-          accessToken: 'token'
-        };
-        var responseHeaders = {
-          json: {
-            'Content-Type': 'application/json',
-            'ETag': 'susdiwp36ljsdl'
-          }
-        };
-        var server = sinon.fakeServer.create();
-        server.respondWith(
-           'GET',
-           /selected-pull.json.*/, [
-             200,
-             responseHeaders.json,
-             '{"field": "value", "original": "new"}'
-           ]);
-        var pullRequest = {
-          _links: {
-            self: {
-              href: 'selected-pull.json'
-            }
-          },
-          original: 'original'
-        };
-
-        elem.addEventListener('pull-request-upgraded', function() {
-          assert.equal(elem.selectedPull.field, 'value');
-          assert.equal(elem.selectedPull.original, 'original');
-          done();
-        });
-        elem.selectedPull = pullRequest;
-        server.respond();
       });
 
       var get = function(selector) {

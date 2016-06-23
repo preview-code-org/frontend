@@ -118,8 +118,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
       </div>
     </template>
-    <set-reviewers hidden$="[[!editable]]" pull-request="{{pullRequest}}"></set-reviewers>
-
   </template>
   <script>
   /*global ProjectBehavior*/
@@ -137,7 +135,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         sortedReviewers: {
           type: Array,
-          computed: '_sortReviewers(pullRequest, approvals)'
+          value: function() {
+            return [];
+          }
         },
         pullRequest: {
           type: Object,
@@ -147,37 +147,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: String,
           computed: '_githubPathPost(project, pullRequest)'
         },
-        approvals: {
-          type: Object,
-          value: function() {
-            return {};
-          }
-        }
       },
-      listeners: {
-        'resort': '_resort'
-      },
-      _sortReviewers: function(pullRequest, approvals) {
-        if (pullRequest.assignees) {
-          return pullRequest.assignees.map(function(assignee) {
-            return {
-              login: assignee.login,
-              approved: approvals[assignee.id],
-              avatar_url: assignee.avatar_url
-            };
-          });
-        }
+      observers: [
+        '_updateReviewers(pullRequest)',
+        '_updateReviewers(pullRequest.assignees)',
+        '_updateReviewers(pullRequest.approvals)'
+      ],
+      _updateReviewers: function() {
+        var approvals = this.pullRequest.approvals || {};
+        this.sortedReviewers = this.pullRequest.assignees.map(function(assignee) {
+          return {
+            login: assignee.login,
+            approved: approvals[assignee.id],
+            avatar_url: assignee.avatar_url
+          };
+        });
       },
       _githubPathPost: function(project, pullRequest) {
         if (project !== undefined && pullRequest !== undefined) {
           return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullRequest.number + '/assignees';
         }
-      },
-
-      _resort: function() {
-        var a = this.approvals;
-        this.set('approvals', []);
-        this.set('approvals', a);
       },
       _removeAssignee: function(e) {
         this.$.removeAssignees.body = {
@@ -186,8 +175,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.removeAssignees.generateRequest();
       },
       _removeAssigneesList: function(e) {
-        this.pullRequest.assignees = e.detail.response.assignees;
-        this._resort();
+        this.set('pullRequest.assignees', e.detail.response.assignees);
       }
     });
   </script>
