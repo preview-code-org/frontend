@@ -10,7 +10,7 @@ addons:
     packages:
     - google-chrome-stable
 before_script:
-- npm install -g bower web-component-tester web-component-tester-istanbul
+- npm install -g bower web-component-tester@v4.2.2 web-component-tester-istanbul
 - bower install
 script: xvfb-run wct
 cache:
