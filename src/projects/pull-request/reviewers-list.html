@@ -97,18 +97,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          left: -10px;
          width: calc(100% + 20px);
        }
-
     </style>
 
-    <github-authenticated-ajax
-      id="removeAssignees"
-      method="DELETE"
-      refurl="[[githubPathPost]]"
-      headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
-      on-response="_removeAssigneesList"
-      ></github-authenticated-ajax>
-
-    <template is="dom-repeat" items="[[sortedReviewers]]" as="reviewer">
+    <template is="dom-repeat" items="[[reviewers]]" as="reviewer">
       <div class="reviewer" title$="[[reviewer.login]]">
         <div class="image" style$="background-image: url([[reviewer.avatar_url]]); ">
           <div class="icons">
@@ -123,7 +114,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   /*global ProjectBehavior*/
     Polymer({
       is: 'reviewers-list',
-      behaviors: [ProjectBehavior],
       properties: {
         small: {
           type: Boolean,
@@ -133,49 +123,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: Boolean,
           value: false
         },
-        sortedReviewers: {
+        reviewers: {
           type: Array,
           value: function() {
             return [];
           }
-        },
-        pullRequest: {
-          type: Object,
-          notify: true
-        },
-        githubPathPost: {
-          type: String,
-          computed: '_githubPathPost(project, pullRequest)'
-        },
-      },
-      observers: [
-        '_updateReviewers(pullRequest)',
-        '_updateReviewers(pullRequest.assignees)',
-        '_updateReviewers(pullRequest.approvals)'
-      ],
-      _updateReviewers: function() {
-        var approvals = this.pullRequest.approvals || {};
-        this.sortedReviewers = this.pullRequest.assignees.map(function(assignee) {
-          return {
-            login: assignee.login,
-            approved: approvals[assignee.id],
-            avatar_url: assignee.avatar_url
-          };
-        });
-      },
-      _githubPathPost: function(project, pullRequest) {
-        if (project !== undefined && pullRequest !== undefined) {
-          return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullRequest.number + '/assignees';
         }
-      },
-      _removeAssignee: function(e) {
-        this.$.removeAssignees.body = {
-          assignees: [e.model.reviewer.login]
-        }
-        this.$.removeAssignees.generateRequest();
-      },
-      _removeAssigneesList: function(e) {
-        this.set('pullRequest.assignees', e.detail.response.assignees);
       }
     });
   </script>

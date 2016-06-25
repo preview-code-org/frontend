@@ -174,7 +174,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </a></span>
         <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
           hidden$="[[!_canUserApprove]]" toggles active="{{_approved}}"></paper-icon-button>
-        <reviewers-list small pull-request="[[pullRequest]]" approvals="[[_approvals]]"></reviewers-list>
+        <reviewers-list small reviewers="[[reviewers]]"></reviewers-list>
       </div>
       <div class="content">
         <div class="lines">
@@ -219,7 +219,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         _firebaseApprovalPath: {
           type: String,
-          computed: '_getFirebaseApprovalPath(project, pullRequest)'
+          computed: '_getFirebaseApprovalPath(project, pullRequest, hunk)'
+        },
+        reviewers: {
+          type: Array,
+          computed: '_getReviewers(pullRequest.assignees, _approvals)'
         }
       },
       observers: [
@@ -274,12 +278,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/approve';
         }
       },
-      _getFirebaseApprovalPath: function(project, pullRequest) {
-        if (project && pullRequest) {
-          return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/hunkApprovals';
+      _getFirebaseApprovalPath: function(project, pullRequest, hunk) {
+        if (project && pullRequest && hunk) {
+          return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/hunkApprovals/' + hunk.id;
         }
       },
-
+      _getReviewers: function(assignees, approvals) {
+        return assignees.map(function(assignee) {
+          return {
+            login: assignee.login,
+            approved: approvals[assignee.id],
+            avatar_url: assignee.avatar_url
+          }
+        });
+      },
       _getCanUserApprove: function(githubUser, isApprovable) {
         if (!this.pullRequest) {
           return false;
@@ -300,10 +312,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       },
       _onFirebaseApprovalsChange: function(e) {
-        if (this.hunk && e.detail.value[this.hunk.id]) {
-          this._approvals = e.detail.value[this.hunk.id];
-          this._approved = !!this._approvals[this.githubUser.id];
-        }
+        this._approvals = e.detail.value;
+        this._approved = this.githubUser && !!this._approvals[this.githubUser.id];
       },
 
       flash: function() {

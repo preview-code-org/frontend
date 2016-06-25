@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <link rel="import" href="pull-request-comment.html">
 <link rel="import" href="pull-request-add-comments.html">
-<link rel="import" href="reviewers-list.html">
+<link rel="import" href="pull-request-reviewers.html">
 <link rel="import" href="pr-status.html">
 
 <dom-module id="pull-request-general-information">
@@ -137,8 +137,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
         <div class="sidebar">
           <pr-status pull-request="[[pullRequest]]"></pr-status>
-          <reviewers-list editable pull-request="{{pullRequest}}"></reviewers-list>
-          <set-reviewers hidden$="[[!editable]]" pull-request="{{pullRequest}}"></set-reviewers>
+          <pull-request-reviewers editable="[[editable]]" pull-request="[[pullRequest]]"></pull-request-reviewers>
           <tags-list>
             <template is="dom-repeat" items="[[issue.labels]]">
               <tag-list-item backgroundcolor="[[item.color]]">[[item.name]]</tag-list-item>
@@ -170,8 +169,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pullRequest: {
           type: Object,
           notify: true
-        },
-        project: Object
+        }
       },
       observers: [
         '_fireAjax(pullRequest)',
