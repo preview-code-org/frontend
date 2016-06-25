@@ -28,14 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <dom-module id="dom-repeat-once">
   <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-
     <content></content>
-
   </template>
   <script>
     Polymer({
@@ -60,14 +53,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var n = this.items.length;
         var domApi = Polymer.dom(this);
         var items = this.items;
+        var _this = this;
         function appendChildren() {
-          for (var i=0;i<4 && stamped + i < n;i++,stamped++) {
-            domApi.appendChild(getItemElem(items[i]));
+          // A reset was called while we were stamping
+          if (items != _this.items) {
+            return;
           }
+          var i = 0;
+          for (;i<4 && stamped + i < n;i++) {
+            domApi.appendChild(getItemElem(items[stamped + i]));
+          }
+          stamped += i;
           if (stamped < n) {
             requestAnimationFrame(appendChildren);
+          } else {
+            // Trigger :empty selector in parents
+            _this.style.display = 'block';
           }
-        }
+        };
         requestAnimationFrame(appendChildren);
       }
     });
