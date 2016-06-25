@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       on-response="_updateAssigneesList"
       ></github-authenticated-ajax>
 
-    <reviewers-list editable reviewers="[[reviewers]]"></reviewers-list>
+    <reviewers-list id="list" editable reviewers="[[reviewers]]" on-remove-assignee="_removeAssignee"></reviewers-list>
     <set-reviewers hidden$="[[!editable]]" on-reviewer-changed="_postReviewer"></set-reviewers>
   </template>
   <script>
@@ -70,7 +70,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _removeAssignee: function(e) {
         this.$.removeAssignees.body = {
-          assignees: [e.model.reviewer.login]
+          assignees: [e.detail.login]
         }
         this.$.removeAssignees.generateRequest();
       },

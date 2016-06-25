@@ -169,9 +169,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <collapsible-content collapse="{{collapsed}}">
       <div class="header">
-        <span><a href$="[[hunk.fileUrl]]" target="_blank">
-          <hunk-file title="View file on GitHub" hunk="[[hunk]]"><iron-icon icon="reply"></iron-icon></hunk-file>
-        </a></span>
+        <span>
+          <a href$="[[hunk.fileUrl]]" target="_blank">
+            <hunk-file title="View file on GitHub" hunk="[[hunk]]">
+              <iron-icon icon="reply"></iron-icon>
+            </hunk-file>
+          </a>
+        </span>
         <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
           hidden$="[[!_canUserApprove]]" toggles active="{{_approved}}"></paper-icon-button>
         <reviewers-list small reviewers="[[reviewers]]"></reviewers-list>
@@ -204,7 +208,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         _canUserApprove: {
           type: Boolean,
-          computed: '_getCanUserApprove(githubUser, approvable)'
+          computed: '_getCanUserApprove(pullRequest.assignees, githubUser, approvable)'
         },
         _approved: {
           type: Boolean,
@@ -292,11 +296,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         });
       },
-      _getCanUserApprove: function(githubUser, isApprovable) {
-        if (!this.pullRequest) {
-          return false;
-        }
-        var isAssignee = this.pullRequest.assignees.filter(function(assignee) {
+      _getCanUserApprove: function(assignees, githubUser, isApprovable) {
+        var isAssignee = assignees.filter(function(assignee) {
           return assignee.login === githubUser.login;
         }).length > 0;
         return isAssignee && isApprovable;
