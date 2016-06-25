@@ -141,14 +141,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         description: String,
         contributors: Array,
         branches: Array,
-        baseBranch: {
-          type: String,
-          value: 'master'
-        },
-        headBranch: {
-          type: String,
-          value: '<select branch>'
-        },
+        baseBranch: String,
+        headBranch: String,
         branchNames: {
           type: Array,
           computed: '_branchNames(branches)'
@@ -160,10 +154,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       observers: [
         '_fetchBranchesAndCollaborators(project)',
-        '_fetchDiff(baseBranch, headBranch)'
+        '_fetchDiff(baseBranch, headBranch)',
+        '_reset(project)'
       ],
       listeners: {
         'create-pr': '_createPullRequest'
+      },
+      _reset: function() {
+        this.baseBranch = 'master';
+        this.headBranch = '<select branch>';
+        this.$.diffView.hide();
+        this.$.description.hide();
       },
       _fetchBranchesAndCollaborators: function() {
         this.$.ajaxBranches.generateRequest();
