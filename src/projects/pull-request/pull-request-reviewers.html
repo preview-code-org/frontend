@@ -1,0 +1,101 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../ajax/github-authenticated-ajax.html">
+<link rel="import" href="reviewers-list.html">
+<link rel="import" href="set-reviewers.html">
+
+<dom-module id="pull-request-reviewers">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <github-authenticated-ajax
+      id="removeAssignees"
+      method="DELETE"
+      refurl="[[pullRequest._links.issue.href]]/assignees"
+      headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
+      on-response="_updateAssigneesList"
+      ></github-authenticated-ajax>
+
+    <github-authenticated-ajax
+      id="postAssignees"
+      method="POST"
+      refurl="[[pullRequest._links.issue.href]]/assignees"
+      headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
+      on-response="_updateAssigneesList"
+      ></github-authenticated-ajax>
+
+    <reviewers-list id="list" editable reviewers="[[reviewers]]" on-remove-assignee="_removeAssignee"></reviewers-list>
+    <set-reviewers hidden$="[[!editable]]" on-reviewer-changed="_postReviewer"></set-reviewers>
+  </template>
+  <script>
+    Polymer({
+      is: 'pull-request-reviewers',
+      behaviors: [ProjectBehavior],
+      properties: {
+        pullRequest: Object,
+        editable: Boolean,
+        reviewers: {
+          type: Array,
+          computed: '_getReviewers(pullRequest.assignees)'
+        }
+      },
+      _removeAssignee: function(e) {
+        this.$.removeAssignees.body = {
+          assignees: [e.detail.login]
+        }
+        this.$.removeAssignees.generateRequest();
+      },
+      _postReviewer: function(e) {
+        var reviewer = e.detail.value;
+        if (reviewer && this.pullRequest.assignees.indexOf(reviewer) === -1) {
+          this.$.postAssignees.body = {
+            assignees: [reviewer]
+          }
+          this.$.postAssignees.generateRequest();
+        }
+      },
+      _getReviewers: function(assignees) {
+        return assignees.map(function(assignee) {
+          return {
+            login: assignee.login,
+            // TODO(Tim): Extract LGTM from backend
+            approved: false,
+            avatar_url: assignee.avatar_url
+          };
+        });
+      },
+      _updateAssigneesList: function(e) {
+        this.set('pullRequest.assignees', e.detail.response.assignees);
+      }
+    });
+  </script>
+</dom-module>

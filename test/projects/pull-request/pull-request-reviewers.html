@@ -30,24 +30,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <html>
 <head>
   <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
-  <title>reviewers-list tests</title>
+  <title>pull-request-reviewers tests</title>
   <script src='../../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
   <script src='../../../src/bower_components/web-component-tester/browser.js'></script>
   <script src='../../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
 
   <!-- Import the element to test -->
-  <link rel='import' href='../../../src/projects/pull-request/reviewers-list.html'>
+  <link rel='import' href='../../../src/projects/pull-request/pull-request-reviewers.html'>
 
 </head>
 <body>
   <test-fixture id="basic">
     <template>
-      <reviewers-list></reviewers-list>
+      <pull-request-reviewers></pull-request-reviewers>
     </template>
   </test-fixture>
 
 <script>
-  suite('<reviewers-list>', function() {
+  suite('<pull-request-reviewers>', function() {
     var elem;
 
     setup(function() {
@@ -71,68 +71,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       };
       var result = [
         {
-          approved: undefined,
+          approved: false,
           avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3',
           login: 'tnsmith'
         },
         {
-          approved: undefined,
+          approved: false,
           avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3',
           login: 'eanker'
         }
       ];
-      assert.deepEqual(elem.sortedReviewers, result);
-    });
-
-    test('shows reviewers, when a lgtm is set', function() {
-      elem.pullRequest = {
-        approvals: {
-          3: true
-        },
-        assignees: [
-          {
-            login: 'eanker',
-            id: 3,
-            avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'
-          },
-          {
-            login: 'tnsmith',
-            id: 2,
-            avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3'
-          }
-        ]
-      };
-      var result = [
-        {
-          approved: true,
-          avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3',
-          login: 'eanker'
-        },
-        {
-          approved: undefined,
-          avatar_url: 'https://avatars.githubusercontent.com/u/5946422?v=3',
-          login: 'tnsmith'
-        }
-      ];
-      assert.deepEqual(elem.sortedReviewers, result);
-    });
-
-    test('correct github path is set, when project and pull request are set', function() {
-      elem.project = {
-        owner: 'owner',
-        name: 'name'
-      };
-      elem.pullRequest = {
-        number: 42,
-        assignees: []
-      };
-      assert.equal(elem.githubPathPost, 'https://api.github.com/repos/owner/name/issues/42/assignees');
+      assert.deepEqual(elem.reviewers, result);
     });
 
     test('triggers ajax when removing assignee', function(done) {
       stub('github-authenticated-ajax', {
         generateRequest: function() {
           if (this.id === 'removeAssignees') {
+            this.fire('response', {
+              response: {
+                assignees: ['eanker']
+              }
+            });
+            assert.deepEqual(elem.pullRequest.assignees, ['eanker']);
             done();
           }
         }
@@ -152,29 +113,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         ]
       };
       flush(function() {
-        var button = Polymer.dom(elem.root).querySelector('paper-icon-button');
+        var button = Polymer.dom(elem.$.list.root).querySelector('paper-icon-button');
         MockInteractions.tap(button);
       });
     });
-
-    test('assignees array correctly refreshed, after removing', function(done) {
-      elem.pullRequest = {
-        assignees: []
-      };
-      elem.$.removeAssignees.generateRequest();
-      var e = set();
-      elem._removeAssigneesList(e);
-      assert.deepEqual(elem.pullRequest.assignees, ['eanker']);
-      done();
-    })
-
-    var set = function() {
-      var e = {test: 'x'};
-      e.detail = {test: 'x'};
-      e.detail.response = {test: 'x'};
-      e.detail.response.assignees = ['eanker'];
-      return e;
-    }
   });
 </script>
 

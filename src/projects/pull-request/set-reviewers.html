@@ -26,11 +26,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../project-behavior.html">
 
 <dom-module id="set-reviewers">
@@ -40,18 +38,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display: block;
       },
     </style>
-
-    <github-authenticated-ajax
-      id="postAssignees"
-      method="POST"
-      refurl="[[githubPathPost]]"
-      headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
-      on-response="_setNewAssingees"
-      ></github-authenticated-ajax>
-
     <paper-dropdown-menu label="Add reviewer" value="{{reviewer}}">
       <paper-menu class="dropdown-content">
-        <template is="dom-repeat" items="[[assignees]]" index-as="index">
+        <template is="dom-repeat" items="[[project.assignees]]" index-as="index">
           <paper-item><img height=45px src="[[item.avatar_url]]" alt="[[item.login]] user image" />[[item.login]]</paper-item>
         </template>
       </paper-menu>
@@ -63,46 +52,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'set-reviewers',
       behaviors: [ProjectBehavior],
       properties: {
-        pullRequest: {
-          type: Object,
-          notify: true
-        },
-        reviewer: String,
-        githubPathPost: {
+        reviewer: {
           type: String,
-          computed: '_githubPathPost(project, pullRequest)'
-        },
-        assignees: {
-          type: Array,
-          value: function() {
-            return [];
-          },
-          computed: '_computeProjectAssignees(project.assignees)'
-        }
-      },
-      observers: [
-        '_postReviewer(reviewer)'
-      ],
-      _computeProjectAssignees: function(assignees) {
-        return assignees || [];
-      },
-
-      _githubPathPost: function(project, pullRequest) {
-        if (project !== undefined && pullRequest !== undefined) {
-          return 'https://api.github.com/repos/' + project.owner + '/' + project.name + '/issues/' + pullRequest.number + '/assignees';
-        }
-      },
-      _postReviewer: function(reviewer) {
-        if (this.githubPathPost !== undefined && reviewer && this.pullRequest.assignees.indexOf(reviewer) === -1) {
-          this.$.postAssignees.body = {
-            assignees: [reviewer]
-          }
-          this.$.postAssignees.generateRequest();
-        }
-      },
-      _setNewAssingees: function(e) {
-        if (e.detail.response !== undefined) {
-          this.set('pullRequest.assignees', e.detail.response.assignees);
+          notify: true
         }
       }
     });

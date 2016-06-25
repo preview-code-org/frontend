@@ -58,6 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           done();
         }
         document.body.appendChild(elem);
+        document.body.removeChild(elem);
       });
 
       suite('general functionality', function() {
@@ -92,9 +93,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             }
           },
           _updatePath: function(newPath) {
-            assert.equal(newPath, 'owner/name/pulls/42/hunkApprovals');
+            assert.equal(newPath, 'owner/name/pulls/42/hunkApprovals/hunkId');
             this.data = {
-              hunkId: ['user2']
+              user2: true
             };
           }
         });
@@ -102,15 +103,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         setup(function() {
           replace('firebase-document').with('mocked-firebase-document');
           elem = fixture('basic');
+          elem.project = {
+            owner: 'owner',
+            name: 'name'
+          };
+          elem.githubUser = {
+            login: 'user2',
+          };
           elem.pullRequest = {
-            assignees: [{login: 'user1'}, {login: 'user2'}],
+            assignees: [
+              {
+                login: 'user1'
+              },
+              {
+                login: 'user2'
+              }
+            ],
             number: 42
           };
-          elem.hunk = {id: 'hunkId', file: {
-            name: 'hunk'
-          }};
+          elem.hunk = {
+            id: 'hunkId',
+            file: {
+              name: 'hunk'
+            }
+          };
           elem.approvable = true;
-          elem.githubUser = {login: 'user2'};
+          elem.collapsed = false;
           button = elem.$$('[icon="icons:thumb-up"]');
         });
 

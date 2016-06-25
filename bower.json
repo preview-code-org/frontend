@@ -32,6 +32,6 @@
     "marked-element": "expose-callback"
   },
   "devDependencies": {
-    "web-component-tester": "^4.2.2"
+    "web-component-tester": "4.2.2"
   }
 }
