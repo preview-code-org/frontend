@@ -27,6 +27,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../util/marked-github-element.html">
 <link rel="import" href="../../util/branch-selector.html">
 <link rel="import" href="../../util/markdown-input.html">
@@ -94,6 +95,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       refurl="[[backendPath]]"
       last-response="{{number}}"
       on-response="_madePulls"
+      on-error="_handlePRCreateError"
       ></backend-ajax>
 
     <div class="inputs">
@@ -129,6 +131,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       description="[[description]]"
       github-user="[[githubUser]]"
       ></project-create-pull-diff>
+
+    <paper-toast id="errorToast" horizontal-align="right" horizontal-offset="20"></paper-toast>
   </template>
   <script>
   /*global ProjectBehavior*/
@@ -187,6 +191,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.description.show();
       },
       _createPullRequest: function() {
+        if (!this.title) {
+          this.$.errorToast.show({text: 'Missing pull request title'});
+          return;
+        }
+        if (!this.description) {
+          this.$.errorToast.show({text: 'Missing pull request description'});
+          return;
+        }
         this.$.createPull.body = {
           title: this.title,
           description: this.description,
@@ -204,6 +216,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           var location = '/projects/' + this.project.owner + '/' + this.project.name + '/pulls/' + this.number.number + '/overview'
           window.location.assign(location);
         }
+      },
+      _handlePRCreateError: function(e) {
+        var response = e.detail.request.parseResponse();
+        this.$.errorToast.show({text: response.message});
       }
     });
   </script>
