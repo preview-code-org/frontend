@@ -52,8 +52,8 @@ var SearchBehavior = {
   observers: ['_setSearch(getFields)'],
   _setSearch: function(getFields) {
     this.search = function(list, searchWord) {
-      if (searchWord === '') {
-        return list;
+      if (!searchWord) {
+        return list || [];
       }
       searchWord = searchWord.toLowerCase();
       return list.filter(function(data) {
