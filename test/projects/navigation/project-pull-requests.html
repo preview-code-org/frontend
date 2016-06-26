@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     var elem;
     var pr1 = {
       title: 'First PR',
-      status: 'Under review',
+      status: 'No reviewer assigned',
       user: {
         login: 'User1'
       },
@@ -59,7 +59,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     };
     var pr2 = {
       title: 'Second PR',
-      status: 'Waiting for contributor',
+      status: 'Awaiting contributor response',
       user: {
         login: 'User2'
       },
@@ -74,14 +74,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ]
     };
 
+    Polymer({
+      is: 'mocked-firebase-query',
+      properties: {
+        equalTo: {
+          type: String,
+          observer: '_updatePath'
+        },
+        data: {
+          type: Array,
+          value: function() {
+            return []
+          },
+          notify: true
+        }
+      },
+      _updatePath: function(equalTo) {
+        if (equalTo !== 'All') {
+          this.push('data', {
+            $key: '1',
+            status: 'No reviewer assigned'
+          });
+        }
+      }
+    });
+
     setup(function() {
+      replace('firebase-query').with('mocked-firebase-query');
       elem = fixture('basic');
-      elem.pullrequests = [pr1, pr2];
+      elem.pullrequests = [pr2, pr1];
       elem.route = {};
     });
 
     test('set status filters list of projects', function(done) {
-      elem.status = 'Under review';
+      elem.status = 'No reviewer assigned';
       flush(function() {
         var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
         assert.equal(prs.length, 1);
@@ -141,7 +167,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var prs = Polymer.dom(elem.root).querySelectorAll('project-pull-request-list-item');
         MockInteractions.pressEnter(prs[0]);
         Polymer.Base.async(function() {
-          assert.equal(elem.route.path, '/pulls/1/overview');
+          assert.equal(elem.route.path, '/pulls/2/overview');
           done();
         });
       });
