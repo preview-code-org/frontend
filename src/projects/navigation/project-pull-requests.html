@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../../list-items/preview-list.html">
 <link rel="import" href="../pull-request/pull-request-page.html">
@@ -100,6 +101,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         margin-left:75%;
       }
     </style>
+    <firebase-query
+        app-name="preview-code"
+        path="/[[project.owner]]/[[project.name]]/pulls"
+        order-by-child="status"
+        equal-to="[[status]]"
+        data="{{_firebaseStatusData}}"
+        ></firebase-query>
+
     <preview-list id="list" on-end-of-list="_retrieveNewPullRequests">
       <h2>[[project.name]] pull requests <a href$="[[route.prefix]]/createpull"><iron-icon class="add" icon="icons:add-circle-outline"></iron-icon></a></h2>
       <paper-toggle-button class="pr-state-switch" on-tap="_setPRStateFilter" checked>[[prStateFilter]]</paper-toggle-button>
@@ -109,13 +118,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <paper-dropdown-menu label="Pull request status" value="{{status}}">
             <paper-menu class="dropdown-content">
               <paper-item>All</paper-item>
-              <paper-item>Under review</paper-item>
-              <paper-item>Waiting for contributor</paper-item>
+              <paper-item>No reviewer assigned</paper-item>
+              <paper-item>Awaiting reviewer response</paper-item>
+              <paper-item>Awaiting contributor response</paper-item>
             </paper-menu>
           </paper-dropdown-menu>
         </div>
       </div>
-      <template is="dom-repeat" items="[[_filter(pullrequests, status, searchWord)]]" as="pr">
+      <template is="dom-repeat" items="[[_filteredPullRequests]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
                 show-status="[[_equals('All', status)]]" selected="[[_equals(selectedPull.number, pr.number)]]"
@@ -143,6 +153,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: String,
           value: 'open'
         },
+        _firebaseStatusData: {
+          type: Array
+        },
+        _filteredPullRequests: {
+          type: Array,
+          value: function() {
+            return []
+          }
+        },
         getFields: {
           type: Function,
           value: function() {
@@ -160,17 +179,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       observers: [
         '_resetSearch(selectedPull)',
-        '_clearTriggers(pullrequests.*)'
+        '_clearTriggers(pullrequests.*)',
+        '_onFirebaseStatusChange(_firebaseStatusData.splices)',
+        '_setInitialPullRequests(pullrequests)',
+        '_filterOnSearchWord(pullrequests, searchWord)'
       ],
       attached: function() {
         this.$.list.setScrollTarget(this);
       },
       _filter: function(pullrequests, status, searchWord) {
-        if (status !== 'All') {
-          pullrequests = pullrequests.filter(function(e) {
-            return e.status === status;
-          });
-        }
         return this.search(pullrequests, searchWord);
       },
       _equals: function(one, other) {
@@ -199,6 +216,44 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.prStateFilter = 'closed'
         }
         this.fire('PRStateFilter-updated', this.prStateFilter);
+      },
+      _setInitialPullRequests: function(pullrequests) {
+        this._filteredPullRequests = pullrequests;
+      },
+      _filterOnSearchWord: function(pullrequests, searchWord) {
+        var filtered = this.search(pullrequests, searchWord);
+        if (this.status !== 'All') {
+          var status = this.status;
+          filtered = filtered.filter(function(e) {
+            return e._status === status;
+          });
+        }
+        this._filteredPullRequests = filtered;
+      },
+      _onFirebaseStatusChange: function(e) {
+        if (!e) {
+          // Status is All or we did have no status updates, force an update
+          // to potentially reset the list
+          this._filterOnSearchWord(this.pullrequests, this.searchWord);
+          return;
+        }
+        e.indexSplices.forEach(function(s) {
+          var currentPR = this.pullrequests.length - 1;
+          for (var i=s.index,l=s.index + s.addedCount;i<l;i++) {
+            var added = s.object[i];
+            var index = parseInt(added.$key);
+            // Firebase index is ordered from low to high
+            // our list is ordered from high to low
+            while (currentPR > 0 && this.pullrequests[currentPR].number < index) {
+              currentPR--;
+            }
+            var pullrequest = this.pullrequests[currentPR];
+            if (pullrequest.number === index) {
+              pullrequest._status = added.status;
+            }
+          }
+        }, this);
+        this._filterOnSearchWord(this.pullrequests, this.searchWord);
       }
     });
   </script>
