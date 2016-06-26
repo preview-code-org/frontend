@@ -64,10 +64,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           label: 'preview-app:master'
         },
         created_at: '2016-05-25T00:31:28Z',
-        assignee: {
+        assignees: [{
           html_url: 'https://example.com/',
           login: 'reviewer'
-        }
+        }]
       };
       var elem;
 
@@ -85,7 +85,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         });
 
-        elem.pullRequest = {};
+        elem.pullRequest = {
+          assignees: []
+        };
       });
 
       test('has add comments buttom', function() {
@@ -111,7 +113,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
 
       test('has reviewers list element', function() {
-        assert.isOk(get('reviewers-list'));
+        assert.isOk(get('pull-request-reviewers'));
       });
 
       test('has tags list element', function() {
