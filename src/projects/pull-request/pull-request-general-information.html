@@ -136,8 +136,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <pull-request-add-comments comments="{{comments}}" number="[[pullRequest.number]]"></pull-request-add-comments>
         </div>
         <div class="sidebar">
-          <pr-status pull-request="[[pullRequest]]"></pr-status>
-          <pull-request-reviewers editable="[[editable]]" pull-request="[[pullRequest]]"></pull-request-reviewers>
+          <pr-status id="PRStatus" pull-request="[[pullRequest]]" status="{{_prStatus}}"></pr-status>
+          <pull-request-reviewers
+              editable="[[editable]]" pull-request="[[pullRequest]]"
+              on-reviewers-updated="_updateReviewerStatus"></pull-request-reviewers>
           <tags-list>
             <template is="dom-repeat" items="[[issue.labels]]">
               <tag-list-item backgroundcolor="[[item.color]]">[[item.name]]</tag-list-item>
@@ -169,7 +171,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         pullRequest: {
           type: Object,
           notify: true
-        }
+        },
+        _prStatus: String
       },
       observers: [
         '_fireAjax(pullRequest)',
@@ -195,6 +198,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _prHasBeenMerged: function(e) {
         console.log(e);
+      },
+      _updateReviewerStatus: function(e) {
+        if (e.detail.length && this._prStatus === 'No reviewer assigned') {
+          this.$.PRStatus.select('Awaiting reviewer response');
+        }
       }
     });
   </script>
