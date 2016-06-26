@@ -55,10 +55,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ></firebase-document>
 
     <list-item-label type="box" title="status">[[status]]</list-item-label>
-    <paper-dropdown-menu label="Set status" value="{{status}}" on-value-changed="_updateFirebaseStatus">
-      <paper-menu class="dropdown-content">
+    <paper-dropdown-menu label="Set status" on-value-changed="_updateFirebaseStatus">
+      <paper-menu id="statusList" class="dropdown-content" attr-for-selected="data-status">
         <template is="dom-repeat" items="[[statuses]]" index-as="index">
-          <paper-item>[[item]]</paper-item>
+          <paper-item data-status="[[item]]">[[item]]</paper-item>
         </template>
       </paper-menu>
     </paper-dropdown-menu>
@@ -76,7 +76,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         },
         status: {
-          type: String
+          type: String,
+          notify: true
         },
         sendStatus: String,
         pullRequest: Object,
@@ -102,16 +103,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/status';
       },
       _updateFirebaseStatus: function(e) {
-        if (!e.detail.value) {
+        if (!e.detail.value || typeof this.retrievedStatus === 'object'
+            || e.detail.value === this.retrievedStatus || e.detail.value === this.status) {
           return;
         }
+        this.status = e.detail.value;
         this.$.setPrStatus.body = {
           status: this.status
         };
         this.$.setPrStatus.generateRequest();
       },
       _setStatus: function(retrievedStatus) {
-        this.status = (typeof retrievedStatus !== 'object') ? retrievedStatus : 'No reviewer assigned';
+        if (typeof retrievedStatus !== 'object') {
+          this.status = retrievedStatus;
+          this.select(this.status);
+        }
+      },
+      select: function(status) {
+        this.$.statusList.select(status);
       }
     });
   </script>

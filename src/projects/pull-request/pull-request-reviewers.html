@@ -95,6 +95,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _updateAssigneesList: function(e) {
         this.set('pullRequest.assignees', e.detail.response.assignees);
+        this.fire('reviewers-updated', e.detail.response.assignees);
       }
     });
   </script>
