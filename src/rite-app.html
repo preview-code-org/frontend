@@ -105,8 +105,17 @@ Prism.languages.diff.other = /.+/m;
         flex: 1;
         display: flex;
       }
-      paper-spinner {
+      .loading {
         margin: auto;
+        height: 50px;
+        width: 100%;
+        text-align: center;
+      }
+      .loading span {
+        display: block;
+        margin-bottom: 10px;
+      }
+      paper-spinner {
         height: 50px;
         width: 50px;
       }
@@ -139,7 +148,10 @@ Prism.languages.diff.other = /.+/m;
         </template>
       </div>
 
-      <paper-spinner active="[[firebaseLoading]]" hidden$="[[!firebaseLoading]]"></paper-spinner>
+      <div class="loading" hidden$="[[!firebaseLoading]]">
+        <span>Logging in...</span>
+        <paper-spinner active></paper-spinner>
+      </div>
 
       <iron-lazy-pages selected="[[page.page]]"
                   attr-for-selected="data-route"
@@ -176,7 +188,9 @@ Prism.languages.diff.other = /.+/m;
       'go-login-github': '_signInWithGitHub'
     },
     attached: function() {
-      this.$.firebase.signIn(this.page.page !== '');
+      if (this.page.page !== '') {
+        this.$.firebase.signIn(true);
+      }
     },
     _equals: function(one, other) {
       return one === other;

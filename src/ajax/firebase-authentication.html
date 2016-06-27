@@ -83,16 +83,18 @@ of the GitHub oAuth token.
        * with the Firebase session and fires `github-token` again.
        */
       signIn: function(shouldRedirect) {
+        this.loading = true;
         this.$.auth.auth.getRedirectResult().then(function(result) {
-          this.loading = false;
           if (!result.credential) {
             if (this.signedIn && this._tokens.GitHub) {
               this.fire('github-token', this._tokens.GitHub);
+              this.loading = false;
             } else if (shouldRedirect) {
               this._redirectToGitHub();
             }
           } else {
             this._parseSuccesfulResult(result);
+            this.loading = false;
           }
         }.bind(this)).catch(function() {
           this.loading = false;
@@ -103,6 +105,8 @@ of the GitHub oAuth token.
         provider.addScope('user');
         provider.addScope('repo');
         this.$.auth.signInWithRedirect(provider);
+        // This will be called after the redirect has finished
+        this.signIn();
       },
       _parseSuccesfulResult: function(result) {
         var token = result.credential.accessToken;
