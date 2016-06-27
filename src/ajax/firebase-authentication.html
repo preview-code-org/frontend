@@ -105,8 +105,6 @@ of the GitHub oAuth token.
         provider.addScope('user');
         provider.addScope('repo');
         this.$.auth.signInWithRedirect(provider);
-        // This will be called after the redirect has finished
-        this.signIn();
       },
       _parseSuccesfulResult: function(result) {
         var token = result.credential.accessToken;
