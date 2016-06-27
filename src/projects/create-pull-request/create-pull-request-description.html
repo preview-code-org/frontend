@@ -29,6 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../util/markdown-input.html">
 <link rel="import" href="../../util/fade-in-behavior.html">
 
@@ -58,12 +60,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         --paper-input-container-color: var(--secondary-background-color);
         --paper-input-container-focus-color: var(--anchor-color);
       }
+      #metadata {
+        margin-top: 10px;
+      }
     </style>
 
     <paper-input class="title" label="Enter a pull request title" value="{{title}}"></paper-input>
     <markdown-input
       label="Enter a description for your pull request. Markdown is supported."
       markdown="{{description}}"></markdown-input>
+    <paper-checkbox id="metadata" checked="{{metadata}}">Add metadata to description</paper-checkbox>
+    <paper-tooltip for="metadata" offset="5">Metadata will include a direct link to the pull request on preview-code.com</paper-tooltip>
   </template>
   <script>
   /*global FadeInBehavior*/
@@ -76,6 +83,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         description: {
           type: String,
+          notify: true
+        },
+        metadata: {
+          type: Boolean,
+          value: true,
           notify: true
         }
       },
