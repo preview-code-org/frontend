@@ -102,12 +102,10 @@ Element that shows GitHub flavored markdown.
       img {
         max-width: 100%;
       }
-      /* Do not style multi-line code blocks, only single-line */
-      code:not([class]) {
-        background-color: rgba(0,0,0,0.04);
-      }
       pre {
         background-color: #f7f7f7;
+        padding: 16px;
+        overflow: auto;
       }
       a {
         text-decoration: none;
@@ -119,6 +117,9 @@ Element that shows GitHub flavored markdown.
       .markdown-html, p {
         word-wrap: break-word;
         @apply(--commits);
+      }
+      marked-element {
+        width: 100%;
       }
     </style>
     <marked-element markdown="[[markdown]]" callback="[[createMarkdownSubstituter(project)]]">

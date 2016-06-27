@@ -108,6 +108,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           @apply(--green-action-button);
         };
       }
+      section .main {
+        min-width: 0;
+      }
     </style>
 
     <github-authenticated-ajax
@@ -131,7 +134,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
       </header>
       <section>
-        <div>
+        <div class="main">
           <marked-github-element markdown="[[pullRequest.body]]"></marked-github-element>
           <pull-request-add-comments comments="{{comments}}" number="[[pullRequest.number]]"></pull-request-add-comments>
         </div>
