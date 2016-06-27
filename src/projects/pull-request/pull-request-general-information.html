@@ -111,6 +111,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       section .main {
         min-width: 0;
       }
+      .additions {
+        color: var(--pr-addition-color);
+      }
+      .deletions {
+        color: var(--pr-deletion-color);
+      }
     </style>
 
     <github-authenticated-ajax
@@ -132,6 +138,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <span>from</span>
         <branch-tag class="head" branch="[[pullRequest.head.label]]"></branch-tag>
         <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
+        <list-item-label class="additions" type="info" icon="icons:add">[[pullRequest.additions]]</list-item-label>
+        <list-item-label class="deletions" type="info" icon="icons:remove">[[pullRequest.deletions]]</list-item-label>
       </header>
       <section>
         <div class="main">
