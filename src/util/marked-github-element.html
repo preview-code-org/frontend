@@ -56,8 +56,9 @@ var SubstituteRenderedGitHubMarkdownBehavior = (function() {
       var name = project.name;
 
       var replacers = [
+        // Remove direct link in GitHub comment to our application
         {
-          regex: /\<hr\>\n\<p\>This pull request was created on.*\<\/p\>$/m,
+          regex: /\<hr\>\n\<p\>Review this pull request.*\<\/p\>$/m,
           callback: function(match) {
             return '';
           }
