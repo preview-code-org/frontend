@@ -132,6 +132,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       description="[[description]]"
       github-user="[[githubUser]]"
       ></project-create-pull-diff>
+      <paper-spinner active="[[loadingPR]]"></paper-spinner>
 
     <paper-toast id="errorToast" horizontal-align="right" horizontal-offset="20"></paper-toast>
   </template>
@@ -149,6 +150,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         baseBranch: String,
         headBranch: String,
         metadata: Boolean,
+        loadingPR: false,
         branchNames: {
           type: Array,
           computed: '_branchNames(branches)'
@@ -202,6 +204,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.$.errorToast.show({text: 'Missing pull request description'});
           return;
         }
+        this.loadingPR = true;
         this.$.createPull.body = {
           title: this.title,
           description: this.description,
@@ -224,6 +227,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _handlePRCreateError: function(e) {
         var response = e.detail.request.parseResponse();
         this.$.errorToast.show({text: response.message});
+        this.loadingPR = false;
       }
     });
   </script>
