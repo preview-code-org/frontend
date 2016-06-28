@@ -116,6 +116,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         project="[[project]]"
         title="{{title}}"
         description="{{description}}"
+        metadata="{{metadata}}"
         ></project-create-pull-request-description>
     </div>
 
@@ -147,6 +148,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         branches: Array,
         baseBranch: String,
         headBranch: String,
+        metadata: Boolean,
         branchNames: {
           type: Array,
           computed: '_branchNames(branches)'
@@ -205,6 +207,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           description: this.description,
           base: this.baseBranch,
           head: this.headBranch,
+          metadata: this.metadata,
           ordering: this.$.diffView.getOrdering()
         };
         this.$.createPull.generateRequest();
