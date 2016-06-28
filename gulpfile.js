@@ -29,7 +29,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 'use strict';
-
+/*global require*/
 var gulp = require('gulp');
 var load = require('gulp-load-plugins')();
 var browserSync = require('browser-sync');
@@ -40,8 +40,12 @@ var historyApiFallback = require('connect-history-api-fallback');
 var eslint = require('gulp-eslint');
 
 var serve = function(baseDir) {
-  var proxyOptions = url.parse('http://localhost:9000/api/');
-  proxyOptions.route = '/api';
+  var proxyOptions = url.parse('https://localhost:8443/');
+  proxyOptions.route = '/api/v1';
+  // Since we use a self-signed certificate, do not check this certificate
+  // against the list of known CA's.
+  // See: https://nodejs.org/api/https.html#https_https_request_options_callback
+  proxyOptions.rejectUnauthorized = false;
 
   browserSync({
     port: 5200,
