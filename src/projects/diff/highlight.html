@@ -208,6 +208,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         _canUserApprove: {
           type: Boolean,
+          value: false,
           computed: '_getCanUserApprove(pullRequest.assignees, githubUser, approvable)'
         },
         _approved: {
