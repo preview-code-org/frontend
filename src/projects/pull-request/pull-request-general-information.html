@@ -208,10 +208,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         return mergeable ? 'Merge pull request' : 'This branch has conflicts that must be resolved';
       },
       _prHasBeenMerged: function(e) {
-        if(e.detail.response.merged){
-          this.set('pullRequest.state','closed');
+        if (e.detail.response.merged) {
+          this.set('pullRequest.state', 'closed');
         }
-        console.log(e);
       },
       _updateReviewerStatus: function(e) {
         if (e.detail.length && this._prStatus === 'No reviewer assigned') {
