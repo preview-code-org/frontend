@@ -132,8 +132,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       title="[[title]]"
       description="[[description]]"
       github-user="[[githubUser]]"
+      loading="[[loadingPR]]"
       ></project-create-pull-diff>
-      <paper-spinner active="[[loadingPR]]"></paper-spinner>
 
     <paper-toast id="errorToast" horizontal-align="right" horizontal-offset="20"></paper-toast>
   </template>
@@ -226,7 +226,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _handlePRCreateError: function(e) {
         var response = e.detail.request.parseResponse();
-        this.$.errorToast.show({text: response.message});
+        this.$.errorToast.show({text: response ? response.message : 'Could not connect to server.'});
       }
     });
   </script>
