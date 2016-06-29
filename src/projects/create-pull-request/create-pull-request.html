@@ -96,6 +96,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       last-response="{{number}}"
       on-response="_madePulls"
       on-error="_handlePRCreateError"
+      loading="{{loadingPR}}"
       ></backend-ajax>
 
     <div class="inputs">
@@ -131,6 +132,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       title="[[title]]"
       description="[[description]]"
       github-user="[[githubUser]]"
+      loading="[[loadingPR]]"
       ></project-create-pull-diff>
 
     <paper-toast id="errorToast" horizontal-align="right" horizontal-offset="20"></paper-toast>
@@ -149,6 +151,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         baseBranch: String,
         headBranch: String,
         metadata: Boolean,
+        loadingPR: false,
         branchNames: {
           type: Array,
           computed: '_branchNames(branches)'
@@ -223,7 +226,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _handlePRCreateError: function(e) {
         var response = e.detail.request.parseResponse();
-        this.$.errorToast.show({text: response.message});
+        this.$.errorToast.show({text: response ? response.message : 'Could not connect to server.'});
       }
     });
   </script>

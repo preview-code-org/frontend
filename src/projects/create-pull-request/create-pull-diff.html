@@ -41,12 +41,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       paper-button {
         @apply(--green-action-button);
       }
+      paper-spinner {
+        display: block;
+        margin: 10px auto;
+      }
     </style>
     <info-header title="Describe your changes">
       <span class="subtitle">You can drag the diff sections to re-order them for reviewers.</span>
     </info-header>
     <pull-request-diff id="changes" editable diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" github-user="[[githubUser]]"></pull-request-diff>
-    <paper-button on-tap="_createPR" raised>Create pull request</paper-button>
+    <paper-spinner active="[[loading]]"></paper-spinner>
+    <paper-button on-tap="_createPR" raised disabled="[[loading]]">Create pull request</paper-button>
   </template>
   <script>
   /*global FadeInBehavior*/
@@ -56,7 +61,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         diff: String,
         baseUrl: String,
         sha: String,
-        githubUser: Object
+        githubUser: Object,
+        loading: {
+          type: Boolean,
+          value: false
+        }
       },
       behaviors: [FadeInBehavior],
       _createPR: function() {
