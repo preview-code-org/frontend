@@ -26,7 +26,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="pull-request-space-card.html">
+<link rel="import" href="snap.html">
+<link rel="import" href="pull-request-space-group.html">
+<link rel="import" href="vector-behavior.html">
+<link rel="import" href="pan-zoom-viewport.html">
 
 <dom-module id="pull-request-space">
   <template>
@@ -37,20 +40,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       [hidden] {
         display: none !important;
       }
-      #container {
-        height: 100%;
-        width: 100%;
-        position: relative;
+      svg {
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
+        background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTgiIGhlaWdodD0iNTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI1OCIgaGVpZ2h0PSI1OCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDE0LjUgTCA1OCAxNC41IE0gMTQuNSAwIEwgMTQuNSA1OCBNIDAgMjkgTCA1OCAyOSBNIDI5IDAgTCAyOSA1OCBNIDAgNDMuNSBMIDU4IDQzLjUgTSA0My41IDAgTCA0My41IDU4IiBmaWxsPSJub25lIiBzdHJva2U9IiNlMGUwZTAiIG9wYWNpdHk9IjAuMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PHBhdGggZD0iTSA1OCAwIEwgMCAwIDAgNTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UwZTBlMCIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+');
+        background-color: white;
       }
-      canvas {
-        position: absolute;
+      line.ghost {
+        stroke: var(--anchor-color);
+        stroke-dasharray: 10,5;
+        stroke-width: 3;
+      }
+      line.link {
+        stroke: var(--secondary-text-color);
+        stroke-width: 3;
       }
     </style>
-      <canvas id="canvas"></canvas>
+    <pan-zoom-viewport id="viewport">
+      <svg id="svg"></svg>
       <div id="container"></div>
+    </pan-zoom-viewport>
   </template>
   <script>
+  /*global VectorBehavior*/
     Polymer({
+      behaviors: [VectorBehavior],
       is: 'pull-request-space',
       properties: {
         groups: {
@@ -62,281 +76,177 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: function() {
             return [];
           }
-        }
-      },
-      get canvas() {
-        return this.$.canvas;
-      },
-      get ctx() {
-        return this.canvas.getContext('2d');
-      },
-      get containerRect() {
-        return this.$.container.getBoundingClientRect();
+        },
+        _arrows: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+        _snap: Object
       },
       listeners: {
-        'card-tracking': '_handleCardTracking',
-        'linked-from-or-to': '_maybeCreateLink'
+        'group-dragging': '_handleGroupDragging',
+        'link': '_handleLinkTracking',
+        'select': '_selectGroup',
+        'unselect': '_unselectGroup'
       },
       attached: function() {
-        this.updateAfterResize();
-        this._updateMousePosition = this._updateMousePosition.bind(this);
-        this.updateAfterResize = this.updateAfterResize.bind(this);
-        this._recalcCanvas = this._recalcCanvas.bind(this);
-        this._maybeCancelLinking = this._maybeCancelLinking.bind(this);
-
-        window.addEventListener('resize', this.updateAfterResize);
-
-        setInterval(this._recalcCanvas, 1000 / 60);
+        this._updateElemTrackingPosition = this._updateElemTrackingPosition.bind(this);
+        this._snap = Snap(this.$.svg);
       },
-      updateAfterResize: (function() {
+
+      _createBlocks: function(groups) {
+        var container = this.$.container;
+        this._blocks = [];
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        while (this._arrows.length) {
+          this._arrows.pop().remove();
+        }
+        for (var i=0, l=groups.length; i<l; i++) {
+          var elem = document.createElement('pull-request-space-group');
+          elem.group = groups[i];
+          Polymer.dom(container).appendChild(elem);
+          this._blocks.push(elem);
+        }
+      },
+
+      _updateElemTrackingPosition: function(elem, originalPosition, delta) {
+        var elemSize = this.$.viewport.unzoom(this.toVector(elem.getBoundingClientRect(), 'width', 'height'));
+        var newPos = this.add(originalPosition, delta);
+        var clippedPos = this.clipBox(
+          newPos,
+          elemSize,
+          this.nullVector,
+          this.constVector(1500));
+
+        elem.moveArrows(delta);
+
+        elem.style.left = clippedPos.x + 'px';
+        elem.style.top  = clippedPos.y + 'px';
+      },
+
+      _handleGroupDragging: (function() {
+        var lastElem, originalPosition, startMousePos;
+
+        return function(e) {
+          var event = e.detail.event;
+          var vp = this.$.viewport;
+          var currentMousePos = vp.clientToCanvasVector(event);
+          if (event.state === 'start') {
+            lastElem = e.detail.elem;
+            var delta = vp.unzoom(this.toVector(event, 'dx', 'dy'));
+            startMousePos = this.subtract(currentMousePos, delta);
+            originalPosition = vp.clientToCanvasVector(this.toVector(lastElem.getBoundingClientRect()));
+            lastElem.style.zIndex = 5;
+            lastElem.saveArrowPositions();
+            this._updateElemTrackingPosition(lastElem, originalPosition, delta);
+          } else if (event.state === 'track') {
+            var delta = this.subtract(currentMousePos, startMousePos);
+            this._updateElemTrackingPosition(lastElem, originalPosition, delta);
+          } else if (event.state === 'end') {
+            var delta = this.subtract(currentMousePos, startMousePos);
+            this._updateElemTrackingPosition(lastElem, originalPosition, delta);
+            lastElem.style.zIndex = 0;
+            lastElem = undefined;
+            originalPosition = undefined;
+          }
+        }
+      })(),
+
+      _createArrow: function(fromPos, toPos, cssClass) {
+        return this._snap.line(fromPos.x, fromPos.y, toPos.x, toPos.y).attr({
+          class: cssClass !== undefined ? cssClass : ''
+        });
+      },
+
+      _handleLinkTracking: (function() {
+        var fromElem, originalPosition, fromPosition, toPosition, ghostArrow;
+
+        return function(e) {
+          var event = e.detail.event;
+          var vp = this.$.viewport;
+          var toPosition;
+          if (this._selectedGroup) {
+            toPosition = vp.clientToCanvasVector(this._selectedGroup.anchorPosition);
+          } else {
+            toPosition = vp.clientToCanvasVector(event);
+          }
+          if (event.state === 'start') {
+            fromElem = e.detail.groupElem;
+            fromPosition = vp.clientToCanvasVector(fromElem.anchorPosition);
+            ghostArrow = this._createArrow(fromPosition, toPosition, 'ghost');
+
+            for (var i = 0, l = this._blocks.length; i < l; i++) {
+              this._blocks[i].addEventListener('mouseenter', this._blocks[i].selectCandidate);
+            }
+          } else if (event.state === 'track') {
+            ghostArrow.attr({
+              x2: toPosition.x,
+              y2: toPosition.y
+            })
+          } else if (event.state === 'end') {
+            if (this._selectedGroup) {
+              this._createLink(fromElem, this._selectedGroup, fromPosition, toPosition);
+            }
+            for (var i = 0, l = this._blocks.length; i < l; i++) {
+              this._blocks[i].removeEventListener('mouseenter', this._blocks[i].selectCandidate);
+            }
+            this._removeArrow(ghostArrow);
+          }
+        }
+      })(),
+
+      _createLink: function(fromElem, toElem, fromPos, toPos) {
+        if (fromElem !== toElem) {
+          var arrow = this._snap.line(fromPos.x, fromPos.y, toPos.x, toPos.y).attr({
+            class: 'link'
+          });
+
+          fromElem.outArrows.push(arrow);
+          toElem.inArrows.push(arrow);
+          this._arrows.push(arrow);
+
+          fromElem.unselectCandidate();
+          toElem.unselectCandidate();
+        }
+      },
+
+      _selectGroup: function(e) {
+        console.log('selected: ', e.detail);
+        this._selectedGroup = e.detail
+      },
+
+      _unselectGroup: function(e) {
+        console.log('unselected: ', this._selectedGroup);
+        delete this._selectedGroup;
+      },
+
+      _removeArrow: function(arrow) {
+        arrow.animate({opacity: 0}, 300, mina.easein,
+          function() {
+            arrow.remove();
+            arrow = undefined;
+          });
+      },
+
+      _throttle: function(fps, callback) {
         var wait = false;
 
         return function() {
           if (!this.isAttached || wait) {
             return;
           }
-          var rect = this.containerRect;
-          this._blocks.forEach(function(block) {
-            this._updateElemTrackingPosition(rect, block, 0, 0, 0);
-          }.bind(this));
-
-          this._recalcCanvas(true);
+          callback.apply(null, arguments);
 
           wait = true;
           setTimeout(function() {
             wait = false;
-          }, 1000 / 10);
+          }, 1000 / fps);
         }
-      })(),
-      _createBlocks: function(groups) {
-        this._blocks = [];
-        var container = this.$.container;
-        container.innerHTML = '';
-        for (var i=0, l=groups.length; i<l; i++) {
-          var elem = document.createElement('pull-request-space-card');
-          elem.group = groups[i];
-          elem.blockId = i;
-          elem.style.right = (i * 100) + 'px';
-          Polymer.dom(container).appendChild(elem);
-          elem._originalPosition = elem.getBoundingClientRect();
-          // elem.style.width = elem._originalPosition.width + 'px';
-          elem.style.right = 'auto';
-          this._blocks.push(elem);
-        }
-      },
-      // New functions to make sure we can remove the listener later to
-      // preserve memory
-      _updateMousePosition: function updateMousePosition(e) {
-        this._mouseX = e.clientX;
-        this._mouseY = e.clientY;
-        this._recalcCanvas(true);
-      },
-      _maybeCancelLinking: function(e) {
-        // Escape key
-        if (e.keyCode === 27) {
-          delete this._previousCard;
-          this._recalcCanvas(true);
-        }
-      },
-      _createLink: function(card) {
-        var exists = this._previousCard.connections.filter(function(c) {
-          return c.id === card.blockId;
-        });
-        if (!exists.length && this._previousCard.blockId !== card.blockId) {
-          this._previousCard.push('connections', {
-            id: card.blockId
-          });
-        }
-        this._previousCard.linkText = 'Link';
-        delete this._previousCard;
-        window.removeEventListener('mousemove', this._updateMousePosition);
-        window.removeEventListener('keydown', this._maybeCancelLinking);
-        this._recalcCanvas(true);
-      },
-      _maybeCreateLink: function(e) {
-        var card = e.detail;
-        if (this._previousCard) {
-          this._createLink(card);
-        } else {
-          window.addEventListener('mousemove', this._updateMousePosition);
-          window.addEventListener('keydown', this._maybeCancelLinking);
-          card.linkText = 'Stop';
-          this._previousCard = card;
-        }
-      },
-      _calculateAnchorPoints: function(rectangleLeft, rectangleRight, dx, dy, containerRect) {
-        var points = {};
-
-        // Rectangle on the right is always anchored to the left boundary
-        points.rightX = rectangleRight.left - containerRect.left;
-        points.rightY = rectangleRight.top + (rectangleRight.height / 2) - containerRect.top
-
-        // Rectangle on the left is bounded to top/right/bottom
-        // default is top
-        points.leftX = rectangleLeft.left - containerRect.left;
-        points.leftY = rectangleLeft.top - containerRect.top;
-
-        if (dy < dx) {
-          // From right to left
-          points.leftX += rectangleLeft.width;
-          points.leftY += (rectangleLeft.height / 2);
-        } else {
-          points.leftX += (rectangleLeft.width / 2);
-
-          if (rectangleLeft.top < rectangleRight.top) {
-            // From bottom to left
-            points.leftY += rectangleLeft.height;
-          }
-        }
-
-        return points;
-      },
-      /**
-       * Determine which rectangle is left from the other and based on that
-       * calculate the anchorpoints for the arrow
-       * @param  {BoundingClientRect} containerRect The rectangle of the surrounding containerRect
-       * @param  {Object} fromRect      The rectangle of the start point of the arrow
-       * @param  {Object} toRect        The rectangle of the end point of the arrow
-       * @return {Object}               From and to anchor points for the corresponding rectangles
-       */
-      _calculateCoordinates: function(containerRect, fromRect, toRect) {
-        var dy = Math.abs(toRect.top - fromRect.top);
-        var dx = Math.abs(toRect.left - fromRect.left);
-        var points;
-
-        // Arrow points to the right
-        if (fromRect.left < toRect.left) {
-          points = this._calculateAnchorPoints(fromRect, toRect, dx, dy, containerRect);
-
-          return {
-            fromX: points.leftX,
-            fromY: points.leftY,
-            toX: points.rightX,
-            toY: points.rightY
-          };
-        }
-
-        points = this._calculateAnchorPoints(toRect, fromRect, dx, dy, containerRect);
-
-        // Arrow points to the left, so swap the values to make sure the Arrow
-        // points in the correct direction
-        return {
-          fromX: points.rightX,
-          fromY: points.rightY,
-          toX: points.leftX,
-          toY: points.leftY
-        };
-      },
-      _drawArrow: function(ctx, coordinates) {
-        var fromX = coordinates.fromX,
-            fromY = coordinates.fromY,
-            toX   = coordinates.toX,
-            toY   = coordinates.toY;
-        ctx.beginPath();
-        ctx.moveTo(fromX, fromY);
-        ctx.lineTo(toX, toY);
-
-        // Draw the arrow point
-        // http://stackoverflow.com/a/6333775/2761676
-        var angle = Math.atan2(toY - fromY, toX - fromX);
-        ctx.moveTo(toX, toY);
-        ctx.lineTo(toX - 10 * Math.cos(angle - Math.PI / 6), toY - 10 * Math.sin(angle - Math.PI / 6));
-        ctx.moveTo(toX, toY);
-        ctx.lineTo(toX - 10 * Math.cos(angle + Math.PI / 6), toY - 10 * Math.sin(angle + Math.PI / 6));
-
-        ctx.closePath();
-        ctx.stroke();
-      },
-      // Recalc the canvas if we are currently dragging
-      _recalcCanvas: function(forced) {
-        if (this.dragging || forced) {
-          // Update the width and height in case the frame was not calculated
-          // yet on stamping, or the window was resized.
-          var containerRect = this.containerRect;
-          this.canvas.width = containerRect.width;
-          this.canvas.height = containerRect.height;
-          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-          for (var i=0, l=this._blocks.length;i<l;i++) {
-            var fromBlock = this._blocks[i];
-            var fromRect = fromBlock.getBoundingClientRect();
-
-            for (var j=0, c=fromBlock.connections.length; j<c;j++) {
-              var connection = fromBlock.connections[j];
-              var toRect = this._blocks[connection.id].getBoundingClientRect();
-
-              var coordinates = this._calculateCoordinates(containerRect, fromRect, toRect);
-
-              this._drawArrow(this.ctx, coordinates);
-            }
-          }
-
-          // We are currently creating a new connection
-          if (this._previousCard) {
-            this._drawArrowToMousePosition(containerRect);
-          }
-        }
-      },
-      _drawArrowToMousePosition: function(containerRect) {
-        var fromRect = this._previousCard.getBoundingClientRect();
-        var coordinates = this._calculateCoordinates(containerRect, fromRect, {
-          top: this._mouseY,
-          bottom: this._mouseY,
-          left: this._mouseX,
-          right: this._mouseX,
-          width: 1,
-          height: 1
-        });
-        this._drawArrow(this.ctx, coordinates);
-      },
-      _updateElemTrackingPosition: function(rect, lastElem, dy, dx) {
-        // Position the element to the new y position based on its original
-        // position, the delta from the original position.
-        //
-        // The position is bounded to the container rectangle
-        var newTop = lastElem._originalPosition.top + dy;
-        var bottomBoundary = rect.bottom - lastElem._originalPosition.height;
-        var topBoundedToBottom = Math.min(newTop, bottomBoundary);
-        var topBoundedtoYAndBottom = Math.max(rect.top, topBoundedToBottom) - rect.top;
-        lastElem.style.top = topBoundedtoYAndBottom + 'px';
-
-        // Same for the x position as pointed out above
-        var newLeft = lastElem._originalPosition.left + dx;
-        var rightBoundary = rect.right - lastElem._originalPosition.width;
-        var leftBoundedtoRight = Math.min(newLeft, rightBoundary);
-        var leftBoundedToLeftAndRight = Math.max(rect.left, leftBoundedtoRight) - rect.left;
-        lastElem.style.left = leftBoundedToLeftAndRight + 'px';
-      },
-      _handleCardTracking: (function() {
-        var lastElem, rect;
-
-        return function(e) {
-          var event = e.detail.event;
-          switch (event.state) {
-            case 'start':
-              var elem = e.detail.card;
-              elem._originalPosition = elem.getBoundingClientRect();
-              rect = this.containerRect;
-
-              elem.style.zIndex = 5;
-              lastElem = elem;
-              this.dragging = true;
-
-              break;
-
-            case 'track':
-              this._updateElemTrackingPosition(rect, lastElem, event.dy, event.dx);
-              break;
-
-            case 'end':
-              lastElem.style.zIndex = 0;
-              lastElem = undefined;
-              this.dragging = false;
-
-              break;
-          }
-        }
-      })()
+      }
     });
   </script>
 </dom-module>

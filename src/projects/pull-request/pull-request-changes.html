@@ -92,14 +92,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         pullRequest: Object
       },
-      observers: [
-        '_resizeSpace(showSpace)'
-      ],
       listeners: {
         'jump-to-hunk': 'jumpToHunk'
-      },
-      _resizeSpace: function() {
-        this.$.space.updateAfterResize();
       },
       jumpToHunk: function(e) {
         this.$.diff.jumpToHunk(e.detail.groupId, e.detail.hunkId);

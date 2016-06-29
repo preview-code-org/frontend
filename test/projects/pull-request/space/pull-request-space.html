@@ -55,7 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <script>
     suite('<pull-request-space> tests', function() {
-      var elem, cards;
+      var elem, groups;
 
       setup(function() {
         elem = fixture('basic');
@@ -77,83 +77,53 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         ];
       });
 
-      test('drags card around', function(done) {
+      test('drags group around', function(done) {
+        var oldRect;
         elem.addEventListener('track', function(e) {
           if (e.detail.state === 'end') {
-            var rect = cards[0].getBoundingClientRect();
-            var parentRect = elem.getBoundingClientRect();
-            assert.equal(rect.top - parentRect.top, 50);
-            assert.equal(rect.left - parentRect.left, 50);
+            var rect = groups[0].getBoundingClientRect();
+            assert.equal(rect.top - oldRect.top, 0);
+            assert.equal(rect.left - oldRect.left, 50);
             done();
           }
         });
         flush(function() {
-          cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
-          MockInteractions.track(cards[0], 50, 50);
+          groups = Polymer.dom(elem.root).querySelectorAll('pull-request-space-group');
+          oldRect = groups[0].getBoundingClientRect();
+          MockInteractions.track(groups[0].$.groupContent, 50, 0, 2);
         });
       });
 
-      test('resetting group removes old cards', function(done) {
+      test('drags group around with zoom', function(done) {
+        var oldRect;
+        elem.addEventListener('track', function(e) {
+          if (e.detail.state === 'end') {
+            var rect = groups[0].getBoundingClientRect();
+            assert.equal(rect.top - oldRect.top, 0);
+            assert.equal(rect.left - oldRect.left, 50);
+            done();
+          }
+        });
+        flush(function() {
+          elem.$.viewport.zoom = 0.5;
+          elem.addEventListener('transitionend', function() {
+            groups = Polymer.dom(elem.root).querySelectorAll('pull-request-space-group');
+            oldRect = groups[0].getBoundingClientRect();
+            MockInteractions.track(groups[0].$.groupContent, 50, 0, 2);
+          });
+        });
+      });
+
+      test('resetting group removes old groups', function(done) {
         flush(function() {
           elem.groups = [];
           flush(function() {
-            var cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
-            assert.equal(cards.length, 0);
+            var groups = Polymer.dom(elem.root).querySelectorAll('pull-request-space-group');
+            assert.equal(groups.length, 0);
             done();
           });
         });
-      })
-
-      function getImageData() {
-        var ctx = elem.$.canvas.getContext('2d');
-        var leftCardRect = cards[1].getBoundingClientRect();
-        return ctx.getImageData(leftCardRect.left + leftCardRect.width, leftCardRect.top, 250, leftCardRect.height).data;
-      }
-
-      test('draws arrows', function(done) {
-        flush(function() {
-          cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
-          MockInteractions.track(cards[0], 250, 0);
-          MockInteractions.tap(cards[0].$$('paper-button'));
-          MockInteractions.tap(cards[1].$$('paper-button'));
-          var imageData = getImageData();
-          // Verify that the image data has pixels drawn
-          assert.equal(imageData.filter(function(pixel) {
-            return pixel > 0;
-          }).length > 0, true);
-          done();
-        });
       });
-
-      test('clicking same card again cancels arrow drawing', function(done) {
-        flush(function() {
-          cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
-          MockInteractions.track(cards[0], 250, 0);
-          MockInteractions.tap(cards[0].$$('paper-button'));
-          MockInteractions.tap(cards[0].$$('paper-button'));
-          var imageData = getImageData();
-          // Verify that the image data has no pixels drawn
-          assert.equal(imageData.filter(function(pixel) {
-            return pixel > 0;
-          }).length > 0, false);
-          done();
-        });
-      });
-
-      test('clicking escape cancels arrow drawing', function(done) {
-        flush(function() {
-          cards = Polymer.dom(elem.root).querySelectorAll('pull-request-space-card');
-          MockInteractions.track(cards[0], 250, 0);
-          MockInteractions.tap(cards[0].$$('paper-button'));
-          MockInteractions.pressAndReleaseKeyOn(document, 27);
-          var imageData = getImageData();
-          // Verify that the image data has no pixels drawn
-          assert.equal(imageData.filter(function(pixel) {
-            return pixel > 0;
-          }).length > 0, false);
-          done();
-        });
-      })
     });
   </script>
 

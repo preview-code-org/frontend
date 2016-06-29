@@ -1,0 +1,274 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../util/collapsible-content.html">
+<link rel="import" href="../../../util/editable-title.html">
+<link rel="import" href="../../../util/markdown-input.html">
+<link rel="import" href="../../diff/hunk-file.html">
+<link rel="import" href="vector-behavior.html">
+
+<dom-module id="pull-request-space-group">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: absolute;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        padding: 16px;
+        min-width: 300px;
+        max-width: 500px;
+      }
+
+      :host([linking-candidate]) collapsible-content {
+        -webkit-box-shadow: 0px 0 8px 0px var(--anchor-color);
+        box-shadow: 0px 0 8px 0px var(--anchor-color);
+      }
+      collapsible-content {
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
+        position: relative;
+        background-color: var(--primary-background-color);
+        padding: 1em;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .hunks {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .hunks hunk-file {
+        margin: 5px;
+      }
+      #anchors {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+      }
+      #anchors:hover {
+        cursor: pointer;
+      }
+      #anchors:hover #anchorGhost,
+      :host([linking-candidate]) #anchorGhost {
+        transform: scale(1);
+      }
+      :host([linking-candidate]) #anchorGhost {
+        border: solid 12px var(--anchor-color);
+        opacity: 0.5;
+      }
+      #anchorGhost {
+        -webkit-transition: transform 0.1s ease;
+        -moz-transition: transform 0.1s ease;
+        -ms-transition: transform 0.1s ease;
+        -o-transition: transform 0.1s ease;
+        transition: transform 0.1s ease;
+        transform: scale(0);
+        position: absolute;
+        margin-left: -12px;
+        margin-top: -12px;
+        border-radius: 12px;
+        border: solid 12px black;
+        opacity: 0.25;
+      }
+    </style>
+    <div id="anchors" on-track="_anchorTrack">
+      <div id="anchorGhost"></div>
+    </div>
+    <collapsible-content on-track="_throwGroupDragging" id="groupContent" collapse="{{collapsed}}">
+      <div class="header">
+        <editable-title id="editTitleDialog" editable="[[editable]]" value="{{group.info.title}}"></editable-title>
+      </div>
+      <div class="content">
+        <markdown-input
+          hidden$="[[hideDescription]]"
+          disabled="[[!editable]]"
+          label="Enter a description for these changes. Markdown is supported."
+          markdown="{{group.info.description}}"
+        ></markdown-input>
+
+        <div class="hunks">
+          <template is="dom-repeat" items="[[group.diff]]">
+            <hunk-file on-tap="_jumpToHunk" hunk="[[item]]"></hunk-file>
+          </template>
+        </div>
+      </div>
+    </collapsible-content>
+
+  </template>
+  <script>
+  /*global VectorBehavior*/
+    Polymer({
+      behaviors: [VectorBehavior],
+      is: 'pull-request-space-group',
+      properties: {
+        blockId: Number,
+        group: Object,
+        linkText: {
+          type: String,
+          value: 'Link'
+        },
+        editable: {
+          type: Boolean,
+          value: false
+        },
+        collapsed: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        },
+        linkingCandidate: {
+          type: Boolean,
+          reflectToAttribute: true
+        },
+        inArrows: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+        outArrows: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+        hideDescription: {
+          type: Boolean,
+          value: true,
+          computed: '_shouldHideDescription(editable, group)'
+        },
+        anchorPosition: Object
+      },
+      attached: function() {
+        this.$.anchors.addEventListener('mouseenter', function() {
+          this.$.anchors.addEventListener('mousemove', this._updateAnchorGhostPos.bind(this));
+        }.bind(this));
+        this.$.anchors.addEventListener('mouseleave', function() {
+          this.$.anchors.removeEventListener('mousemove', this._updateAnchorGhostPos.bind(this));
+        }.bind(this));
+      },
+
+      selectCandidate: function() {
+        if (!this.linkingCandidate) {
+          this.linkingCandidate = true;
+          this.addEventListener('mouseleave', this.unselectCandidate);
+          this.fire('select', this);
+        }
+      },
+
+      unselectCandidate: function() {
+        if (this.linkingCandidate) {
+          this.linkingCandidate = false;
+          this.removeEventListener('mouseleave', this.unselectCandidate);
+          this.fire('unselect', this);
+        }
+      },
+
+      _updateAnchorGhostPos: function(e) {
+        var mouseVect = this.toVector(e);
+        var groupContentVect = this.toVector(this.$.groupContent.getBoundingClientRect());
+        var groupContentSize = this.toVector(this.$.groupContent.getBoundingClientRect(), 'width', 'height');
+        var clippedMousePos = this.clip(mouseVect, groupContentVect, this.add(groupContentVect, groupContentSize));
+        var anchorPos = this.subtract(clippedMousePos, this.toVector(this.getBoundingClientRect()));
+        this.$.anchorGhost.style.left = anchorPos.x + 'px';
+        this.$.anchorGhost.style.top = anchorPos.y + 'px';
+        this.anchorPosition = clippedMousePos;
+      },
+
+      saveArrowPositions: function() {
+        this.forEachArrow(function(a, arrowPos) {
+          a.originalPosition = arrowPos;
+        });
+      },
+
+      moveArrows: function(deltaVect) {
+        this.forEachArrow(function(a, arrowPos) {
+          return this.add(a.originalPosition, deltaVect);
+        }.bind(this));
+      },
+
+      forEachArrow: function(f) {
+        this._forEachArrow(f, this.outArrows, 'x1', 'y1');
+        this._forEachArrow(f, this.inArrows, 'x2', 'y2');
+      },
+
+      _forEachArrow: function(f, arrows, xField, yField) {
+        arrows.forEach(function(arrow) {
+          var newPos = f(arrow, {x: arrow.node[xField].baseVal.value, y: arrow.node[yField].baseVal.value});
+          if (newPos) {
+            var newAttrs = {};
+            newAttrs[xField] = newPos.x;
+            newAttrs[yField] = newPos.y;
+            arrow.attr(newAttrs);
+          }
+        });
+      },
+
+      _shouldHideDescription: function(editable, group) {
+        return !editable && (!group || !group.info.description);
+      },
+      _throwGroupDragging: function(e) {
+        this.fire('group-dragging', {
+          elem: this,
+          event: e.detail
+        });
+      },
+      _linkFromOrTo: function() {
+        this.fire('link-start', this);
+      },
+
+      _anchorTrack: function(e) {
+        if (e.detail.state === 'start') {
+          this.linkingCandidate = true;
+        } else if (e.detail.state === 'end') {
+          this.linkingCandidate = false;
+        }
+        this.fire('link', {
+          groupElem: this,
+          event: e.detail
+        });
+      },
+
+      _jumpToHunk: function(e) {
+        this.fire('jump-to-hunk', {
+          groupId: this.group.id,
+          hunkId: e.model.item.id
+        });
+      }
+    });
+  </script>
+</dom-module>

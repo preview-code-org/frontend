@@ -1,7 +1,9 @@
 {
   "name": "rite-evaluation",
   "authors": [
-    "Tim van der Lippe <tvanderlippe@gmail.com>"
+    "Eva Anker <e.s.anker@student.tudelft.nl>",
+    "Tim van der Lippe <tvanderlippe@gmail.com>",
+    "Thomas Smith <tnsmith@live.nl>"
   ],
   "description": "",
   "main": "",
@@ -25,13 +27,16 @@
     "marked-element": "TimvdLippe/marked-element#expose-callback",
     "prism-element": "polymerelements/prism-element#^1.1.0",
     "polymerfire": "firebase/polymerfire#^0.9.2",
-    "prism": "1.5.1"
+    "prism": "1.5.1",
+    "Snap.svg": "snap.svg#^0.4.1"
   },
   "resolutions": {
     "carbon-route": "reset-tail",
-    "marked-element": "expose-callback"
+    "marked-element": "expose-callback",
+    "iron-test-helpers": "fix-mockinteractions-track"
   },
   "devDependencies": {
-    "web-component-tester": "4.2.2"
+    "web-component-tester": "4.2.2",
+    "iron-test-helpers": "txsmith/iron-test-helpers#fix-mockinteractions-track"
   }
 }
