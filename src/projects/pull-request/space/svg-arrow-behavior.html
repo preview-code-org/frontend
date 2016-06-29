@@ -1,0 +1,116 @@
+<!-- Copyright (c) 2016, preview-code
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of rite-evaluation nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="paths-js.html">
+<link rel="import" href="vector-behavior.html">
+
+<script>
+/*exported SvgArrowBehavior*/
+var SvgArrowBehavior = (function() {
+  var v = VectorBehavior
+
+  /**
+   * Determines how curved the arrows will be.
+   * Lower values will make them more straight.
+   */
+  var controlPointOffset = 32;
+  var arrowHeadLength = 16;
+  var arrowHeadBase = 12;
+
+  var computeCubicBezier = function(arrow) {
+    // When dragging the ghost arrow, it has no second anchor point yet
+    // So we set the last control point as the inversion of the first so the
+    // curve ends smooth.
+    if (!arrow.inDirection) {
+      arrow.inDirection = v.negate(arrow.outDirection);
+    }
+    var c1 = v.add(arrow.start, v.scale(controlPointOffset, arrow.outDirection));
+    var c2 = v.add(arrow.end, v.scale(controlPointOffset, arrow.inDirection));
+    var end = v.add(arrow.end, v.scale(arrowHeadLength, arrow.inDirection));
+    return Paths.Path()
+      .moveto(arrow.start.x, arrow.start.y)
+      .curveto(c1.x, c1.y, c2.x, c2.y, end.x, end.y).print();
+  }
+
+  var computeArrowHead = function(arrow) {
+    var lengthOffset = v.scale(arrowHeadLength, arrow.inDirection);
+    var baseOffset = v.scale(0.5*arrowHeadBase, v.invert(arrow.inDirection));
+
+    var p1 = v.add(arrow.end, v.add(lengthOffset, baseOffset));
+    var p2 = v.add(arrow.end, v.add(lengthOffset, v.negate(baseOffset)));
+    return Paths.Path()
+      .moveto(arrow.end.x, arrow.end.y)
+      .lineto(p1.x, p1.y)
+      .lineto(p2.x, p2.y)
+      .closepath().print();
+  }
+
+  var createSvgElem = function(elemName) {
+    return document.createElementNS('http://www.w3.org/2000/svg', elemName);
+  };
+
+  var path = function(id, data) {
+    var p = createSvgElem('path');
+    p.setAttribute('id', id);
+    p.setAttribute('d', data);
+    return p;
+  }
+
+  var group = function() {
+    var elems = Array.prototype.slice.call(arguments);
+    var g = createSvgElem('g');
+    elems.forEach(function (e) {
+      g.appendChild(e);
+    });
+    return g;
+  }
+
+  return {
+    createArrow: function(start, end, outDirection, inDirection) {
+      var arrow = {
+        start: start,
+        end: end,
+        outDirection: outDirection,
+        inDirection: inDirection
+      };
+      var line = path('line', computeCubicBezier(arrow));
+      var head = path('arrowhead', computeArrowHead(arrow))
+      var elem = group(line, head);
+      elem.arrow = arrow;
+      return elem;
+    },
+
+    updateArrow: function(elem, newFromVect, newToVect) {
+      elem.arrow.start = newFromVect;
+      elem.arrow.end = newToVect;
+      elem.querySelector('#line').setAttribute('d', computeCubicBezier(elem.arrow));
+      elem.querySelector('#arrowhead').setAttribute('d', computeArrowHead(elem.arrow));
+    }
+  };
+})();
+</script>

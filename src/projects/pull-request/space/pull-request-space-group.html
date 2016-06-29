@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../../util/markdown-input.html">
 <link rel="import" href="../../diff/hunk-file.html">
 <link rel="import" href="vector-behavior.html">
+<link rel="import" href="svg-arrow-behavior.html">
 
 <dom-module id="pull-request-space-group">
   <template>
@@ -47,8 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         -ms-user-select: none;
         user-select: none;
         padding: 16px;
-        min-width: 300px;
-        max-width: 500px;
+        width: 450px;
       }
 
       :host([linking-candidate]) collapsible-content {
@@ -130,9 +130,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   </template>
   <script>
-  /*global VectorBehavior*/
+  /*global VectorBehavior, SvgArrowBehavior*/
     Polymer({
-      behaviors: [VectorBehavior],
+      behaviors: [VectorBehavior, SvgArrowBehavior],
       is: 'pull-request-space-group',
       properties: {
         blockId: Number,
@@ -174,12 +174,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         anchorPosition: Object
       },
       attached: function() {
-        this.$.anchors.addEventListener('mouseenter', function() {
-          this.$.anchors.addEventListener('mousemove', this._updateAnchorGhostPos.bind(this));
-        }.bind(this));
-        this.$.anchors.addEventListener('mouseleave', function() {
-          this.$.anchors.removeEventListener('mousemove', this._updateAnchorGhostPos.bind(this));
-        }.bind(this));
+        this._updateAnchorGhostPos = this._updateAnchorGhostPos.bind(this);
+        this._addAnchorEnterListener = this._addAnchorEnterListener.bind(this);
+        this._removeAnchorEnterListener = this._removeAnchorEnterListener.bind(this);
+        this._addAnchorUpdateListener();
+      },
+
+      _addAnchorUpdateListener: function() {
+        this.$.anchors.addEventListener('mouseenter', this._addAnchorEnterListener);
+        this.$.anchors.addEventListener('mouseleave', this._removeAnchorEnterListener);
+      },
+
+      _removeAnchorUpdateListener: function() {
+        this.$.anchors.removeEventListener('mouseenter', this._addAnchorEnterListener);
+        this.$.anchors.removeEventListener('mouseleave', this._removeAnchorEnterListener);
+      },
+
+      _addAnchorEnterListener: function() {
+        this.$.anchors.addEventListener('mousemove', this._updateAnchorGhostPos);
+      },
+
+      _removeAnchorEnterListener: function() {
+        this.$.anchors.removeEventListener('mousemove', this._updateAnchorGhostPos);
       },
 
       selectCandidate: function() {
@@ -207,6 +223,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.anchorGhost.style.left = anchorPos.x + 'px';
         this.$.anchorGhost.style.top = anchorPos.y + 'px';
         this.anchorPosition = clippedMousePos;
+
+        var groupNorthWest = this.toVector(this.getBoundingClientRect());
+        var groupSouthEast = this.add(groupNorthWest, this.toVector(this.getBoundingClientRect(), 'width', 'height'));
+        this.anchorPosition.direction = this.computeQuadrant(clippedMousePos, groupNorthWest, groupSouthEast);
       },
 
       saveArrowPositions: function() {
@@ -222,20 +242,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       forEachArrow: function(f) {
-        this._forEachArrow(f, this.outArrows, 'x1', 'y1');
-        this._forEachArrow(f, this.inArrows, 'x2', 'y2');
+        this._forEachArrow(f, this.outArrows, 'start');
+        this._forEachArrow(f, this.inArrows, 'end');
       },
 
-      _forEachArrow: function(f, arrows, xField, yField) {
+      _forEachArrow: function(f, arrows, positionField) {
         arrows.forEach(function(arrow) {
-          var newPos = f(arrow, {x: arrow.node[xField].baseVal.value, y: arrow.node[yField].baseVal.value});
+          var newPos = f(arrow, arrow.arrow[positionField]);
           if (newPos) {
-            var newAttrs = {};
-            newAttrs[xField] = newPos.x;
-            newAttrs[yField] = newPos.y;
-            arrow.attr(newAttrs);
+            arrow.arrow[positionField] = newPos
+            this.updateArrow(arrow, arrow.arrow.start, arrow.arrow.end);
           }
-        });
+        }.bind(this));
       },
 
       _shouldHideDescription: function(editable, group) {
@@ -254,8 +272,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _anchorTrack: function(e) {
         if (e.detail.state === 'start') {
           this.linkingCandidate = true;
-        } else if (e.detail.state === 'end') {
+          this._removeAnchorUpdateListener();
+          this._removeAnchorEnterListener();
+         } else if (e.detail.state === 'end') {
           this.linkingCandidate = false;
+          this._addAnchorUpdateListener();
         }
         this.fire('link', {
           groupElem: this,

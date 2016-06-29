@@ -26,9 +26,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="snap.html">
 <link rel="import" href="pull-request-space-group.html">
 <link rel="import" href="vector-behavior.html">
+<link rel="import" href="svg-arrow-behavior.html">
 <link rel="import" href="pan-zoom-viewport.html">
 
 <dom-module id="pull-request-space">
@@ -46,25 +46,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTgiIGhlaWdodD0iNTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI1OCIgaGVpZ2h0PSI1OCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDE0LjUgTCA1OCAxNC41IE0gMTQuNSAwIEwgMTQuNSA1OCBNIDAgMjkgTCA1OCAyOSBNIDI5IDAgTCAyOSA1OCBNIDAgNDMuNSBMIDU4IDQzLjUgTSA0My41IDAgTCA0My41IDU4IiBmaWxsPSJub25lIiBzdHJva2U9IiNlMGUwZTAiIG9wYWNpdHk9IjAuMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PHBhdGggZD0iTSA1OCAwIEwgMCAwIDAgNTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UwZTBlMCIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+');
         background-color: white;
       }
-      line.ghost {
+      .ghost #line {
         stroke: var(--anchor-color);
         stroke-dasharray: 10,5;
-        stroke-width: 3;
+        stroke-width: 2;
+        fill: none;
       }
-      line.link {
+      .link #line {
         stroke: var(--secondary-text-color);
-        stroke-width: 3;
+        stroke-width: 2;
+        fill: none;
+      }
+      .ghost #arrowhead {
+        stroke: none;
+        fill: var(--anchor-color);
+      }
+      .link #arrowhead {
+        stroke: none;
+        fill: var(--secondary-text-color);
       }
     </style>
     <pan-zoom-viewport id="viewport">
-      <svg id="svg"></svg>
+      <svg id="svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+        <defs>
+          <marker id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
+            <circle cx="5" cy="5" r="30" style="stroke: none; fill:#000000;"/>
+          </marker>
+
+          <marker id="markerArrow" markerWidth="13" markerHeight="13" refX="2" refY="6" orient="auto">
+            <path d="M2,2 L2,11 L10,6 L2,2" style="fill: #000000;" />
+          </marker>
+        </defs>
+      </svg>
       <div id="container"></div>
     </pan-zoom-viewport>
   </template>
   <script>
-  /*global VectorBehavior*/
+  /*global VectorBehavior,SvgArrowBehavior*/
     Polymer({
-      behaviors: [VectorBehavior],
+      behaviors: [VectorBehavior, SvgArrowBehavior],
       is: 'pull-request-space',
       properties: {
         groups: {
@@ -82,8 +102,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: function() {
             return [];
           }
-        },
-        _snap: Object
+        }
       },
       listeners: {
         'group-dragging': '_handleGroupDragging',
@@ -93,7 +112,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       attached: function() {
         this._updateElemTrackingPosition = this._updateElemTrackingPosition.bind(this);
-        this._snap = Snap(this.$.svg);
       },
 
       _createBlocks: function(groups) {
@@ -156,14 +174,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       })(),
 
-      _createArrow: function(fromPos, toPos, cssClass) {
-        return this._snap.line(fromPos.x, fromPos.y, toPos.x, toPos.y).attr({
-          class: cssClass !== undefined ? cssClass : ''
-        });
-      },
-
       _handleLinkTracking: (function() {
-        var fromElem, originalPosition, fromPosition, toPosition, ghostArrow;
+        var fromElem, originalPosition, fromPosition, toPosition, ghostArrow, direction;
 
         return function(e) {
           var event = e.detail.event;
@@ -177,16 +189,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           if (event.state === 'start') {
             fromElem = e.detail.groupElem;
             fromPosition = vp.clientToCanvasVector(fromElem.anchorPosition);
-            ghostArrow = this._createArrow(fromPosition, toPosition, 'ghost');
-
+            ghostArrow = this.createArrow(fromPosition, toPosition, fromElem.anchorPosition.direction);
+            ghostArrow.setAttribute('class', 'ghost');
+            this.$.svg.appendChild(ghostArrow);
             for (var i = 0, l = this._blocks.length; i < l; i++) {
               this._blocks[i].addEventListener('mouseenter', this._blocks[i].selectCandidate);
             }
           } else if (event.state === 'track') {
-            ghostArrow.attr({
-              x2: toPosition.x,
-              y2: toPosition.y
-            })
+            if (this._selectedGroup) {
+              ghostArrow.arrow.inDirection = this._selectedGroup.anchorPosition.direction;
+            }
+            this.updateArrow(ghostArrow, fromPosition, toPosition);
           } else if (event.state === 'end') {
             if (this._selectedGroup) {
               this._createLink(fromElem, this._selectedGroup, fromPosition, toPosition);
@@ -201,9 +214,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       _createLink: function(fromElem, toElem, fromPos, toPos) {
         if (fromElem !== toElem) {
-          var arrow = this._snap.line(fromPos.x, fromPos.y, toPos.x, toPos.y).attr({
-            class: 'link'
-          });
+          var arrow = this.createArrow(fromPos, toPos, fromElem.anchorPosition.direction, toElem.anchorPosition.direction);
+          arrow.setAttribute('class', 'link');
+          this.$.svg.appendChild(arrow);
 
           fromElem.outArrows.push(arrow);
           toElem.inArrows.push(arrow);
@@ -215,21 +228,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       _selectGroup: function(e) {
-        console.log('selected: ', e.detail);
         this._selectedGroup = e.detail
       },
 
       _unselectGroup: function(e) {
-        console.log('unselected: ', this._selectedGroup);
         delete this._selectedGroup;
       },
 
       _removeArrow: function(arrow) {
-        arrow.animate({opacity: 0}, 300, mina.easein,
-          function() {
-            arrow.remove();
-            arrow = undefined;
-          });
+        arrow.parentElement.removeChild(arrow);
       },
 
       _throttle: function(fps, callback) {

@@ -76,10 +76,26 @@ var VectorBehavior = (function() {
 
     subtract: reduce(function(a,b) { return a-b; }),
 
+    pairwiseMultiply: reduce(function(a, b) { return a*b; }),
+
     scale: function(s, v) {
-      return map(v, function(a) {
-        return s*a;
-      });
+      return map(v, function(a) { return s*a; });
+    },
+
+    negate: function(v) {
+      return this.subtract(this.nullVector, v);
+    },
+
+    abs: function(v) {
+      return map(v, function(a) { Math.abs(a); });
+    },
+
+    invert: function(v) {
+      return {x: v.y, y: v.x};
+    },
+
+    dot: function(v1, v2) {
+      return v1.x*v2.x + v1.y*v2.y;
     },
 
     clip: function(v, northWest, southEast) {
@@ -98,8 +114,55 @@ var VectorBehavior = (function() {
 
     average: function(v1, v2) {
       return this.scale(0.5, this.add(v1,v2));
-    }
+    },
 
+    /**
+     * Barycentric method for determining whether a point intersects a triangle
+     */
+    isInTriangle: function(query, a, b, c) {
+      // Compute vectors
+      var v0 = this.subtract(c, a);
+      var v1 = this.subtract(b, a);
+      var v2 = this.subtract(query, a);
+
+      // Compute dot products
+      var dot00 = this.dot(v0, v0)
+      var dot01 = this.dot(v0, v1)
+      var dot02 = this.dot(v0, v2)
+      var dot11 = this.dot(v1, v1)
+      var dot12 = this.dot(v1, v2)
+
+      // Compute barycentric coordinates
+      var invDenom = 1 / (dot00 * dot11 - dot01 * dot01)
+      var u = (dot11 * dot02 - dot01 * dot12) * invDenom
+      var v = (dot00 * dot12 - dot01 * dot02) * invDenom
+
+      // Check if point is in triangle
+      return (u >= 0) && (v >= 0) && (u + v < 1)
+    },
+
+    /**
+     * Computes in which quadrant of a rectangle a point is.
+     * It divides the rectangle in four sections (north, east, south and west)
+     * and returns the direction vector for the quadrant that the point intersects.
+     */
+    computeQuadrant: function(point, boxNorthWest, boxSouthEast) {
+      var boxCenter = this.average(boxNorthWest, boxSouthEast);
+      var boxNorthEast = {x: boxSouthEast.x, y: boxNorthWest.y};
+      var boxSouthWest = {x: boxNorthWest.x, y: boxSouthEast.y};
+      //North
+      if (this.isInTriangle(point, boxNorthWest, boxNorthEast, boxCenter)) {
+        return {x: 0, y: -1};
+      //East
+      } else if (this.isInTriangle(point, boxCenter, boxNorthEast, boxSouthEast)) {
+        return {x: 1, y: 0};
+      //South
+      } else if (this.isInTriangle(point, boxCenter, boxSouthEast, boxSouthWest)) {
+        return {x: 0, y: 1};
+      }
+      // West
+      return {x: -1, y: 0};
+    }
   };
 })();
 </script>
