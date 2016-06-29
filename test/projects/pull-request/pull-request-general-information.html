@@ -95,7 +95,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
 
       test('has markdown description element', function() {
-        assert.isOk(get('marked-github-element'));
+        assert.isOk(get('markdown-input'));
       });
 
       test('has user element', function() {
@@ -125,7 +125,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
 
       test('sets description to markdown element', function() {
-        var mdElem = get('marked-github-element');
+        var mdElem = get('markdown-input');
         assert.equal(mdElem.markdown, examplePull.body);
       });
 

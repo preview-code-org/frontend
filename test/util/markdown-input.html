@@ -73,7 +73,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
 
       test('Does not hide <marked-github-element> when preview is true', function() {
-        mdInput._previewToggle = true;
+        mdInput.previewToggle = true;
         var githubElem = Polymer.dom(mdInput.root).querySelector('marked-github-element');
         assert.isFalse(githubElem.hasAttribute('hidden'));
       });
@@ -84,7 +84,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       });
 
       test('Hides paper-textarea when preview is true', function() {
-        mdInput._previewToggle = true;
+        mdInput.previewToggle = true;
         var paperText = Polymer.dom(mdInput.root).querySelector('paper-textarea');
         assert.isTrue(paperText.hasAttribute('hidden'));
       });
