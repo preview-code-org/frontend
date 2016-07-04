@@ -93,10 +93,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         background-color: red;
         float: right;
       }
-      marked-github-element {
+      markdown-input {
         display: flex;
-        padding: 0 2em;
         margin: 1em 0;
+      }
+      .description {
+        padding: 2em;
       }
       .sidebar {
         margin: 1em 0;
@@ -150,7 +152,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </header>
       <section>
         <div class="main">
-          <markdown-input preview-toggle="{{shouldSend}}" markdown="{{pullRequest.body}}"></markdown-input>
+          <div class="description">
+            <markdown-input preview-toggle="{{shouldSend}}" markdown="{{pullRequest.body}}"></markdown-input>
+          </div>
           <pull-request-add-comments comments="{{comments}}" number="[[pullRequest.number]]"></pull-request-add-comments>
         </div>
         <div class="sidebar">
