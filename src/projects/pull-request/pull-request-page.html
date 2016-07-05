@@ -26,7 +26,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -120,7 +120,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       headers='{"Accept": "application/vnd.github.VERSION.diff"}'
       last-response="{{diff}}"></github-authenticated-ajax>
 
-    <carbon-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></carbon-route>
+    <app-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></app-route>
     <get-comments groups="{{orderedGroups}}" group-comments="{{groupComments}}"
         pull-request="[[selectedPull]]" general-comments="{{generalComments}}"></get-comments>
 
