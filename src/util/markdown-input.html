@@ -73,8 +73,7 @@ after toggling the preview showing the rendered markdown in real-time.
       paper-icon-button {
         margin-top: 1em;
       }
-      paper-icon-button:hover,
-      paper-icon-button[active] {
+      paper-icon-button:hover {
         color: var(--anchor-color);
       }
       marked-github-element {
@@ -86,7 +85,8 @@ after toggling the preview showing the rendered markdown in real-time.
       <paper-textarea hidden$="[[!_hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
       <marked-github-element hidden$="[[_hidePreview]]" markdown="[[markdown]]"></marked-github-element>
     </div>
-    <paper-icon-button toggles icon="icons:visibility" hidden$="[[disabled]]" active="{{_previewToggle}}" title="Toggle Markdown preview">[[_toggleText]]</paper-icon-button>
+    <paper-icon-button toggles icon="icons:visibility" hidden$="[[hideEdit]]" active="{{previewToggle}}" title="Toggle Markdown preview">[[_toggleText]]</paper-icon-button>
+    <paper-icon-button toggles icon="editor:mode-edit" hidden$="[[!hideEdit]]" active="{{previewToggle}}" title="Toggle Markdown preview">[[_toggleText]]</paper-icon-button>
   </template>
   <script>
     Polymer({
@@ -114,14 +114,21 @@ after toggling the preview showing the rendered markdown in real-time.
          * @type {String}
          */
         label: String,
-        _previewToggle: Boolean,
+        previewToggle: {
+          type: Boolean,
+          notify: true
+        },
         _hidePreview: {
           type: Boolean,
-          computed: '_getHidePreview(_previewToggle, disabled)'
+          computed: '_getHidePreview(previewToggle, disabled)'
         },
         _toggleText: {
           type: String,
-          computed: '_getToggleText(_previewToggle)'
+          computed: '_getToggleText(previewToggle)'
+        },
+        hideEdit: {
+          type: Boolean,
+          computed: '_showEdit(disabled, previewToggle)'
         }
       },
       _getHidePreview: function(previewToggle, disabled) {
@@ -134,7 +141,15 @@ after toggling the preview showing the rendered markdown in real-time.
           return 'Edit';
         }
         return 'Preview';
+      },
+      _showEdit: function(disabled, previewToggle) {
+        if (disabled) {
+          return !disabled;
+        } else {
+          return previewToggle;
+        }
       }
+
     });
   </script>
 </dom-module>

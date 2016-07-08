@@ -30,8 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 
+<link rel="import" href="../create-pull-request/create-pull-request-description.html">
 <link rel="import" href="../../util/to-date-string-behavior.html">
-<link rel="import" href="../../util/marked-github-element.html">
+<link rel="import" href="../../util/markdown-input.html">
 <link rel="import" href="../../util/a-user.html">
 <link rel="import" href="../../util/branch-tag.html">
 <link rel="import" href="../../ajax/github-authenticated-ajax.html">
@@ -92,10 +93,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         background-color: red;
         float: right;
       }
-      marked-github-element {
+      markdown-input {
         display: flex;
-        padding: 0 2em;
         margin: 1em 0;
+      }
+      .description {
+        padding: 2em;
       }
       .sidebar {
         margin: 1em 0;
@@ -130,6 +133,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       method="PUT"
       on-response="_prHasBeenMerged"></github-authenticated-ajax>
 
+    <github-authenticated-ajax
+      id="updateDescription"
+      refurl="[[pullRequest._links.self.href]]"
+      method="PATCH"
+      ></github-authenticated-ajax>
+
     <div class="description primary-container">
       <header>
         <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
@@ -143,7 +152,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </header>
       <section>
         <div class="main">
-          <marked-github-element markdown="[[pullRequest.body]]"></marked-github-element>
+          <div class="description">
+            <markdown-input preview-toggle="{{shouldSend}}" markdown="{{pullRequest.body}}"></markdown-input>
+          </div>
           <pull-request-add-comments comments="{{comments}}" number="[[pullRequest.number]]"></pull-request-add-comments>
         </div>
         <div class="sidebar">
@@ -183,14 +194,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: Object,
           notify: true
         },
-        _prStatus: String
+        _prStatus: String,
+        editData: {
+          type: Boolean,
+          value: false
+        },
+        shouldSend: {
+          type: Boolean,
+          value: true
+        }
       },
       observers: [
         '_fireAjax(pullRequest)',
         // Because the PR state css class is set dynamically,
         // and this class uses a mixin which is also evaluated dynamically,
         // we need to manually trigger updating the styles.
-        'updateStyles(pullRequest.state)'
+        'updateStyles(pullRequest.state)',
+        '_updateDescription(shouldSend)'
       ],
       _fireAjax: function(pullRequest) {
         if (pullRequest) {
@@ -215,6 +235,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _updateReviewerStatus: function(e) {
         if (e.detail.length && this._prStatus === 'No reviewer assigned') {
           this.$.PRStatus.select('Awaiting reviewer response');
+        }
+      },
+      _updateDescription: function(shouldSend) {
+        if (this.pullRequest && shouldSend) {
+          this.$.updateDescription.body= {
+            title: this.pullRequest.title,
+            body: this.pullRequest.body,
+            state: this.pullRequest.state
+          }
+          this.$.updateDescription.generateRequest();
         }
       }
     });
