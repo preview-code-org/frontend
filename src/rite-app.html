@@ -197,8 +197,8 @@ Prism.languages.diff.other = /.+/m;
     _equals: function(one, other) {
       return one === other;
     },
-    _signInWithGitHub: function() {
-      this.$.firebase.signIn(true);
+    _signInWithGitHub: function(e) {
+      this.$.firebase.signIn(true, e.detail);
     },
     _setToken: function(e) {
       this.$.authenticatedAjax.storeToken(e.detail);

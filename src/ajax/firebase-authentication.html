@@ -82,7 +82,7 @@ of the GitHub oAuth token.
        * Else it checks for local storage if the token existed and signed in
        * with the Firebase session and fires `github-token` again.
        */
-      signIn: function(shouldRedirect) {
+      signIn: function(shouldRedirect, privateRepos) {
         this.loading = true;
         this.$.auth.auth.getRedirectResult().then(function(result) {
           if (!result.credential) {
@@ -90,7 +90,7 @@ of the GitHub oAuth token.
               this.fire('github-token', this._tokens.GitHub);
               this.loading = false;
             } else if (shouldRedirect) {
-              this._redirectToGitHub();
+              this._redirectToGitHub(privateRepos);
             }
           } else {
             this._parseSuccesfulResult(result);
@@ -100,10 +100,14 @@ of the GitHub oAuth token.
           this.loading = false;
         });
       },
-      _redirectToGitHub: function() {
+      _redirectToGitHub: function(privateRepos) {
         var provider = new firebase.auth.GithubAuthProvider();
         provider.addScope('user');
-        provider.addScope('repo');
+        if (privateRepos) {
+          provider.addScope('repo');
+        } else {
+          provider.addScope('public_repo');
+        }
         this.$.auth.signInWithRedirect(provider);
       },
       _parseSuccesfulResult: function(result) {
