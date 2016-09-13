@@ -21,7 +21,7 @@
     "paper-elements": "polymerelements/paper-elements#^1.0.7",
     "carbon-elements": "polymerelements/carbon-elements#^0.1.0",
     "iron-elements": "polymerelements/iron-elements#^1.0.10",
-    "carbon-route": "TimvdLippe/carbon-route#reset-tail",
+    "app-route": "TimvdLippe/app-route#parent-active-propagation",
     "iron-lazy-pages": "^1.0.2",
     "Sortable": "Rubaxa/Sortable#dev",
     "marked-element": "TimvdLippe/marked-element#expose-callback",
@@ -31,7 +31,7 @@
     "paths-js": "andreaferretti/paths-js#^0.4.4"
   },
   "resolutions": {
-    "carbon-route": "reset-tail",
+    "app-route": "parent-active-propagation",
     "marked-element": "expose-callback",
     "iron-test-helpers": "fix-mockinteractions-track"
   },
