@@ -63,6 +63,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .name {
         margin-top:3%;
       }
+      .flex {
+        display: flex;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .note {
+        font-size: 13px;
+      }
     </style>
 
     <h1 class="name">PReview Code</h1>
@@ -70,12 +78,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <img class="logo" src="https://blueseptember.org.au/wp-content/uploads/2015/07/Blue-square.jpg" />
     </div>
     <div class="button-container">
-      <paper-button raised on-tap="_loginWithGithub">
-        <img height=30px src="https://assets-cdn.github.com/images/modules/logos_page/Octocat.png" /> Login with Github
-      </paper-button>
-      <paper-button raised disabled title="Support coming soon!">
-        <img height=30px src="https://pbs.twimg.com/profile_images/615675308243488768/_d8TRzzL.png" /> Login with Bitbucket
-      </paper-button>
+      <div>
+        <h4>Log in with GitHub</h4>
+        <div class="flex">
+          <div>
+            <paper-button raised on-tap="_loginWithGithubPrivate">
+              <img height=30px src="https://assets-cdn.github.com/images/modules/logos_page/Octocat.png" /> Private access
+            </paper-button>
+            <div class="note">Private access includes all private repositories. See <a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">GitHub scope</a> 'repo'.</div>
+          </div>
+          <div>
+            <paper-button raised on-tap="_loginWithGithubPublic">
+              <img height=30px src="https://assets-cdn.github.com/images/modules/logos_page/Octocat.png" /> Public access
+            </paper-button>
+            <div class="note">Public access does not include private repositories. See <a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">GitHub scope</a> 'public_repo'.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h4>Log in with BitBucket</h4>
+        <paper-button raised disabled>
+          <img height=30px src="https://pbs.twimg.com/profile_images/615675308243488768/_d8TRzzL.png" /> Coming soon
+        </paper-button>
+      </div>
     </div>
     <div class="about">
       <h2>About us</h2>
@@ -92,8 +117,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <script>
     Polymer({
       is: 'home-page',
-      _loginWithGithub: function() {
-        this.fire('go-login-github');
+      _loginWithGithubPrivate: function() {
+        this.fire('go-login-github', true);
+      },
+      _loginWithGithubPublic: function() {
+        this.fire('go-login-github', false);
       }
     });
   </script>
