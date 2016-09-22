@@ -62,9 +62,9 @@ __Please note__: version `4.3.5` of `web-component-tester` causes errors. Please
 2. Enter the (newly created) directory named `frontend`
 
 ## Prepare the frontend to run
-1. Install the npm packages
+1. Install the (local) npm packages
 		
-        npm install
+        sudo npm install -only=dev
 2. Install bower packages
 		
         bower install
