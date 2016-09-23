@@ -22,14 +22,9 @@ If you live in the Netherlands, please consider using the following mirror in "U
 __Please note__: It is important to first install `nodejs`, as shown here, and then `npm`. The script for `nodejs` downloads an older version of `npm`, which we subsequently update.
 
 ## Install tooling
-1. Install Chrome:
+* Install Chrome:
 
   	Please visit https://www.google.com/chrome/ to install the newest version of Chrome.
-
-2. Install [Atom](https://atom.io/):
-
-		curl -o atom.deb -sL https://atom.io/download/deb
-		sudo dpkg -i atom.deb
 
 ## Install the npm (global) packages
 1. install the [java](http://packages.ubuntu.com/en/trusty/default-jre) runtime
