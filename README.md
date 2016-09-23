@@ -4,9 +4,6 @@ This is the frontend code for https://preview-code.com implemented with Polymer.
 
 Please read the complete README.md file before executing any of the steps.
 
-If you live in the Netherlands, please consider using the following mirror in "Ubuntu Software & Updates":
-<ftp://ftpserv.tudelft.nl/pub/Linux/archive.ubuntu.com>
-
 # Installation guide
 ## Prerequisites: nodejs, npm, and git
 1. Install the LTS version (4.x) of [node.js](https://nodejs.org/en/). Please __do not__ install version 6.0 as it is not officially supported by [polymer](https://www.polymer-project.org/1.0/start/first-element/intro) (last checked on 2016.09.22).
@@ -22,7 +19,7 @@ If you live in the Netherlands, please consider using the following mirror in "U
 __Please note__: It is important to first install `nodejs`, as shown here, and then `npm`. The script for `nodejs` downloads an older version of `npm`, which we subsequently update.
 
 ## Install tooling
-* Install Chrome:
+Install Chrome:
 
   	Please visit https://www.google.com/chrome/ to install the newest version of Chrome.
 
@@ -47,7 +44,7 @@ __Please note__: It is important to first install `nodejs`, as shown here, and t
         sudo npm install -g web-component-tester@4.2.2
 5. install [web-component-tester-istanbul](https://github.com/thedeeno/web-component-tester-istanbul)
 		
-        sudo npm i -g web-component-tester-istanbul@git://github.com/TimvdLippe/web-component-tester-istanbul.git#coverage-log-test-result-fix
+        sudo npm i -g web-component-tester-istanbul@git://github.com/TimvdLippe/web-component-tester-istanbul.git
 __Please note__: version `4.3.5` of `web-component-tester` causes errors. Please use `4.2.2` until further notice.
 
 ## Clone the frontend
@@ -67,7 +64,8 @@ __Please note__: It is important to first install the `npm` packages and then
 the `bower` packages. The `bower` script depends on the former.
 
 ## Start up the frontend
-* Use `gulp` to serve the frontend
+Use `gulp` to serve the frontend
+
 		gulp serve
 
 # Certificate warnings
