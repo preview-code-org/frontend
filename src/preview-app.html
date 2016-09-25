@@ -196,20 +196,20 @@ Prism.languages.diff.other = /.+/m;
     },
     listeners: {
       'github-token': '_setToken',
-      'go-login-github': '_signInWithGitHub'
+      'go-login-github': '_signInWithGitHub',
+      'check-signed-in-failed': '_toHome'
     },
     attached: function() {
-      if (document.referrer.indexOf('preview-code.firebaseapp.com') > -1) {
-        this.$.firebase.signIn(false);
-      } else if (this.page.page !== '') {
-        this.$.firebase.signIn(true);
+      // On page-load, we may or may not be signed in.
+      if (this.page.page !== '' || document.referrer.indexOf('preview-code.firebaseapp.com') > -1) {
+        this.$.firebase.checkSignedIn();
       }
     },
     _equals: function(one, other) {
       return one === other;
     },
     _signInWithGitHub: function(e) {
-      this.$.firebase.signIn(true, e.detail);
+      this.$.firebase.doSignIn(e.detail);
     },
     _signout: function() {
       this.$.firebase.signOut().then(function() {
@@ -220,6 +220,9 @@ Prism.languages.diff.other = /.+/m;
       this.$.authenticatedAjax.storeToken(e.detail);
       this.set('page.page', 'projects');
       this.$.ajaxGithubUser.generateRequest();
+    },
+    _toHome: function() {
+      this.set('page.page', '');
     }
   });
   </script>
