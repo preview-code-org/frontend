@@ -26,51 +26,43 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../util/fade-in-behavior.html">
-<link rel="import" href="../diff/diff.html">
+<!doctype html>
+<html>
+<head>
+  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
+  <title>feature-bar-tests</title>
 
-<dom-module id="project-create-pull-diff">
-  <template>
-    <style>
-      :host {
-        display: none;
-        padding: 2em 0;
-      }
-      paper-button {
-        @apply(--green-action-button);
-      }
-      paper-spinner {
-        display: block;
-        margin: 10px auto;
-      }
-    </style>
-    <span class="subtitle">You can drag the diff sections to re-order them for reviewers.</span>
-    <pull-request-diff id="changes" editable diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" github-user="[[githubUser]]"></pull-request-diff>
-    <paper-spinner active="[[loading]]"></paper-spinner>
-    <paper-button on-tap="_createPR" raised disabled="[[loading]]">Create pull request</paper-button>
-  </template>
+  <script src='../../src/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <script src='../../src/bower_components/web-component-tester/browser.js'></script>
+  <script src='../../src/bower_components/iron-test-helpers/mock-interactions.js'></script>
+
+
+  <!-- Import the element to test -->
+  <link rel='import' href='../../src/projects/feature-bar.html'>
+
+</head>
+<body>
+
+  <test-fixture id='feature-bar-fixture'>
+    <template>
+      <feature-bar>
+
+      </feature-bar>
+    </template>
+  </test-fixture>
+
   <script>
-  /*global FadeInBehavior*/
-    Polymer({
-      is: 'project-create-pull-diff',
-      properties: {
-        diff: String,
-        baseUrl: String,
-        sha: String,
-        githubUser: Object,
-        loading: {
-          type: Boolean,
-          value: false
-        }
-      },
-      behaviors: [FadeInBehavior],
-      _createPR: function() {
-        this.fire('create-pr');
-      },
-      getOrdering: function() {
-        return this.$.changes.getOrdering();
-      }
+    suite('<projects-page>', function() {
+
+      setup(function() {
+      });
+
+      test('', function() {
+      });
+
+
     });
   </script>
-</dom-module>
+
+</body>
+</html>
