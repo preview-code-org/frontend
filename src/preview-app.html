@@ -39,6 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="bower_components/prism-element/prism-highlighter.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
 
 <link rel="stylesheet" href="bower_components/font-roboto/roboto.html">
 <link rel="import" href="ajax/github-authenticated-ajax.html">
@@ -67,6 +68,7 @@ Prism.languages.diff.other = /.+/m;
         margin-left: -55px;
         color: var(--secondary-action-red);
         font-size: 13px;
+        flex: 1;
       }
       paper-tab {
         @apply(--layout-flex-none);
@@ -96,7 +98,7 @@ Prism.languages.diff.other = /.+/m;
       }
       .paper-header {
         z-index: 100;
-        flex: 0;
+        display:flex;
         background-color: var(--primary-background-color);
         -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
@@ -118,6 +120,14 @@ Prism.languages.diff.other = /.+/m;
       paper-spinner {
         height: 50px;
         width: 50px;
+      }
+      paper-button {
+        float:right;
+        margin:4px;
+        text-transform: none;
+      }
+      paper-button:hover {
+        background: var(--anchor-hover-color);
       }
     </style>
     <app-location route="{{route}}"></app-location>
@@ -145,6 +155,7 @@ Prism.languages.diff.other = /.+/m;
               <a href$="[[route.prefix]]/projects">My projects</a>
             </paper-tab>
           </paper-tabs>
+          <paper-button on-tap="_signout">Sign out</paper-button>
         </template>
       </div>
 
@@ -199,6 +210,11 @@ Prism.languages.diff.other = /.+/m;
     },
     _signInWithGitHub: function(e) {
       this.$.firebase.signIn(true, e.detail);
+    },
+    _signout: function() {
+      this.$.firebase.signOut().then(function() {
+        window.location = '/';
+      }.bind(this));
     },
     _setToken: function(e) {
       this.$.authenticatedAjax.storeToken(e.detail);
