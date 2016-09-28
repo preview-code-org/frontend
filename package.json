@@ -1,5 +1,12 @@
 {
   "private": true,
+  "dependencies": {
+    "connect-history-api-fallback": "^1.2.0",
+    "gulp": "^3.9.1",
+    "gulp-load-plugins": "^1.2.2",
+    "proxy-middleware": "^0.15.0",
+    "url": "^0.11.0"
+  },
   "devDependencies": {
     "browser-sync": "^2.12.5",
     "connect-history-api-fallback": "^1.2.0",
@@ -8,7 +15,6 @@
     "gulp-eslint": "^2.0.0",
     "gulp-load-plugins": "^1.2.2",
     "proxy-middleware": "^0.15.0",
-    "url": "^0.11.0",
-    "web-component-tester-istanbul": "git://github.com/TimvdLippe/web-component-tester-istanbul.git#coverage-log-test-result-fix"
+    "url": "^0.11.0"
   }
 }
