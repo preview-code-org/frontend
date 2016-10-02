@@ -82,7 +82,7 @@ after toggling the preview showing the rendered markdown in real-time.
       }
     </style>
     <div class="edit-area">
-      <paper-textarea hidden$="[[!_hidePreview]]" label="[[label]]" value="{{markdown}}"></paper-textarea>
+      <paper-textarea id="textarea" hidden$="[[!_hidePreview]]" label="[[label]]" value="{{markdown}}" on-blur="_blurred"></paper-textarea>
       <marked-github-element hidden$="[[_hidePreview]]" markdown="[[markdown]]"></marked-github-element>
     </div>
     <paper-icon-button toggles icon="icons:visibility" hidden$="[[hideEdit]]" active="{{previewToggle}}" title="Toggle Markdown preview">[[_toggleText]]</paper-icon-button>
@@ -116,7 +116,8 @@ after toggling the preview showing the rendered markdown in real-time.
         label: String,
         previewToggle: {
           type: Boolean,
-          notify: true
+          notify: true,
+          observer: '_previewToggleChanged'
         },
         _hidePreview: {
           type: Boolean,
@@ -130,6 +131,13 @@ after toggling the preview showing the rendered markdown in real-time.
           type: Boolean,
           computed: '_showEdit(disabled, previewToggle)'
         }
+      },
+      _previewToggleChanged: function(newValue, oldValue) {
+        if (newValue)
+          return;
+        var position = this.$.textarea.$.input.$.textarea.value.length;
+        this.$.textarea.$.input.$.textarea.setSelectionRange(0, 0);
+        this.$.textarea.focus();
       },
       _getHidePreview: function(previewToggle, disabled) {
         var shouldBeHidden = !disabled && !previewToggle;
@@ -148,8 +156,12 @@ after toggling the preview showing the rendered markdown in real-time.
         } else {
           return previewToggle;
         }
+      },
+      _blurred: function() {
+        if (!(this.markdown.trim()))
+          return;
+        this.previewToggle = !this.previewToggle;
       }
-
     });
   </script>
 </dom-module>
