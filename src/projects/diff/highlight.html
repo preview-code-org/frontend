@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../project-behavior.html">
 <link rel="import" href="hunk-file.html">
 <link rel="import" href="hunk-ghost.html">
+<link rel="import" href="move-dialog.html">
 
 <dom-module id='pull-request-diff-highlight'>
   <template>
@@ -128,8 +129,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       reviewers-list {
         margin-left: 0.5em;
       }
-      paper-icon-button {
+      .btns {
         margin-left: auto;
+      }
+      paper-icon-button {
         -webkit-box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
         box-shadow: 0 0 4px 0 rgba(0,0,0,0.2);
         border-radius: 8px;
@@ -176,8 +179,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </hunk-file>
           </a>
         </span>
-        <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
-          hidden$="[[!_canUserApprove]]" toggles active="{{_approved}}"></paper-icon-button>
+        <span class="btns">
+          <paper-icon-button noink icon="icons:tab" title="Move this change to another group" on-tap="_promptToMove"></paper-icon-button>
+          <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
+            hidden$="[[!_canUserApprove]]" toggles active="{{_approved}}"></paper-icon-button>
+        </span>
         <reviewers-list small reviewers="[[reviewers]]"></reviewers-list>
       </div>
       <div class="content">
@@ -188,7 +194,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <pre><code id="codeView"></code></pre>
       </div>
     </collapsible-content>
-
     <hunk-ghost id="ghost" hunk-text="[[hunk.file.name]]"></hunk-ghost>
   </template>
 
@@ -277,7 +282,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var event = this.fire('syntax-highlight', {code: code, lang: 'diff'});
         return event.detail.code || code;
       },
-
       _getBackendApprovalPath: function(project, pullRequest) {
         if (project && pullRequest) {
           return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/approve';
@@ -317,13 +321,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this._approvals = e.detail.value;
         this._approved = this.githubUser && !!this._approvals[this.githubUser.id];
       },
-
       flash: function() {
         this.toggleClass('flash', true);
         setTimeout(function() {
           this.toggleClass('flash', false);
           this.fire('stopped-flashing');
         }.bind(this), 800);
+      },
+      _promptToMove: function(sender) {
+          this.fire('moveToGroup', { hunk: this.hunk });
       }
     });
   </script>

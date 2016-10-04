@@ -113,6 +113,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       on-confirm="_addGroup"
     ></input-dialog>
 
+    <move-dialog id="moveGroupDialog"
+      action-title="Move commit to another group"
+      items="[[orderedGroups]]"
+    ></move-dialog>
+
   </template>
   <script>
     Polymer({
@@ -154,7 +159,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'add': '_hunkAdded',
         'update': '_hunkUpdate',
         'orderUpdate': '_updateUI',
-        'rename': '_updateUI'
+        'rename': '_updateUI',
+        'moveToGroup': '_moveToGroup',
+        'groupSelected': '_groupSelected'
       },
       _openAddGroupDialog: function() {
         this.$.addGroupDialog.open();
@@ -218,8 +225,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.set('orderedGroups', []);
         this.set('orderedGroups', groups);
       },
+      _groupSelected: function(sender, args) {
+        var oldGroup = this.$$('#group-' + args.oldGroupId);
+        var newGroup = this.$$('#group-' + args.newGroupId);
+        var hunk = oldGroup.$$('#hunk-'+args.hunk.id.split('=').join('')).parentElement;
+        var oldHunks = oldGroup.$$('#hunks');
+        var newHunks = newGroup.$$('#hunks');
+        oldHunks.removeChild(hunk);
+        newHunks.appendChild(hunk);
+        this.$.sorter.addHunkToGroup(args.hunk, args.newGroupId, newHunks.children.length - 1);
+        this.$.sorter.removeHunkFromGroup(args.oldGroupId, args.hunk);
+      },
       getOrdering: function() {
         return this.$.sorter.getOrdering();
+      },
+      _moveToGroup: function(sender, args) {
+        var prg = sender.path.find(function(e){ return e.localName === 'pull-request-group';  });
+        this.$.moveGroupDialog.hunk = args.hunk;
+        this.$.moveGroupDialog.selected = prg.group.id;
+        this.$.moveGroupDialog.open();
       }
     });
   </script>
