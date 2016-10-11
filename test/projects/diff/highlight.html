@@ -127,7 +127,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               name: 'hunk'
             }
           };
-          elem.approvable = true;
+          elem.nonEdit = true;
           elem.collapsed = false;
           button = elem.$$('[icon="icons:thumb-up"]');
         });
@@ -136,8 +136,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           assert.equal(button.hidden, false);
         });
 
-        test('not when not approvable', function() {
-          elem.approvable = false;
+        test('not when not nonEdit', function() {
+          elem.nonEdit = false;
           assert.equal(button.hidden, true);
         });
 

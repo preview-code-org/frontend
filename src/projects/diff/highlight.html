@@ -180,7 +180,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </a>
         </span>
         <span class="btns">
-          <paper-icon-button noink icon="icons:tab" title="Move this change to another group" on-tap="_promptToMove"></paper-icon-button>
+          <paper-icon-button noink icon="icons:tab" title="Move this change to another group" on-tap="_promptToMove" hidden$="[[nonEdit]]"></paper-icon-button>
           <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
             hidden$="[[!_canUserApprove]]" toggles active="{{_approved}}"></paper-icon-button>
         </span>
@@ -207,14 +207,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         hunk: Object,
         pullRequest: Object,
         collapsed: Boolean,
-        approvable: {
+        nonEdit: {
           type: Boolean,
           value: false
         },
         _canUserApprove: {
           type: Boolean,
           value: false,
-          computed: '_getCanUserApprove(pullRequest.assignees, githubUser, approvable)'
+          computed: '_getCanUserApprove(pullRequest.assignees, githubUser, nonEdit)'
         },
         _approved: {
           type: Boolean,
