@@ -104,9 +104,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _dialogClosed: function(e) {
         e.stopPropagation();
-        if (!e.detail.confirmed || this.selected == this.$.groups.selected)
+        if (!e.detail.confirmed || this.selected === this.$.groups.selected)
           return;
-        this.fire('groupSelected', { hunk: this.hunk, oldGroupId: this.selected, newGroupId: this.$.groups.selected });
+        this.fire('groupSelected', {hunk: this.hunk, oldGroupId: this.selected, newGroupId: this.$.groups.selected});
       },
       open: function() {
         this.$.groups.selected = this.selected;

@@ -240,7 +240,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         return this.$.sorter.getOrdering();
       },
       _moveToGroup: function(sender, args) {
-        var prg = sender.path.find(function(e){ return e.localName === 'pull-request-group';  });
+        var prg = sender.path.find(function(e) {
+           return e.localName === 'pull-request-group';
+         });
         this.$.moveGroupDialog.hunk = args.hunk;
         this.$.moveGroupDialog.selected = prg.group.id;
         this.$.moveGroupDialog.open();

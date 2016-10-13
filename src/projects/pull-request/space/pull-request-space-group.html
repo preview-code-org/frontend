@@ -236,7 +236,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       moveArrows: function(deltaVect) {
-        this.forEachArrow(function(a, arrowPos) {
+        this.forEachArrow(function(a) {
           return this.add(a.originalPosition, deltaVect);
         }.bind(this));
       },

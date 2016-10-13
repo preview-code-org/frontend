@@ -55,7 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             setup(function() {
                 moveDialog = fixture('basic');
                 moveDialog.hunk = new Object();
-                moveDialog.selected = "guid";
+                moveDialog.selected = 'guid';
             });
 
             test('opens the dialog when moveDialog.open() is called', function(done) {
@@ -72,7 +72,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 causeEvent.detail = {
                     confirmed: true
                 };
-                moveDialog.$.groups.selected = "other";
+                moveDialog.$.groups.selected = 'other';
                 moveDialog.addEventListener('groupSelected', function() {
                     done();
                 });
@@ -84,7 +84,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 causeEvent.detail = {
                     confirmed: false
                 };
-                moveDialog.$.groups.selected = "other";
+                moveDialog.$.groups.selected = 'other';
                 moveDialog.addEventListener('groupSelected', function() {
                     assert.ok(false);
                 });
@@ -97,7 +97,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 causeEvent.detail = {
                     confirmed: true
                 };
-                moveDialog.$.groups.selected = "guid";
+                moveDialog.$.groups.selected = 'guid';
                 moveDialog.addEventListener('groupSelected', function() {
                     assert.ok(false);
                 });

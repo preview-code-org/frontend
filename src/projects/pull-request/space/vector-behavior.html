@@ -33,8 +33,12 @@ var VectorBehavior = (function() {
     var args = Array.prototype.slice.call(arguments);
     var f = args.pop();
     return {
-      x: f.apply(null, args.map(function(v) { return v.x })),
-      y: f.apply(null, args.map(function(v) { return v.y }))
+      x: f.apply(null, args.map(function(v) {
+        return v.x
+      })),
+      y: f.apply(null, args.map(function(v) {
+        return v.y
+      }))
     };
   };
 
@@ -72,14 +76,22 @@ var VectorBehavior = (function() {
       return {x: s, y: s};
     },
 
-    add: reduce(function(a,b) { return a+b; }),
+    add: reduce(function(a, b) {
+      return a+b;
+    }),
 
-    subtract: reduce(function(a,b) { return a-b; }),
+    subtract: reduce(function(a, b) {
+      return a-b;
+    }),
 
-    pairwiseMultiply: reduce(function(a, b) { return a*b; }),
+    pairwiseMultiply: reduce(function(a, b) {
+      return a*b;
+    }),
 
     scale: function(s, v) {
-      return map(v, function(a) { return s*a; });
+      return map(v, function(a) {
+        return s*a;
+      });
     },
 
     negate: function(v) {
@@ -87,7 +99,9 @@ var VectorBehavior = (function() {
     },
 
     abs: function(v) {
-      return map(v, function(a) { Math.abs(a); });
+      return map(v, function(a) {
+        Math.abs(a);
+      });
     },
 
     invert: function(v) {
@@ -113,7 +127,7 @@ var VectorBehavior = (function() {
     },
 
     average: function(v1, v2) {
-      return this.scale(0.5, this.add(v1,v2));
+      return this.scale(0.5, this.add(v1, v2));
     },
 
     /**

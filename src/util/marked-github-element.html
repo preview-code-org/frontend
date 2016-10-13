@@ -59,7 +59,7 @@ var SubstituteRenderedGitHubMarkdownBehavior = (function() {
         // Remove direct link in GitHub comment to our application
         {
           regex: /\<hr\>\n\<p\>Review this pull request.*\<\/p\>$/m,
-          callback: function(match) {
+          callback: function() {
             return '';
           }
         },

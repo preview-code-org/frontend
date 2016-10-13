@@ -240,7 +240,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
         e.indexSplices.forEach(function(s) {
           var currentPR = this.pullrequests.length - 1;
-          for (var i=s.index,l=s.index + s.addedCount;i<l;i++) {
+          for (var i=s.index, l=s.index + s.addedCount;i<l;i++) {
             var added = s.object[i];
             var index = parseInt(added.$key);
             // Firebase index is ordered from low to high

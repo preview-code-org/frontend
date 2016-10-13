@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var _this = this;
         function appendChildren() {
           // A reset was called while we were stamping
-          if (items != _this.items) {
+          if (items !== _this.items) {
             return;
           }
           var i = 0;
@@ -70,7 +70,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             // Trigger :empty selector in parents
             _this.style.display = 'block';
           }
-        };
+        }
         requestAnimationFrame(appendChildren);
       }
     });

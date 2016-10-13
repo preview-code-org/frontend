@@ -88,9 +88,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         // File was renamed
         } else if (fromFile !== toFile) {
           return {name: toFile, moved: true, from: fromFile};
-        } else {
-          return {name: toFile};
-        }
+        } return {name: toFile};
       }
 
       return function(diff) {

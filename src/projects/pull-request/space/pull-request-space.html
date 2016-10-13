@@ -153,19 +153,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           var event = e.detail.event;
           var vp = this.$.viewport;
           var currentMousePos = vp.clientToCanvasVector(event);
+          var delta;
           if (event.state === 'start') {
             lastElem = e.detail.elem;
-            var delta = vp.unzoom(this.toVector(event, 'dx', 'dy'));
+            delta = vp.unzoom(this.toVector(event, 'dx', 'dy'));
             startMousePos = this.subtract(currentMousePos, delta);
             originalPosition = vp.clientToCanvasVector(this.toVector(lastElem.getBoundingClientRect()));
             lastElem.style.zIndex = 5;
             lastElem.saveArrowPositions();
             this._updateElemTrackingPosition(lastElem, originalPosition, delta);
           } else if (event.state === 'track') {
-            var delta = this.subtract(currentMousePos, startMousePos);
+            delta = this.subtract(currentMousePos, startMousePos);
             this._updateElemTrackingPosition(lastElem, originalPosition, delta);
           } else if (event.state === 'end') {
-            var delta = this.subtract(currentMousePos, startMousePos);
+            delta = this.subtract(currentMousePos, startMousePos);
             this._updateElemTrackingPosition(lastElem, originalPosition, delta);
             lastElem.style.zIndex = 0;
             lastElem = undefined;
@@ -175,7 +176,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       })(),
 
       _handleLinkTracking: (function() {
-        var fromElem, originalPosition, fromPosition, toPosition, ghostArrow, direction;
+        var fromElem, fromPosition, ghostArrow;
 
         return function(e) {
           var event = e.detail.event;
@@ -204,8 +205,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             if (this._selectedGroup) {
               this._createLink(fromElem, this._selectedGroup, fromPosition, toPosition);
             }
-            for (var i = 0, l = this._blocks.length; i < l; i++) {
-              this._blocks[i].removeEventListener('mouseenter', this._blocks[i].selectCandidate);
+            for (var j = 0, k = this._blocks.length; j < k; j++) {
+              this._blocks[j].removeEventListener('mouseenter', this._blocks[j].selectCandidate);
             }
             this._removeArrow(ghostArrow);
           }
@@ -231,7 +232,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this._selectedGroup = e.detail
       },
 
-      _unselectGroup: function(e) {
+      _unselectGroup: function() {
         delete this._selectedGroup;
       },
 

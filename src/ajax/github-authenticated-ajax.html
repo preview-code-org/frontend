@@ -130,14 +130,14 @@ of params with oAuth tokens.
         shared.headerCache[this.refurl] = e.detail.request.xhr.getResponseHeader('ETag');
         // Cache responses to save the rate limit of the GitHub api
         if (e.detail.request.status === 304) {
-          this._retrievePreviousRequestFromCache(e);
+          this._retrievePreviousRequestFromCache();
         } else {
           this.fire('error', e.detail, {
             bubbles: this.bubbles
           });
         }
       },
-      _retrievePreviousRequestFromCache: function(e) {
+      _retrievePreviousRequestFromCache: function() {
         this._setLastResponse(shared.responseCache[this.refurl + 'page' + this.page]);
         // Inject our last response
         this.lastRequest._setResponse(this.lastResponse);

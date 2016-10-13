@@ -328,8 +328,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           this.fire('stopped-flashing');
         }.bind(this), 800);
       },
-      _promptToMove: function(sender) {
-          this.fire('moveToGroup', { hunk: this.hunk });
+      _promptToMove: function() {
+          this.fire('moveToGroup', {hunk: this.hunk});
       }
     });
   </script>

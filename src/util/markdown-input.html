@@ -132,10 +132,9 @@ after toggling the preview showing the rendered markdown in real-time.
           computed: '_showEdit(disabled, previewToggle)'
         }
       },
-      _previewToggleChanged: function(newValue, oldValue) {
+      _previewToggleChanged: function(newValue) {
         if (newValue)
           return;
-        var position = this.$.textarea.$.input.$.textarea.value.length;
         this.$.textarea.$.input.$.textarea.setSelectionRange(0, 0);
         this.$.textarea.focus();
       },
@@ -153,9 +152,8 @@ after toggling the preview showing the rendered markdown in real-time.
       _showEdit: function(disabled, previewToggle) {
         if (disabled) {
           return !disabled;
-        } else {
-          return previewToggle;
         }
+        return previewToggle;
       },
       _blurred: function() {
         if (!(this.markdown.trim()))
