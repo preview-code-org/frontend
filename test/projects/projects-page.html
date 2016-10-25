@@ -130,7 +130,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       test('shows pull request page when a pull request is selected', function() {
         projectPage.projectSelected = true;
         projectPage.pullRequestSelected = true;
-        assert.equal('pr', ironPages.selected);
+        assert.equal('overview', ironPages.selected);
       });
 
       test('shows closed prs when event is fired with closed', function() {
