@@ -42,6 +42,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <template>
     <style>
       :host {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+      }
+      .content {
         flex: 1;
         display: flex;
         max-width: 100%;
@@ -62,6 +67,44 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
       list-navigation:not([list-class='no-list']) + .filler {
         max-width: var(--project-list-width);
+      }
+      paper-tabs {
+        --paper-tabs-selection-bar-color: var(--secondary-action-red);
+        margin-left: -55px;
+        color: var(--secondary-action-red);
+        font-size: 13px;
+        flex: 1;
+      }
+      paper-tab {
+        @apply(--layout-flex-none);
+        padding: 0;
+        --paper-tab-ink: var(--secondary-action-red);
+      }
+      paper-tab a {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        text-decoration: none;
+        text-transform: uppercase;
+        color: var(--primary-text-color);
+        font-weight: 500;
+        padding: 0 20px;
+        height: 100%;
+      }
+      .paper-header {
+        z-index: 100;
+        display:flex;
+        background-color: var(--primary-background-color);
+        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
+        box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
+      }
+      paper-button {
+        margin: 4px;
+        float: right;
+        text-transform: none;
+        padding: 0;
+      }
+      paper-button:hover {
+        background: var(--anchor-hover-color);
       }
     </style>
     <app-route route="{{route}}" pattern="/:owner/:name" data="{{projectTitle}}" tail="{{nameTail}}" active="{{projectSelected}}"></app-route>
@@ -94,23 +137,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       refurl="https://api.github.com/user/repos"
       last-response="{{projects}}"></github-authenticated-ajax>
 
-    <list-navigation
-        route="[[route]]" show-projects-list="{{showProjectsList}}"
-        show-pull-list="{{showPullList}}" selected-pull="[[selectedPull]]"
-        name-tail="{{nameTail}}" project="[[projectTitle]]"
-        projects="[[projects]]" pullrequests="[[pullrequests]]"
-        on-opened-project="_focusProject"></list-navigation>
-    <div class="filler"></div>
-    <iron-pages
-        class="project"
-        selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
-        attr-for-selected="data-route"
-        on-tap="_tapHideProjectList">
-      <no-project-selected data-route="no-selected"></no-project-selected>
-      <project-overview-page data-route="overview" tabindex="0"
-          route="{{nameTail}}" pullrequests="[[pullrequests]]" github-user="[[githubUser]]"></project-overview-page>
-      <pull-request-page data-route="pr" selected-pull="[[selectedPull]]" route="{{prTail}}" github-user="[[githubUser]]"></pull-request-page>
-    </iron-pages>
+
+    <div class="paper-header">
+      <paper-tabs selected="{{page.page}}" scrollable attr-for-selected="data-route">
+        <paper-tab data-route="">
+          <a href="/">Home</a>
+        </paper-tab>
+        <paper-tab data-route="projects">
+          <a href$="[[route.prefix]]">My projects</a>
+        </paper-tab>
+      </paper-tabs>
+      <paper-button on-tap="_signout">Sign out</paper-button>
+    </div>
+    <div class="content">
+      <list-navigation
+          route="[[route]]" show-projects-list="{{showProjectsList}}"
+          show-pull-list="{{showPullList}}" selected-pull="[[selectedPull]]"
+          name-tail="{{nameTail}}" project="[[projectTitle]]"
+          projects="[[projects]]" pullrequests="[[pullrequests]]"
+          on-opened-project="_focusProject"></list-navigation>
+      <div class="filler"></div>
+      <iron-pages
+          class="project"
+          selected="[[_getCurrentView(projectSelected, pullRequestSelected)]]"
+          attr-for-selected="data-route"
+          on-tap="_tapHideProjectList">
+        <no-project-selected data-route="no-selected"></no-project-selected>
+        <project-overview-page data-route="overview" tabindex="0"
+            route="{{nameTail}}" pullrequests="[[pullrequests]]" github-user="[[githubUser]]"></project-overview-page>
+        <pull-request-page data-route="pr" selected-pull="[[selectedPull]]" route="{{prTail}}" github-user="[[githubUser]]"></pull-request-page>
+      </iron-pages>
+    </div>
   </template>
   <script>
   /*global ProjectBehavior*/
@@ -165,6 +222,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'PRStateFilter-updated': '_changePRStateFilter',
         'force-hide-list': '_hideBothLists',
         'pull-request-list-end-reached': '_incrementPageAndRetrievePRs'
+      },
+      _signout: function() {
+        this.fire('sign-out');
       },
       chooseProject: function(projects, projectTitle) {
         var owner = projectTitle.value.owner;
