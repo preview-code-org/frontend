@@ -46,20 +46,59 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <test-fixture id='feature-bar-fixture'>
     <template>
       <feature-bar>
-
+        <div class="content">
+        </div>
+        <div feature="f1"><span id="f1">Feature 1</span></div>
+        <div feature="f2"><span id="f2">Feature 2</span></div>
+        <div feature="f3"><span id="f3">Feature 3</span></div>
+        <div feature="f4"><span id="f4">Feature 4</span></div>
       </feature-bar>
     </template>
   </test-fixture>
 
   <script>
     suite('<projects-page>', function() {
+      var elem;
 
       setup(function() {
+        elem = fixture('feature-bar-fixture');
       });
 
-      test('', function() {
+      test('has paper-tabs', function() {
+        var tabs = Polymer.dom(elem.root).querySelectorAll('paper-tab');
+        assert.equal(tabs.length, 4);
       });
 
+      test('paper-tabs have correct feature attribute', function() {
+        var tabs = Polymer.dom(elem.root).querySelectorAll('paper-tab');
+        for (var i = 0, l = tabs.length; i < l; i++) {
+          assert.equal(tabs[i].getAttribute('feature'), 'f'+(i+1));
+        }
+      });
+
+      test('Tap on a tab changes the selected feature', function(done) {
+        flush(function() {
+          elem.addEventListener('selected-feature-changed', function() {
+            assert.equal(elem.selectedFeature, 'f2');
+            done();
+          });
+
+          var tab = Polymer.dom(elem.root).querySelectorAll('paper-tab');
+          MockInteractions.tap(tab[1]);
+        });
+      });
+
+      test('Tap on a tab changes the selected feature to the last', function(done) {
+        flush(function() {
+          elem.addEventListener('selected-feature-changed', function() {
+            assert.equal(elem.selectedFeature, 'f4');
+            done();
+          });
+
+          var tab = Polymer.dom(elem.root).querySelectorAll('paper-tab');
+          MockInteractions.tap(tab[3]);
+        });
+      });
 
     });
   </script>
