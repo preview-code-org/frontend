@@ -223,6 +223,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'force-hide-list': '_hideBothLists',
         'pull-request-list-end-reached': '_incrementPageAndRetrievePRs'
       },
+      _signout: function() {
+        this.fire('sign-out');
+      },
       chooseProject: function(projects, projectTitle) {
         var owner = projectTitle.value.owner;
         var name = projectTitle.value.name;

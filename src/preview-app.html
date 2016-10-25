@@ -145,7 +145,8 @@ Prism.languages.diff.other = /.+/m;
     listeners: {
       'github-token': '_setToken',
       'go-login-github': '_signInWithGitHub',
-      'check-signed-in-failed': '_toHome'
+      'check-signed-in-failed': '_toHome',
+      'sign-out': '_signout'
     },
     attached: function() {
       // On page-load, we may or may not be signed in.
