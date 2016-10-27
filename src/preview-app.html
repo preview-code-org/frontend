@@ -63,45 +63,15 @@ Prism.languages.diff.other = /.+/m;
       [hidden] {
         display: none !important;
       }
-      paper-tabs {
-        --paper-tabs-selection-bar-color: var(--secondary-action-red);
-        margin-left: -55px;
-        color: var(--secondary-action-red);
-        font-size: 13px;
-        flex: 1;
-      }
-      paper-tab {
-        @apply(--layout-flex-none);
-        padding: 0;
-        --paper-tab-ink: var(--secondary-action-red);
-      }
-      paper-tab a {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-        text-decoration: none;
-        text-transform: uppercase;
-        color: var(--primary-text-color);
-        font-weight: 500;
-        padding: 0 20px;
-        height: 100%;
-      }
       .spacer {
         @apply(--layout);
         @apply(--layout-flex-auto);
         @apply(--layout-center-center);
       }
-
-      paper-header-panel {
+      .main {
         display: flex;
         flex-direction: column;
         height: 100vh;
-      }
-      .paper-header {
-        z-index: 100;
-        display:flex;
-        background-color: var(--primary-background-color);
-        -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
-        box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
       }
       iron-lazy-pages {
         flex: 1;
@@ -121,15 +91,6 @@ Prism.languages.diff.other = /.+/m;
         height: 50px;
         width: 50px;
       }
-      paper-button {
-        margin: 4px;
-        float: right;
-        text-transform: none;
-        padding: 0;
-      }
-      paper-button:hover {
-        background: var(--anchor-hover-color);
-      }
     </style>
     <app-location route="{{route}}"></app-location>
     <app-route route="{{route}}" pattern="/:page" data="{{page}}" tail="{{tail}}"></app-route>
@@ -145,21 +106,7 @@ Prism.languages.diff.other = /.+/m;
 
     <prism-highlighter></prism-highlighter>
 
-    <paper-header-panel>
-      <div class="paper-header">
-        <template is="dom-if" if="[[!_equals('',page.page)]]">
-          <paper-tabs selected="{{page.page}}" scrollable attr-for-selected="data-route">
-            <paper-tab data-route="">
-              <a href$="[[route.prefix]]/">Home</a>
-            </paper-tab>
-            <paper-tab data-route="projects">
-              <a href$="[[route.prefix]]/projects">My projects</a>
-            </paper-tab>
-          </paper-tabs>
-          <paper-button on-tap="_signout">Sign out</paper-button>
-        </template>
-      </div>
-
+    <div class="main">
       <div class="loading" hidden$="[[!firebaseLoading]]">
         <span>Logging in...</span>
         <paper-spinner active></paper-spinner>
@@ -183,7 +130,7 @@ Prism.languages.diff.other = /.+/m;
           <a href="/">Head back home</a>
         </template>
       </iron-lazy-pages>
-    </paper-header-panel>
+    </div>
   </template>
   <script>
   Polymer({
@@ -198,7 +145,8 @@ Prism.languages.diff.other = /.+/m;
     listeners: {
       'github-token': '_setToken',
       'go-login-github': '_signInWithGitHub',
-      'check-signed-in-failed': '_toHome'
+      'check-signed-in-failed': '_toHome',
+      'sign-out': '_signout'
     },
     attached: function() {
       // On page-load, we may or may not be signed in.
