@@ -99,11 +99,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           var feature = featureElem.getAttribute('feature');
           tab.setAttribute('feature', feature);
 
-          for(var i=0, l=featureElem.children.length; i < l; i++) {
+          for (var i=0, l=featureElem.children.length; i < l; i++) {
             tab.appendChild(featureElem.children[i]);
           }
           Polymer.dom(this.$.tabs).appendChild(tab);
-          lastFeature = feature;
+          var lastFeature = feature;
         }.bind(this));
       }
     });
