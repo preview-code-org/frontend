@@ -65,6 +65,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       paper-spinner:not([active]) {
         display: none;
       }
+      #diffInformation {
+        padding: 2em;
+        border-bottom: solid 1px var(--secondary-background-color);
+        background-color: var(--primary-background-color);
+        visible:none;
+      }
     </style>
     <github-authenticated-ajax
       id="ajaxBranches"
@@ -111,6 +117,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           selected="{{headBranch}}"
           ></branch-selector>
       </div>
+      
+      <div id="diffInformation"/>
 
       <project-create-pull-request-description
         id="description"
@@ -172,8 +180,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _reset: function() {
         this.baseBranch = 'master';
         this.headBranch = '<select branch>';
-        this.$.diffView.hide();
-        this.$.description.hide();
+        this._resetCreation(false);
+      },
+      _resetCreation: function(enable, message) {
+        if (enable) {
+          this.$.diffView.show();
+          this.$.description.show();
+          this.$.diffInformation.innerText = '';
+          this.$.diffInformation.hidden = true;        
+        } else {
+          this.$.diffView.hide();
+          this.$.description.hide();
+          if (message) {
+            this.$.diffInformation.innerText = message;          
+            this.$.diffInformation.hidden = false;
+          }   
+        }
       },
       _fetchBranchesAndCollaborators: function() {
         this.$.ajaxBranches.generateRequest();
@@ -181,7 +203,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _fetchDiff: function(baseBranch, headBranch) {
         if (headBranch && headBranch !== '<select branch>') {
-          this.$.ajaxDiff.generateRequest();
+          var enable = (headBranch !== baseBranch);
+          if (enable)
+            this.$.ajaxDiff.generateRequest();
+          else
+            this._resetCreation(false, 'Please select different branches.');
         }
       },
       _branchNames: function(branches) {
@@ -193,8 +219,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.headBranchSelector.focus();
       },
       _showPullRequestInformation: function() {
-        this.$.diffView.show();
-        this.$.description.show();
+        this._resetCreation(this.$.diffView.diff, '\'' + this.headBranch + '\' does not differ from \'' + this.baseBranch + '\'.');
       },
       _createPullRequest: function() {
         if (!this.title) {
