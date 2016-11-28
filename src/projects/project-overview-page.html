@@ -34,36 +34,47 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="create-pull-request/create-pull-request.html">
 <link rel="import" href="project-behavior.html">
 <link rel="import" href="project-activity.html">
-<link rel="import" href="info-header.html">
+<link rel="import" href="feature-bar.html">
 
 <dom-module id="project-overview-page">
   <template>
     <style>
       :host {
-        display: block;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        height: 100%
       }
       .description {
         margin-top: 1em;
         font-size: 1em;
         color: var(--secondary-text-color);
       }
+
+      iron-pages {
+        flex: 1;
+        overflow-x: hidden;
+        overflow-y: scroll;
+      }
+      iron-pages > * {
+        display: flex;
+        flex-direction: column;
+        @apply(--constraint-width);
+        margin-top: 2em;
+      }
+
       paper-tabs {
-        display: block;
-        justify-content: center;
-        @apply(--layout-self-end);
-        --paper-tabs-selection-bar-color: var(--secondary-action-red);
-        color: var(--secondary-action-red);
+        --paper-tabs-selection-bar-color: var(--anchor-color);
+        color: var(--primary-text-color);
         font-size: 1em;
-        width: 300px;
-        margin: 0 auto;
       }
       paper-tab {
         padding: 0;
-        --paper-tab-ink: var(--secondary-action-red);
-        text-transform: uppercase;
+        --paper-tab-ink: var(--anchor-color);
         font-weight: 500;
       }
-      paper-tab a {
+
+      a {
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
         text-decoration: none;
@@ -71,46 +82,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         padding: 0 20px;
         height: 100%;
       }
-      iron-pages {
-        @apply(--constraint-width);
+
+      feature-bar .content h2 {
+        margin-top: 0;
       }
-      .subtitle span {
-        display: block;
-        margin-bottom: 5px;
+      feature-bar .content {
+        display: flex;
+      }
+      feature-bar .content .title {
+        font-style: italic;
       }
     </style>
 
     <app-route route="{{route}}" pattern="/:page" data="{{page}}"></app-route>
 
-    <info-header title="[[project.owner]] / [[project.name]]">
-      <span class="subtitle">
-        <span>[[project._actual.description]]</span>
-
+    <feature-bar selected-feature={{page.page}}>
+      <div class="content">
+        <h2 class="title">[[project.owner]] / [[project.name]]</h2>
+        <span class="description">[[project._actual.description]]</span>
         <span>SSH clone url: [[project._actual.ssh_url]]</span>
-      </span>
-
-      <paper-tabs selected="[[page.page]]" class="bottom self-end" attr-for-selected="data-route">
-        <paper-tab data-route="activity">
-          <a href$="[[route.prefix]]/activity">Activity</a>
-        </paper-tab>
-        <paper-tab data-route="pulls">
-          <a href$="[[route.prefix]]/createpull">Create pull request</a>
-        </paper-tab>
-      </paper-tabs>
-    </info-header>
+      </div>
+      <div feature="activity">
+        <a href$="[[route.prefix]]/activity">Activity</a>
+      </div>
+      <div feature="createpull">
+        <a href$="[[route.prefix]]/createpull">Create pull request</a>
+      </div>
+    </feature-bar>
 
     <iron-pages selected="[[page.page]]"
                 attr-for-selected="data-route"
-                fallback-selection="404">
+                fallback-selection="activity">
       <project-activity data-route="activity"></project-activity>
       <project-create-pull-request data-route="createpull" github-user="[[githubUser]]"></project-create-pull-request>
-      <span data-route="404">
-        Oops you hit a 404!
-        <a href="/">Head back home</a>
-      </span>
     </iron-pages>
-
-
   </template>
   <script>
   /*global ProjectBehavior*/

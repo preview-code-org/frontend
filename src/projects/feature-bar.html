@@ -28,74 +28,83 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 
-<dom-module id="info-header">
+<dom-module id="feature-bar">
   <template>
     <style>
       :host {
-        @apply(--constraint-width);
-        display: block;
-        padding-top: 2em;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
         color: var(--primary-text-color);
+        background-color: var(--primary-background-color);
         z-index: 1;
-        will-change: width;
-      }
-      :host header {
-        -webkit-transition: all 0.3s ease;
-        -moz-transition: all 0.3s ease;
-        -ms-transition: all 0.3s ease;
-        -o-transition: all 0.3s ease;
-        transition: all 0.3s ease;
-      }
-      :host([collapsed]) {
         -webkit-box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.25);
-        background-color: var(--primary-background-color);
-        padding-top: 0;
-        @apply(--full-width);
       }
       header {
-        margin: 0 auto 2em auto;
-        text-align: center;
+        padding: 1.5em;
+        padding-bottom: 0;
+        align-self: stretch;
       }
-      header[hidden] {
-        display: none;
-      }
-      header h1,
-      header h2 {
-        text-align: center;
-      }
-      header h1 {
-        font-size: 2em;
+      paper-tabs {
+        --paper-tabs-selection-bar-color: var(--anchor-color);
         color: var(--primary-text-color);
-        margin: 0;
-      }
-      header h2 {
         font-size: 1em;
-        color: var(--secondary-text-color);
+      }
+      paper-tab {
+        padding: 0;
+        --paper-tab-ink: var(--anchor-color);
+        font-weight: 500;
+      }
+
+      a {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        text-decoration: none;
+        color: var(--primary-text-color);
+        padding: 0 1.5em;
+        height: 100%;
       }
     </style>
 
-    <header id="header" hidden$="[[collapsed]]">
-      <h1>[[title]]</h1>
-      <h2><content select=".subtitle"></content></h2>
+    <header>
+      <content select=".content"></content>
     </header>
+    <paper-tabs
+      id="tabs"
+      selected="{{selectedFeature}}"
+      attr-for-selected="feature"
+      autoselect>
+    </paper-tabs>
 
-    <div class=".tab-area">
-      <content></content>
+    <div hidden class="skeleton">
+      <content id="skeleton" select="*"></content>
     </div>
-
   </template>
   <script>
     Polymer({
-      is: 'info-header',
-      properties: {
-        title: String,
-        collapsed: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
+        is: 'feature-bar'
+      , properties: {
+          title: String
+        , selectedFeature: {
+            type: String
+          , notify: true
         }
+      }
+      , attached: function() {
+        this.getContentChildren('#skeleton').forEach(function(featureElem) {
+          var tab = document.createElement('paper-tab');
+          var feature = featureElem.getAttribute('feature');
+          tab.setAttribute('feature', feature);
+
+          for (var i=0, l=featureElem.children.length; i < l; i++) {
+            tab.appendChild(featureElem.children[i]);
+          }
+          Polymer.dom(this.$.tabs).appendChild(tab);
+          var lastFeature = feature;
+        }.bind(this));
       }
     });
   </script>

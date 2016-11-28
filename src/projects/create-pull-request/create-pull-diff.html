@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../util/fade-in-behavior.html">
 <link rel="import" href="../diff/diff.html">
-<link rel="import" href="../info-header.html">
 
 <dom-module id="project-create-pull-diff">
   <template>
@@ -46,9 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         margin: 10px auto;
       }
     </style>
-    <info-header title="Describe your changes">
-      <span class="subtitle">You can drag the diff sections to re-order them for reviewers.</span>
-    </info-header>
+    <span class="subtitle">You can drag the diff sections to re-order them for reviewers.</span>
     <pull-request-diff id="changes" editable diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" github-user="[[githubUser]]"></pull-request-diff>
     <paper-spinner active="[[loading]]"></paper-spinner>
     <paper-button on-tap="_createPR" raised disabled="[[loading]]">Create pull request</paper-button>
