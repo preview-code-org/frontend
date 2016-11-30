@@ -98,20 +98,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         assert.isOk(get('markdown-input'));
       });
 
-      test('has user element', function() {
-        assert.isOk(get('a-user'));
-      });
-
-      test('has head branch element', function() {
-        var headElem = get('.head');
-        assert.equal(headElem.tagName, 'BRANCH-TAG')
-      });
-
-      test('has base branch element', function() {
-        var baseElem = get('.base')
-        assert.equal(baseElem.tagName, 'BRANCH-TAG')
-      });
-
       test('has reviewers list element', function() {
         assert.isOk(get('pull-request-reviewers'));
       });
@@ -127,21 +113,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       test('sets description to markdown element', function() {
         var mdElem = get('markdown-input');
         assert.equal(mdElem.markdown, examplePull.body);
-      });
-
-      test('sets user Object to <a-user> element', function() {
-        var userElem = get('a-user');
-        assert.deepEqual(userElem.user, examplePull.user);
-      });
-
-      test('sets base branch to <branch-tag> element', function() {
-        var baseElem = get('.base');
-        assert.deepEqual(baseElem.branch, examplePull.base.label);
-      });
-
-      test('sets base branch to <branch-tag> element', function() {
-        var headElem = get('.head');
-        assert.deepEqual(headElem.branch, examplePull.head.label);
       });
 
       var get = function(selector) {

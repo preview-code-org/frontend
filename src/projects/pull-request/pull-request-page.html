@@ -213,9 +213,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <div class="subtitle">
               <list-item-label class$="state [[selectedPull.state]]" type="box">[[selectedPull.state]]</list-item-label>
               <span><a-user user="[[selectedPull.user]]"></a-user> wants to merge into</span>
-              <branch-tag branch="[[baseBranchStr]]"></branch-tag>
+              <branch-tag class="base" branch="[[baseBranchStr]]"></branch-tag>
               <span>from</span>
-              <branch-tag branch="[[headBranchStr]]"></branch-tag>
+              <branch-tag class="head" branch="[[headBranchStr]]"></branch-tag>
               <list-item-label class="additions" type="info">+[[selectedPull.additions]]</list-item-label>
               <list-item-label class="deletions" type="info">-[[selectedPull.deletions]]</list-item-label>
             </div>

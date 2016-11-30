@@ -125,6 +125,38 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         elem.set('page.page', 'space');
       });
 
+      test('has user element', function() {
+        assert.isOk(get('a-user'));
+      });
+
+      test('has head branch element', function() {
+        var headElem = get('.head');
+        assert.equal(headElem.tagName, 'BRANCH-TAG')
+      });
+
+      test('has base branch element', function() {
+        var baseElem = get('.base')
+        assert.equal(baseElem.tagName, 'BRANCH-TAG')
+      });
+
+      test('sets user Object to <a-user> element', function() {
+        var userElem = get('a-user');
+        elem.selectedPull = examplePull;
+        assert.deepEqual(userElem.user, examplePull.user);
+      });
+
+      test('sets base branch to <branch-tag> element', function() {
+        var baseElem = get('.base');
+        elem.selectedPull = examplePull;
+        assert.deepEqual(baseElem.branch, examplePull.base.label);
+      });
+
+      test('sets base branch to <branch-tag> element', function() {
+        var headElem = get('.head');
+        elem.selectedPull = examplePull;
+        assert.deepEqual(headElem.branch, examplePull.head.label);
+      });
+
       var get = function(selector) {
         return Polymer.dom(elem.root).querySelector(selector);
       }
