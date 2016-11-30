@@ -35,6 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../feature-bar.html">
 <link rel="import" href="../project-behavior.html">
+<link rel="import" href="../../util/to-date-string-behavior.html">
+<link rel="import" href="../../list-items/list-item-label.html">
 <link rel="import" href="pull-request-general-information.html">
 <link rel="import" href="pull-request-changes.html">
 <link rel="import" href="pull-request-commits.html">
@@ -112,12 +114,80 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         transition: all 0.5s ease;
       }
 
+      feature-bar .content {
+        display: flex;
+      }
       feature-bar .content .title {
         margin-top: 0;
       }
-      feature-bar .content > div {
+      feature-bar .content .title > *:not(:last-child) {
+        margin-right: 0.5em;
+      }
+      feature-bar .content .title h2 {
+        display: inline;
+        vertical-align: baseline;;
+      }
+      feature-bar .content .subtitle {
+        font-size: 14px;
+      }
+      feature-bar .content > .info {
         display: flex;
+        flex-direction: column;
+        flex-grow: 1;
         justify-content: space-between;
+        overflow: hidden;
+      }
+      feature-bar .content > .info > div > *:not(:last-child) {
+        margin-bottom: 0.5em;
+      }
+      feature-bar .content > .info > div {
+        width: 100vw;
+      }
+
+      header > * {
+        vertical-align: middle;
+      }
+      list-item-label {
+        margin: 0;
+        font-size: 0.9em;
+        line-height: 1.4em;
+      }
+      .state {
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+      .state.open {
+        --tag-color: var(--primary-action-green);
+      }
+      .state.closed {
+        --tag-color: var(--primary-action-red);
+      }
+      .additions, .deletions {
+        font-family: 'Roboto Mono';
+        font-size: 14px;
+        font-weight: 300
+      }
+      .additions {
+        margin-left: 0.5em;
+        color: var(--pr-addition-color);
+      }
+      .deletions {
+        color: var(--pr-deletion-color);
+      }
+      branch-tag {
+        --tag-color: var(--secondary-background-color);
+        --tag-text-color: var(--primary-text-color);
+      }
+      .contributor-avatar img {
+        @apply(--avatar-image);
+        width: 64px;
+        height: 64px;
+      }
+      .contributor-avatar {
+
+        -webkit-box-shadow: -20px 0 20px 0px rgb(255, 255, 255);
+        -moz-box-shadow: -20px 0 20px 0px rgb(255, 255, 255);
+        box-shadow: -20px 0 20px 0px rgb(255, 255, 255);
       }
     </style>
 
@@ -134,9 +204,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <feature-bar selected-feature={{page.page}}>
       <div class="content">
-        <div>
-          <h2 class="title">[[selectedPull.title]]</h2>
-          <span><img src$="[[selectedPull.user.avatar_url]]" width="24px" height="24px" alt$="[[selectedPull.user.login]]"/>[[selectedPull.user.login]]</span>
+        <div class="info">
+          <div>
+            <div class="title">
+              <h2>[[selectedPull.title]]</h2>
+              <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(selectedPull.created_at)]] ago</list-item-label>
+            </div>
+            <div class="subtitle">
+              <list-item-label class$="state [[selectedPull.state]]" type="box">[[selectedPull.state]]</list-item-label>
+              <span><a-user user="[[selectedPull.user]]"></a-user> wants to merge into</span>
+              <branch-tag branch="[[baseBranchStr]]"></branch-tag>
+              <span>from</span>
+              <branch-tag branch="[[headBranchStr]]"></branch-tag>
+              <list-item-label class="additions" type="info">+[[selectedPull.additions]]</list-item-label>
+              <list-item-label class="deletions" type="info">-[[selectedPull.deletions]]</list-item-label>
+            </div>
+          </div>
+        </div>
+        <div class="contributor-avatar">
+          <img src$="[[selectedPull.user.avatar_url]]" alt$="[[selectedPull.user.login]]"/>
         </div>
       </div>
       <div feature="overview">
@@ -171,9 +257,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </template>
   <script>
   /*global ProjectBehavior*/
+  /*global ToDateStringBehavior*/
     Polymer({
       is: 'pull-request-page',
-      behaviors: [ProjectBehavior],
+      behaviors: [ProjectBehavior, ToDateStringBehavior],
+      observers: [
+        'updateStyles(selectedPull.state)',
+        'updateBranchStrings(selectedPull)'
+      ],
       properties: {
         githubUser: Object,
         route: Object,
@@ -193,7 +284,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         orderedGroups: Array,
         generalComments: Array,
-        groupComments: Array
+        groupComments: Array,
+        baseBranchStr: String,
+        headBranchStr: String
       },
       _getSelectedTab: function(page) {
         if (page === 'space') {
@@ -211,6 +304,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _fetchAjax: function(pullRequest) {
         if (pullRequest) {
           this.$.ajaxDiff.generateRequest();
+        }
+      },
+      updateBranchStrings: function(pullRequest) {
+        var stripped = this._stripCommonRepo(pullRequest.base.label, pullRequest.head.label);
+        this.baseBranchStr = stripped.first;
+        this.headBranchStr = stripped.second;
+      },
+      _stripCommonRepo: function(str1, str2) {
+        var branch1 = str1.split(":")
+        var branch2 = str2.split(":")
+        if (branch1[0] == branch2[0]) {
+          return {first: branch1[1], second: branch2[1]}
+        } else {
+          return {first: str1, second: str2}
         }
       }
     });
