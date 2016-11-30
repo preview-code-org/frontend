@@ -312,13 +312,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.headBranchStr = stripped.second;
       },
       _stripCommonRepo: function(str1, str2) {
-        var branch1 = str1.split(":")
-        var branch2 = str2.split(":")
-        if (branch1[0] == branch2[0]) {
+        var branch1 = str1.split(':')
+        var branch2 = str2.split(':')
+        if (branch1[0] === branch2[0]) {
           return {first: branch1[1], second: branch2[1]}
-        } else {
-          return {first: str1, second: str2}
         }
+        return {first: str1, second: str2}
       }
     });
   </script>
