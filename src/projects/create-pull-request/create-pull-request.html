@@ -26,10 +26,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html">
-<link rel="import" href="../../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../util/marked-github-element.html">
 <link rel="import" href="../../util/branch-selector.html">
+<link rel="import" href="../../util/branch-tag.html">
 <link rel="import" href="../../util/markdown-input.html">
 <link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../../ajax/backend-ajax.html">
@@ -69,7 +71,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         padding: 2em;
         border-bottom: solid 1px var(--secondary-background-color);
         background-color: var(--primary-background-color);
-        visible:none;
       }
     </style>
     <github-authenticated-ajax
@@ -117,8 +118,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           selected="{{headBranch}}"
           ></branch-selector>
       </div>
-      
-      <div id="diffInformation"/>
+
+      <div id="diffInformation" hidden>
+        <div>
+          <branch-tag branch="[[baseBranch]]"></branch-tag>
+          is up-to-date with all commits on
+          <branch-tag branch="[[headBranch]]"></branch-tag>
+        </div>
+        <div>
+          Select different branches to create a pull request.
+        </div>
+      </div>
 
       <project-create-pull-request-description
         id="description"
@@ -180,22 +190,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _reset: function() {
         this.baseBranch = 'master';
         this.headBranch = '<select branch>';
-        this._resetCreation(false);
       },
-      _resetCreation: function(enable, message) {
-        if (enable) {
+      _enableCreation: function() {
           this.$.diffView.show();
           this.$.description.show();
-          this.$.diffInformation.innerText = '';
-          this.$.diffInformation.hidden = true;        
-        } else {
-          this.$.diffView.hide();
-          this.$.description.hide();
-          if (message) {
-            this.$.diffInformation.innerText = message;          
-            this.$.diffInformation.hidden = false;
-          }   
-        }
+          this.$.diffInformation.hidden = true;
+      },
+      _disableCreation: function() {
+        this.$.diffView.hide();
+        this.$.description.hide();
+        this.$.diffInformation.hidden = false;
       },
       _fetchBranchesAndCollaborators: function() {
         this.$.ajaxBranches.generateRequest();
@@ -207,7 +211,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           if (enable)
             this.$.ajaxDiff.generateRequest();
           else
-            this._resetCreation(false, 'Please select different branches.');
+            this._disableCreation();
         }
       },
       _branchNames: function(branches) {
@@ -219,7 +223,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.headBranchSelector.focus();
       },
       _showPullRequestInformation: function() {
-        this._resetCreation(this.$.diffView.diff, '\'' + this.headBranch + '\' does not differ from \'' + this.baseBranch + '\'.');
+        if (this.$.diffView.diff) {
+          this._enableCreation()
+        } else {
+          this._disableCreation()
+        }
       },
       _createPullRequest: function() {
         if (!this.title) {
