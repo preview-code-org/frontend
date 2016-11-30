@@ -137,6 +137,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       refurl="https://api.github.com/user/repos"
       last-response="{{projects}}"></github-authenticated-ajax>
 
+    <github-authenticated-ajax
+      id="getProject"
+      refurl="https://api.github.com/repos/[[projectTitle.owner]]/[[projectTitle.name]]"
+      last-response="{{tempProject}}"
+      ></github-authenticated-ajax>
+
     <div class="paper-header">
       <paper-tabs selected="{{page.page}}" scrollable attr-for-selected="data-route">
         <paper-tab data-route="">
@@ -169,6 +175,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </iron-pages>
 
     </div>
+
   </template>
   <script>
   /*global ProjectBehavior*/
@@ -217,7 +224,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         'chooseProject(projects, projectTitle.*)',
         '_showProjectList(subPage)',
         '_showPullsList(projectSelected)',
-        '_retrieveNewPullRequests(pullRequestsApiPath)'
+        '_retrieveNewPullRequests(pullRequestsApiPath)',
+        '_setProject(tempProject)'
       ],
       listeners: {
         'PRStateFilter-updated': '_changePRStateFilter',
@@ -243,9 +251,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         })[0];
         if (!project) {
           this.activeProject = null;
+          this.$.getProject.generateRequest();
           return;
         }
 
+        this.pullRequestPagination = 1;
+        this._lastPage = undefined;
+        this._setProject(project);
+      },
+      _setProject: function(project) {
         this.activeProject = {
           owner: project.owner.login,
           name: project.name,
@@ -253,9 +267,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         };
         ProjectBehavior.setProject(this.activeProject);
         this.$.ajaxAssignees.generateRequest();
-
-        this.pullRequestPagination = 1;
-        this._lastPage = undefined;
       },
       _insertAssignees: function(e) {
         ProjectBehavior.setProjectField('assignees', e.detail.response);
