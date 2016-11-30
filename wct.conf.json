@@ -10,7 +10,7 @@
         "/src/**/*.html"
       ],
       "exclude": [
-        "/src/bower_components/**"
+        "/bower_components/**"
       ]
     }
   }

@@ -26,9 +26,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
 
 <!--
 Authentication endpoint for Firebase to handle login logic and storage
@@ -50,6 +50,7 @@ of the GitHub oAuth token.
         app-name="preview-code"
         provider="github"
         signed-in="{{signedIn}}"
+        status-known="{{statusKnown}}"
         ></firebase-auth>
     <iron-localstorage name="token-storage"
         value="{{_tokens}}"
@@ -72,11 +73,11 @@ of the GitHub oAuth token.
         },
         signedIn: Boolean,
         _tokens: Object,
-        waitingForSignIn: Boolean
+        statusKnown: Boolean
       },
 
       observers: [
-        '_onSignInChange(waitingForSignIn, signedIn)'
+        '_onSignInChange(signedIn, statusKnown)'
       ],
 
       attached: function() {
@@ -94,7 +95,8 @@ of the GitHub oAuth token.
         } else {
           provider.addScope('public_repo');
         }
-        this.$.auth.signInWithRedirect(provider);
+        this.loading = true;
+        this.$.auth.signInWithPopup(provider).then(this.checkSignedIn.bind(this));
       },
 
       /**
@@ -104,23 +106,18 @@ of the GitHub oAuth token.
        * If the GitHub token is present in local-storage, we wait for firebase
        * to confirm the signin. If not, we notify that the user was not signed in.
        */
-      checkSignedIn: function() {
-        this.loading = true;
-        this.$.auth.auth.getRedirectResult().then(function(result) {
-          var redirectDone = !!result.credential;
-          if (redirectDone) {
-            this._parseSuccesfulResult(result);
+      checkSignedIn: function(result) {
+        var redirectDone = !!result.credential;
+        if (redirectDone) {
+          this._parseSuccesfulResult(result);
+        } else {
+          if (this._tokens.GitHub) {
+            this.waitingForSignIn = true;
           } else {
-            if (this._tokens.GitHub) {
-              this.waitingForSignIn = true;
-            } else {
-              this.fire('check-signed-in-failed');
-            }
+            this.fire('check-signed-in-failed');
           }
-          this.loading = false;
-        }.bind(this)).catch(function() {
-          this.loading = false;
-        });
+        }
+        this.loading = false;
       },
 
       signOut: function() {
@@ -128,14 +125,13 @@ of the GitHub oAuth token.
         return this.$.auth.auth.signOut();
       },
 
-      /**
-       * When Firebase confirms the user is signed in (via the signedIn property)
-       * then continue with the current GitHub token from local storage.
-       */
-      _onSignInChange: function(waitingForSignIn, signedIn) {
-        if (!waitingForSignIn) return;
-        if (signedIn) {
-          this.fire('github-token', this._tokens.GitHub);
+      _onSignInChange: function(signedIn, statusKnown) {
+        if (statusKnown) {
+          if (signedIn) {
+            this.fire('signed-in', this._tokens.GitHub);
+          } else {
+            this.fire('signed-out');
+          }
         }
       },
 

@@ -26,25 +26,26 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="ajax/firebase-authentication.html">
 
 <!-- Load these elements first to have fetch sub-pages as fast as possible -->
-<link rel="import" href="bower_components/iron-lazy-pages/iron-lazy-pages.html">
-<link rel="import" href="bower_components/app-route/app-location.html">
-<link rel="import" href="bower_components/app-route/app-route.html">
-<link rel="import" href="bower_components/paper-button/paper-button.html">
-<link rel="import" href="bower_components/paper-styles/color.html">
-<link rel="import" href="bower_components/paper-card/paper-card.html">
-<link rel="import" href="bower_components/paper-tabs/paper-tab.html">
-<link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
-<link rel="import" href="bower_components/prism-element/prism-highlighter.html">
-<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-lazy-pages/iron-lazy-pages.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="ajax/firebase-authentication.html">
 
-<link rel="stylesheet" href="bower_components/font-roboto/roboto.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../bower_components/prism-element/prism-highlighter.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="stylesheet" href="../bower_components/font-roboto/roboto.html">
 <link rel="import" href="ajax/github-authenticated-ajax.html">
 
-<script src="bower_components/prism/components/prism-diff.min.js"></script>
+<script src="../bower_components/prism/components/prism-diff.min.js"></script>
 <script>
 /*global Prism*/
 // Match all lines that are not insertions or deletions
@@ -117,11 +118,11 @@ Prism.languages.diff.other = /.+/m;
                   fallback-selection="404"
                   hidden$="[[firebaseLoading]]">
         <template is="iron-lazy-page" data-route=""
-                  path="home-page.html">
+                  path="src/home-page.html">
           <home-page></home-page>
         </template>
         <template is="iron-lazy-page" data-route="projects"
-                  path="projects/projects-page.html">
+                  path="src/projects/projects-page.html">
           <projects-page route="{{tail}}" github-user="[[githubUser]]"></projects-page>
         </template>
         <template is="iron-lazy-page" data-route="404">
@@ -140,38 +141,49 @@ Prism.languages.diff.other = /.+/m;
         type: Boolean,
         value: false
       },
-      githubUser: Object
+      githubUser: Object,
+      page: Object
     },
     listeners: {
       'github-token': '_setToken',
       'go-login-github': '_signInWithGitHub',
       'check-signed-in-failed': '_toHome',
-      'sign-out': '_signout'
+      'sign-out': '_signOut',
+      'signed-out': '_toHome',
+      'signed-in': '_storeToken'
     },
-    attached: function() {
-      // On page-load, we may or may not be signed in.
-      if (this.page.page !== '' || document.referrer.indexOf('preview-code.firebaseapp.com') > -1) {
-        this.$.firebase.checkSignedIn();
-      }
-    },
+    observers: [
+      '_setPageAfterTail(tail)'
+    ],
     _equals: function(one, other) {
       return one === other;
+    },
+    _signOut: function() {
+      this.$.firebase.signOut();
     },
     _signInWithGitHub: function(e) {
       this.$.firebase.doSignIn(e.detail);
     },
-    _signout: function() {
-      this.$.firebase.signOut().then(function() {
-        window.location = '/';
-      }.bind(this));
-    },
-    _setToken: function(e) {
+    _storeToken: function(e) {
       this.$.authenticatedAjax.storeToken(e.detail);
-      this.set('page.page', 'projects');
       this.$.ajaxGithubUser.generateRequest();
     },
+    _setToken: function(e) {
+      this._storeToken(e);
+      this.set('page.page', 'projects');
+    },
     _toHome: function() {
-      this.set('page.page', '');
+      this.page = {
+        page: ''
+      };
+      // To get around the timing issue when app-route has not yet parsed the location
+      this.newPage = '';
+    },
+    _setPageAfterTail: function() {
+      if (this.newPage !== undefined) {
+        this.set('page.page', this.newPage);
+        this.newPage = undefined;
+      }
     }
   });
   </script>

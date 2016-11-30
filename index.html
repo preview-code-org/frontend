@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <script>
     window.Polymer = window.Polymer || {};
     window.Polymer.dom = 'shadow';
@@ -41,11 +41,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </script>
   <link rel="import" href="bower_components/polymer/polymer.html">
 
-  <link rel="import" href="preview-app.html">
-  <link rel="import" href="styles/app-theme.html">
+  <link rel="import" href="src/preview-app.html">
+  <link rel="import" href="src/styles/app-theme.html">
 </head>
 <body>
-  <span id="browser-sync-binding"></span>
   <preview-app></preview-app>
   <script>
   if ('serviceWorker' in navigator) {

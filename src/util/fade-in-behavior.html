@@ -26,14 +26,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../bower_components/neon-animation/neon-animation-runner-behavior.html">
-<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
-<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
 <script>
 /**
  * Behavior to fade in the host element by calling show().
- * @type {Object}
  */
 var FadeInBehaviorImpl = {
   properties: {
@@ -92,5 +91,8 @@ var FadeInBehaviorImpl = {
 };
 
 /*exported FadeInBehavior*/
+/**
+ * @polymerBehavior
+ */
 var FadeInBehavior = [FadeInBehaviorImpl, Polymer.NeonAnimationRunnerBehavior];
 </script>

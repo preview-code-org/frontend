@@ -27,8 +27,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 
 <dom-module id="feature-bar">
   <template>
@@ -85,15 +85,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </template>
   <script>
     Polymer({
-        is: 'feature-bar'
-      , properties: {
-          title: String
-        , selectedFeature: {
-            type: String
-          , notify: true
+      is: 'feature-bar',
+      properties: {
+        title: String,
+        selectedFeature: {
+          type: String,
+          notify: true
         }
-      }
-      , attached: function() {
+      },
+      attached: function() {
         this.getContentChildren('#skeleton').forEach(function(featureElem) {
           var tab = document.createElement('paper-tab');
           var feature = featureElem.getAttribute('feature');
@@ -103,7 +103,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             tab.appendChild(featureElem.children[i]);
           }
           Polymer.dom(this.$.tabs).appendChild(tab);
-          var lastFeature = feature;
         }.bind(this));
       }
     });

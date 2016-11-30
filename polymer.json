@@ -1,0 +1,15 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/preview-app.html",
+  "sources": [
+    "src/**/*",
+    "bower.json"
+  ],
+  "fragments": [
+    "src/projects/projects-page.html",
+    "src/home-page.html"
+  ],
+  "includeDependencies": [
+    "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+  ]
+}

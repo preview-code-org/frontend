@@ -27,14 +27,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <script>
+/*exported ToDateStringBehavior*/
 /**
  * Behavior to transform a UTC timestamp into human readable timestamps.
  *
  * All breakpoints are equivalent to the breakpoints by defined the Moment library
  * @see http://momentjs.com/docs/#/displaying/fromnow/
- * @type {Object}
+ * @polymerBehavior
  */
-/*exported ToDateStringBehavior*/
 var ToDateStringBehavior = {
   toDateString: function(text) {
     var diff = new Date(this._getCurrentTime() - new Date(text).getTime());
