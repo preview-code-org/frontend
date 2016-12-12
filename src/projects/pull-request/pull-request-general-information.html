@@ -48,9 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <style>
       .primary-container {
         @apply(--primary-container);
-      }
-      .description {
-        padding: 0;
+        display: flex;
       }
       pull-request-comments {
         display: block;
@@ -59,46 +57,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         padding: 1em;
         background-color: var(--tertiary-background-color);
       }
-      section {
-        display: flex;
-      }
-      section > * {
+      .primary-container  > * {
         flex: 1;
-      }
-      header > * {
-        vertical-align: middle;
-      }
-      list-item-label {
-        margin: 0;
-        font-size: 0.9em;
-        line-height: 1.4em;
-      }
-      .state {
-        font-weight: 600;
-        text-transform: capitalize;
-        margin-right: 1em;
-      }
-      .state.open {
-        --tag-color: var(--primary-action-green);
-      }
-      .state.closed {
-        --tag-color: var(--primary-action-red);
-      }
-      .head, .time-open {
-        margin-right: 1em;
-      }
-      .line-stats {
-        height: 68px;
-        width: 68px;
-        background-color: red;
-        float: right;
       }
       markdown-input {
         display: flex;
         margin: 1em 0;
-      }
-      .description {
-        padding: 2em;
       }
       .sidebar {
         margin: 1em 0;
@@ -111,14 +75,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           @apply(--green-action-button);
         };
       }
-      section .main {
+      .primary-container .main {
         min-width: 0;
-      }
-      .additions {
-        color: var(--pr-addition-color);
-      }
-      .deletions {
-        color: var(--pr-deletion-color);
       }
     </style>
 
@@ -139,22 +97,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       method="PATCH"
       ></github-authenticated-ajax>
 
-    <div class="description primary-container">
-      <header>
-        <list-item-label class$="state [[pullRequest.state]]" type="box">[[pullRequest.state]]</list-item-label>
-        <span><a-user user="[[pullRequest.user]]"></a-user> wants to merge into</span>
-        <branch-tag class="base" branch="[[pullRequest.base.label]]"></branch-tag>
-        <span>from</span>
-        <branch-tag class="head" branch="[[pullRequest.head.label]]"></branch-tag>
-        <list-item-label class="time-open" type="info" icon="device:access-time">[[toDateString(pullRequest.created_at)]] ago</list-item-label>
-        <list-item-label class="additions" type="info" icon="icons:add">[[pullRequest.additions]]</list-item-label>
-        <list-item-label class="deletions" type="info" icon="icons:remove">[[pullRequest.deletions]]</list-item-label>
-      </header>
-      <section>
+    <div class="primary-container">
         <div class="main">
-          <div class="description">
-            <markdown-input preview-toggle="{{shouldSend}}" markdown="{{pullRequest.body}}"></markdown-input>
-          </div>
+          <markdown-input preview-toggle="{{shouldSend}}" markdown="{{pullRequest.body}}"></markdown-input>
           <pull-request-add-comments comments="{{comments}}" number="[[pullRequest.number]]"></pull-request-add-comments>
         </div>
         <div class="sidebar">
@@ -168,7 +113,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </template>
           </tags-list>
         </div>
-      </section>
     </div>
 
     <div class="primary-container">
