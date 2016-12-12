@@ -4,3 +4,4 @@ token.json
 coverage/
 build/
 *.log
+*.pem

@@ -19,8 +19,8 @@
   },
   "scripts": {
    "build": "node ./node_modules/gulp/bin/gulp.js",
-   "serve": "node ./node_modules/polyserve/bin/polyserve -p 8080 --proxy-path api/v1 --proxy-target http://localhost:8443/",
-   "serve-build": "node ./node_modules/polyserve/bin/polyserve build/unbundled/ -p 8080 --proxy-path api/v1 --proxy-target http://localhost:8443/"
+   "serve": "node ./node_modules/polyserve/bin/polyserve -p 8080 --proxy-path api/v1 --proxy-target http://localhost:8443/ -P h2",
+   "serve-build": "node ./node_modules/polyserve/bin/polyserve build/unbundled/ -p 8080 --proxy-path api/v1 --proxy-target http://localhost:8443/ -P h2"
   },
   "engines": {
     "node": ">=0.10.0"
