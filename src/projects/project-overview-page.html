@@ -78,30 +78,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
 
       a {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-        text-decoration: none;
-        color: var(--primary-text-color);
-        padding: 0 20px;
-        height: 100%;
+        color: var(--anchor-color);
       }
 
       feature-bar .content {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
       }
       feature-bar .content .title {
         flex-grow: 1;
-        overflow: hidden;
+        display: flex;
       }
       feature-bar .content .title h2 {
         margin: 0;
-        width: 100vw;
+        flex: 1;
+      }
+      feature-bar .content .subtitle span {
+        margin-right: 0.5em;
       }
       feature-bar .content #cloneUrl {
         display: flex;
         font-size: 14px;
-
       }
       feature-bar paper-button {
         margin: 0;
@@ -148,11 +145,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         width: 0px;
         padding: 0;
       }
-      feature-bar .content .clone {
-        -webkit-box-shadow: -20px 0 20px 0px rgb(255, 255, 255);
-        -moz-box-shadow: -20px 0 20px 0px rgb(255, 255, 255);
-        box-shadow: -20px 0 20px 0px rgb(255, 255, 255);
-      }
     </style>
 
     <app-route route="{{route}}" pattern="/:page" data="{{page}}"></app-route>
@@ -161,8 +153,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <div class="content">
         <div class="title">
           <h2>[[project.owner]] / [[project.name]]</h2>
-        </div>
-        <div class="clone">
           <paper-card id="cloneUrl" closed>
             <div class="url-content">
               <paper-button id="toggleUrlType" on-tap="_toggleCloneUrlType" ssh-url><span class="ssh">SSH</span><span class="https">HTTPS</span></paper-button>
@@ -170,6 +160,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </div>
             <paper-button class="clone-button" on-tap="_openCloneUrl">Clone</paper-button>
           </paper-card>
+        </div>
+        <div class="subtitle">
+          <span>[[project._actual.description]]</span><a href="[[project._actual.homepage]]">[[project._actual.homepage]]</a>
         </div>
       </div>
       <div feature="activity">
