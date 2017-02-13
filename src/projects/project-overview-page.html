@@ -31,6 +31,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="create-pull-request/create-pull-request.html">
 <link rel="import" href="project-behavior.html">
 <link rel="import" href="project-activity.html">
@@ -75,22 +78,72 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
 
       a {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-        text-decoration: none;
-        color: var(--primary-text-color);
-        padding: 0 20px;
-        height: 100%;
+        color: var(--anchor-color);
       }
 
-      feature-bar .content h2 {
-        margin-top: 0;
-      }
       feature-bar .content {
         display: flex;
+        flex-direction: column;
       }
       feature-bar .content .title {
-        font-style: italic;
+        flex-grow: 1;
+        display: flex;
+      }
+      feature-bar .content .title h2 {
+        margin: 0;
+        flex: 1;
+      }
+      feature-bar .content .subtitle span {
+        margin-right: 0.5em;
+      }
+      feature-bar .content #cloneUrl {
+        display: flex;
+        font-size: 14px;
+      }
+      feature-bar paper-button {
+        margin: 0;
+      }
+      feature-bar .clone-button {
+        background-color: var(--primary-action-green);
+        color: white;
+        font-weight: 600;
+      }
+      feature-bar .content #cloneUrl:not([closed]) .clone-button {
+        background-color: var(--primary-action-red);
+      }
+      feature-bar .content #cloneUrl .url-content {
+        line-height: 22px;
+        border-radius: 2px;
+        background-color: var(--secondary-background-color);
+        transition: width ease 0.25s;
+        width: 300px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        display: flex;
+        overflow: hidden;
+      }
+      feature-bar .content #cloneUrl .clone-url-input {
+        font-family: 'Roboto Mono';
+        font-size: 14px;
+        background-color: var(--secondary-background-color);
+        border: none;
+        margin: 8px;
+        flex: 1;
+      }
+      feature-bar #cloneUrl #toggleUrlType {
+        padding: 0;
+      }
+
+      #toggleUrlType[ssh-url] > .https {
+        display: none;
+      }
+      #toggleUrlType:not([ssh-url]) > .ssh {
+        display: none;
+      }
+
+      feature-bar .content #cloneUrl[closed] .url-content {
+        width: 0px;
+        padding: 0;
       }
     </style>
 
@@ -98,9 +151,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <feature-bar selected-feature={{page.page}}>
       <div class="content">
-        <h2 class="title">[[project.owner]] / [[project.name]]</h2>
-        <span class="description">[[project._actual.description]]</span>
-        <span>SSH clone url: [[project._actual.ssh_url]]</span>
+        <div class="title">
+          <h2>[[project.owner]] / [[project.name]]</h2>
+          <paper-card id="cloneUrl" closed>
+            <div class="url-content">
+              <paper-button id="toggleUrlType" on-tap="_toggleCloneUrlType" ssh-url><span class="ssh">SSH</span><span class="https">HTTPS</span></paper-button>
+              <input readonly class="clone-url-input" is="iron-input" value="[[displayCloneURL]]" onclick="this.setSelectionRange(0, this.value.length);"></input>
+            </div>
+            <paper-button class="clone-button" on-tap="_openCloneUrl">Clone</paper-button>
+          </paper-card>
+        </div>
+        <div class="subtitle">
+          <span>[[project._actual.description]]</span><a href="[[project._actual.homepage]]">[[project._actual.homepage]]</a>
+        </div>
       </div>
       <div feature="activity">
         <a href$="[[route.prefix]]/activity">Activity</a>
@@ -122,10 +185,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Polymer({
       is: 'project-overview-page',
       behaviors: [ProjectBehavior],
+      observers: [
+        'initSshUrl(project._actual.ssh_url)'
+      ],
       properties: {
         githubUser: Object,
         route: Object,
-        page: Object
+        page: Object,
+        displayCloneURL: String
+      },
+      _openCloneUrl: function() {
+        var input = this.$$('.clone-url-input');
+        var inputContainer = this.$.cloneUrl;
+        if (inputContainer.hasAttribute('closed')) {
+          inputContainer.removeAttribute('closed');
+          input.focus();
+          input.setSelectionRange(0, input.value.length);
+        } else {
+          this.$.cloneUrl.setAttribute('closed', true);
+        }
+      },
+      _toggleCloneUrlType: function() {
+        var urlTypeBtn = this.$.toggleUrlType
+        urlTypeBtn.toggleAttribute('ssh-url');
+        if (urlTypeBtn.hasAttribute('ssh-url')) {
+          this.displayCloneURL = this.project._actual.ssh_url;
+        } else {
+          this.displayCloneURL = this.project._actual.html_url + '.git';
+        }
+      },
+      initSshUrl: function(url) {
+        this.displayCloneURL = url;
       }
     });
   </script>
