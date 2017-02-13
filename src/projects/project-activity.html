@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../list-items/list-item-label.html">
 <link rel="import" href="../list-items/column-list-item.html">
 <link rel="import" href="../util/marked-github-element.html">
-<link rel="import" href="../util/collapsible-content.html">
 
 <dom-module id="project-activity">
   <template>
@@ -42,9 +41,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       :host {
         display: block;
         background-color: var(--primary-background-color);
-      }
-      .container {
-        padding: 0.75em;
       }
       a {
         text-decoration: none;
@@ -61,29 +57,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         padding-left: 0.3em;
         vertical-align: bottom;
       }
-      .info{
-        margin-top: 22px;
-      }
-      .container.false {
-        height: 1.3em;
-        overflow: hidden;
-        text-align: center;
-      }
-      .container.true {
-        height: auto;
-      }
-      .hovering.false {
-        text-align: center;
-      }
-      .collapsible-content.false {
-        visibility: hidden;
-      }
       .readme {
         padding: 0.75em;
       }
       .repeat {
         display: inline-block;
         padding: 6px;
+      }
+      .container {
+        text-align: center;
+        margin-top: 1em;
+        margin-left: 1em;
+        margin-right: 1em;
       }
     </style>
 
@@ -102,15 +87,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       last-response="{{contributors}}"
       ></github-authenticated-ajax>
 
-    <collapsible-content collapse=true class$="collapsible-content [[isMore]]" on-tap="_showAllContributors"></collapsible-content>
-    <div class$="container [[showAllContributors]]" id="contributorsoutlist">
-      <div class$="hovering [[isMore]]" id="contributorsinlist">
-        <template is="dom-repeat" items="[[contributors]]">
-          <div class="repeat">
-            <a href="[[item.html_url]]" target="_blank"><img src$="[[item.avatar_url]]" width="24px" height="24px" alt$="[[item.login]]"/></a><span>[[item.login]]</span>
-          </div>
+    <div class=container>
+      <template is="dom-repeat" items="[[contributors]]">
+        <div class="repeat">
+          <a href="[[item.html_url]]" target="_blank"><img src$="[[item.avatar_url]]" width="24px" height="24px" alt$="[[item.login]]"/></a><span>[[item.login]]</span>
+        </div>
       </template>
-      </div>
     </div>
 
     <div class="readme">
@@ -124,26 +106,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'project-activity',
       behaviors: [ProjectBehavior],
         properties: {
-          selected: {
-            type: String
-          },
           readme: String,
           backendPath: {
             type: String,
             computed: '_updateBackendPath(project)'
           },
-          showAllContributors: {
-            type: Boolean,
-            value: false
-          },
-          isMore: {
-            type: Boolean,
-            value: true
-          }
         },
         observers: [
-          '_fetchInformation(backendPath)',
-          '_showAll(contributors)'
+          '_fetchInformation(backendPath)'
         ],
         _updateBackendPath: function(project) {
           return 'https://api.github.com/repos/' + [[project.owner]] + '/' + [[project.name]];
@@ -152,24 +122,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           if (backendPath) {
             this.$.fetch_readme.generateRequest();
             this.$.fetch_contributors.generateRequest();
-          }
-        },
-        _showAllContributors: function() {
-          var heightout = this.$.contributorsoutlist.getBoundingClientRect().height;
-          var heightin = this.$.contributorsinlist.getBoundingClientRect().height;
-          if (this.isMore) {
-            this.showAllContributors = !this.showAllContributors;
-          } else if (heightout < heightin) {
-            this.showAllContributors = !this.showAllContributors;
-            this.isMore = true;
-          }
-        },
-        _showAll: function() {
-          var heightout = this.$.contributorsoutlist.getBoundingClientRect().height;
-          var heightin = this.$.contributorsinlist.getBoundingClientRect().height;
-          if (heightout !== 0 && heightout > heightin) {
-            this.showAllContributors = true;
-            this.isMore = false;
           }
         }
       });
