@@ -20,7 +20,7 @@
   "dependencies": {
     "paper-elements": "polymerelements/paper-elements#^1.0.7",
     "iron-elements": "polymerelements/iron-elements#^1.0.10",
-    "app-route": "TimvdLippe/app-route#parent-active-propagation",
+    "app-route": "polymerelements/app-route",
     "iron-lazy-pages": "^1.0.2",
     "Sortable": "Rubaxa/Sortable#dev",
     "marked-element": "polymerelements/marked-element#^1.2.0",
