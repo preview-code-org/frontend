@@ -28,9 +28,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../bower_components/iron-icons/device-icons.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/marked-element/marked-element.html">
 
+<link rel="import" href="../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../list-items/list-item-label.html">
 <link rel="import" href="../list-items/column-list-item.html">
+<link rel="import" href="../util/marked-github-element.html">
+<link rel="import" href="../util/collapsible-content.html">
 
 <dom-module id="project-activity">
   <template>
@@ -39,95 +43,133 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display: block;
         background-color: var(--primary-background-color);
       }
-      div {
+      .container {
         padding: 0.75em;
       }
       a {
         text-decoration: none;
         color: var(--secondary-text-color);
       }
+      img {
+        flex-shrink: 0;
+        -webkit-box-shadow: 0 0 2px 0 rgba(0,0,0,0.2);
+        box-shadow: 0 0 2px 0 rgba(0,0,0,0.2);
+        border-radius: 3px;
+        vertical-align: -webkit-baseline-middle;
+      }
+      span {
+        padding-left: 0.3em;
+        vertical-align: bottom;
+      }
       .info{
         margin-top: 22px;
       }
+      .container.false {
+        height: 1.3em;
+        overflow: hidden;
+        text-align: center;
+      }
+      .container.true {
+        height: auto;
+      }
+      .hovering.false {
+        text-align: center;
+      }
+      .collapsible-content.false {
+        visibility: hidden;
+      }
+      .readme {
+        padding: 0.75em;
+      }
+      .repeat {
+        display: inline-block;
+        padding: 6px;
+      }
     </style>
-    <a href="https://github.com/preview-code/rite-evaluation/issues/23">
-      <column-list-item selected="[[selected]]">
-        <div class="main">
-          <h2>Latest issue</h2>
-          <list-item-label type="title">[[issues.name]]</list-item-label>
-          <list-item-label type="subtitle">[[issues.lastEditer]]</list-item-label>
-        </div>
-        <div class="info">
-          <list-item-label type="info" title="Last activity" icon="device:access-time">[[issues.lastActivity]]</list-item-label>
-          <list-item-label type="info" title="Number of issues open">[[issues.amount]] issues open</list-item-label>
-        </div>
-      </column-list-item>
-    </a>
-    <a href="https://github.com/preview-code/rite-evaluation/pull/38">
-      <column-list-item selected="[[selected]]">
-        <div class="main">
-          <h2>Latest Pull request</h2>
-          <list-item-label type="title">[[pr.name]]</list-item-label>
-          <list-item-label type="subtitle">[[pr.lastEditer]]</list-item-label>
-        </div>
-        <div class="info">
-          <list-item-label type="info" title="Last activity" icon="device:access-time">[[pr.lastActivity]]</list-item-label>
-          <list-item-label type="info" title="Number of prs open">[[pr.amount]] open pull requests</list-item-label>
-        </div>
-      </column-list-item>
-    </a>
-    <column-list-item selected="[[selected]]">
-      <div class="main">
-        <h2>Statistics</h2>
-        <list-item-label type="title">There were</list-item-label>
-        <list-item-label type="subtitle">[[stats.commits]] commits</list-item-label>
-        <list-item-label type="subtitle">[[stats.prs]] pull requests</list-item-label>
-        <list-item-label type="subtitle">[[stats.issues]] issues</list-item-label>
-        <list-item-label type="subtitle">[[stats.forks]] forks</list-item-label>
-        <list-item-label type="title">in the last 24 hours</list-item-label>
+
+    <github-authenticated-ajax
+      id="fetch_readme"
+      refurl="[[backendPath]]/readme"
+      content-type='text/markdown'
+      handle-as="text"
+      headers='{"Accept": "application/vnd.github.VERSION.raw"}'
+      last-response="{{readme}}"
+      ></github-authenticated-ajax>
+
+    <github-authenticated-ajax
+      id="fetch_contributors"
+      refurl="[[backendPath]]/contributors"
+      last-response="{{contributors}}"
+      ></github-authenticated-ajax>
+
+    <collapsible-content collapse=true class$="collapsible-content [[isMore]]" on-tap="_showAllContributors"></collapsible-content>
+    <div class$="container [[showAllContributors]]" id="contributorsoutlist">
+      <div class$="hovering [[isMore]]" id="contributorsinlist">
+        <template is="dom-repeat" items="[[contributors]]">
+          <div class="repeat">
+            <a href="[[item.html_url]]" target="_blank"><img src$="[[item.avatar_url]]" width="24px" height="24px" alt$="[[item.login]]"/></a><span>[[item.login]]</span>
+          </div>
+      </template>
       </div>
-    </column-list-item>
+    </div>
+
+    <div class="readme">
+      <marked-element markdown="[[readme]]"></marked-element>
+    </div>
   </template>
 
   <script>
+  /*global ProjectBehavior*/
     Polymer({
       is: 'project-activity',
+      behaviors: [ProjectBehavior],
         properties: {
           selected: {
             type: String
           },
-          issues: {
-            type: Array,
-            value: function() {
-              return {
-                name: 'Header tab bar selection indicator disappears ',
-                lastEditer: 'Thomas',
-                lastActivity: '5 hours',
-                amount: 12
-              }
-            }
+          readme: String,
+          backendPath: {
+            type: String,
+            computed: '_updateBackendPath(project)'
           },
-          pr: {
-            type: Array,
-            value: function() {
-              return {
-                name: 'Made something and fixed something else',
-                lastEditer: 'Eva',
-                lastActivity: '123 hours',
-                amount: 22
-              }
-            }
+          showAllContributors: {
+            type: Boolean,
+            value: false
           },
-          stats: {
-            type: Array,
-            value: function() {
-              return {
-                commits: 130,
-                prs: 12,
-                issues: 3,
-                forks: 2
-              }
-            }
+          isMore: {
+            type: Boolean,
+            value: true
+          }
+        },
+        observers: [
+          '_fetchInformation(backendPath)',
+          '_showAll(contributors)'
+        ],
+        _updateBackendPath: function(project) {
+          return 'https://api.github.com/repos/' + [[project.owner]] + '/' + [[project.name]];
+        },
+        _fetchInformation: function(backendPath) {
+          if (backendPath) {
+            this.$.fetch_readme.generateRequest();
+            this.$.fetch_contributors.generateRequest();
+          }
+        },
+        _showAllContributors: function() {
+          var heightout = this.$.contributorsoutlist.getBoundingClientRect().height;
+          var heightin = this.$.contributorsinlist.getBoundingClientRect().height;
+          if (this.isMore) {
+            this.showAllContributors = !this.showAllContributors;
+          } else if (heightout < heightin) {
+            this.showAllContributors = !this.showAllContributors;
+            this.isMore = true;
+          }
+        },
+        _showAll: function() {
+          var heightout = this.$.contributorsoutlist.getBoundingClientRect().height;
+          var heightin = this.$.contributorsinlist.getBoundingClientRect().height;
+          if (heightout !== 0 && heightout > heightin) {
+            this.showAllContributors = true;
+            this.isMore = false;
           }
         }
       });
