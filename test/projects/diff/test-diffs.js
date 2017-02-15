@@ -261,7 +261,7 @@ var testDiffs = [
     index: '1',
     file: {name: 'a', created: true},
     diffId: '@@ -0,0 +1 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n+one line',
     linesChanged: { startLineBefore: 0, rangeBefore: 0,
       startLineAfter: 1,  rangeAfter: 1 }
@@ -270,7 +270,7 @@ var testDiffs = [
     index: '2',
     file: {name: 'a'},
     diffId: '@@ -1 +1,2 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n one line\n' +
     '+line two',
     linesChanged: { startLineBefore: 1, rangeBefore: 1,
@@ -280,7 +280,7 @@ var testDiffs = [
     index: '3',
     file: {name: 'a'},
     diffId: '@@ -1,2 +1,3 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n one line\n' +
     '+line inbetween\n' +
     ' line two',
@@ -291,7 +291,7 @@ var testDiffs = [
     index: '4',
     file: {name: 'a'},
     diffId: '@@ -1,3 +1,5 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n one line\n' +
     ' line inbetween\n' +
     '+another line\n' +
@@ -304,7 +304,7 @@ var testDiffs = [
     index: '5',
     file: {name: 'a'},
     diffId: '@@ -1,5 +1,5 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n one line\n' +
     ' line inbetween\n' +
     ' another line\n' +
@@ -318,7 +318,7 @@ var testDiffs = [
     index: '6',
     file: {name: 'b'},
     diffId: '@@ -1,5 +1,5 @@',
-    fileUrl: 'base/blob/sha/b',
+    fileNameUrl: 'b',
     changes: '\n one line\n' +
     ' line inbetween\n' +
     '-another line\n' +
@@ -332,7 +332,7 @@ var testDiffs = [
     index: '7',
     file: {name: 'a'},
     diffId: '@@ -1,5 +1,4 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n one line\n' +
     ' line inbetween\n' +
     '-replace a line\n' +
@@ -345,7 +345,7 @@ var testDiffs = [
     index: '8',
     file: {name: 'a'},
     diffId: '@@ -1,4 +1,3 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n one line\n' +
     ' line inbetween\n' +
     ' another line\n' +
@@ -357,7 +357,7 @@ var testDiffs = [
     index: '9',
     file: {name: 'a'},
     diffId: '@@ -1,3 +1,3 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n-one line\n' +
     ' line inbetween\n' +
     ' another line\n' +
@@ -369,7 +369,7 @@ var testDiffs = [
     index: '10',
     file: {name: 'a'},
     diffId: '@@ -1,3 +1,2 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n-line inbetween\n' +
     ' another line\n' +
     ' add last',
@@ -380,7 +380,7 @@ var testDiffs = [
     index: '11',
     file: {name: 'a'},
     diffId: '@@ -1,2 +0,0 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n-another line\n' +
     '-add last',
     linesChanged: { startLineBefore: 1, rangeBefore: 2,
@@ -390,7 +390,7 @@ var testDiffs = [
     index: '12',
     file: {name: 'a'},
     diffId: '@@ -3,8 +3,6 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
     ' Maecenas sit amet turpis condimentum enim volutpat imperdiet.\n' +
     ' Vestibulum at sem convallis, congue erat porttitor, mattis dui.\n' +
@@ -406,7 +406,7 @@ var testDiffs = [
     index: '13',
     file: {name: 'a'},
     diffId: '@@ -340,6 +338,8 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n Sed malesuada orci non pulvinar dictum.\n' +
     ' Etiam convallis augue nec posuere convallis.\n' +
     ' Proin molestie turpis a orci ultricies, nec porta urna fringilla.\n' +
@@ -422,7 +422,7 @@ var testDiffs = [
     index: '14',
     file: {name: 'a'},
     diffId: '@@ -343,3 +341,5 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
     ' Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
     ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
@@ -435,7 +435,7 @@ var testDiffs = [
     index: '15',
     file: {name: 'a'},
     diffId: '@@ -341,5 +343,3 @@',
-    fileUrl: 'base/blob/sha/a',
+    fileNameUrl: 'a',
     changes: '\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
     ' Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
     ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
@@ -448,7 +448,7 @@ var testDiffs = [
     index: '16',
     file: {name: 'b', moved: true, from: 'a'},
     diffId: '@@ -341,5 +343,3 @@',
-    fileUrl: 'base/blob/sha/fromatob',
+    fileNameUrl: 'fromatob',
     changes: '\n Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
     ' Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
     ' Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +
@@ -464,7 +464,7 @@ testDiffsWithDelete.push({
   index: '17',
   file: {name: 'a', deleted: true},
   diffId: '@@ -341,5 +343,3 @@',
-  fileUrl: 'base/blob/sha/a',
+  fileNameUrl: 'a',
   changes: '\n-Pellentesque a nulla a libero molestie blandit vitae id eros.\n' +
   '-Morbi fermentum neque sit amet ante eleifend, non molestie nulla pretium.\n' +
   '-Integer non turpis eu quam bibendum pulvinar vel non ante.\n' +

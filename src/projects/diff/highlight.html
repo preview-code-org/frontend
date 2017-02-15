@@ -172,7 +172,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <collapsible-content collapse="{{collapsed}}">
       <div class="header">
         <span>
-          <a href$="[[hunk.fileUrl]]" target="_blank">
+          <a href$="[[fileUrl]]" target="_blank">
             <hunk-file title="View file on GitHub" hunk="[[hunk]]">
               <iron-icon icon="reply"></iron-icon>
             </hunk-file>
@@ -204,6 +204,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       properties: {
         githubUser: Object,
         hunk: Object,
+        fileUrl: {
+          type: String,
+          computed: '_computeHunkFileUrl(pullRequest.head, hunk)'
+        },
         pullRequest: Object,
         collapsed: Boolean,
         nonEdit: {
@@ -329,6 +333,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _promptToMove: function() {
           this.fire('moveToGroup', {hunk: this.hunk});
+      },
+
+      _computeHunkFileUrl: function(head, hunk) {
+        return head.repo.html_url + '/blob/' + head.sha + '/' + hunk.fileNameUrl;
       }
     });
   </script>
