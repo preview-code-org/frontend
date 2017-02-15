@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../ajax/backend-ajax.html">
 <link rel="import" href="../project-behavior.html">
 
 <dom-module id="hunk-sorter">
@@ -37,6 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       path="[[_remoteOrderingPath]]"
       data="{{_remoteOrdering}}"
       ></firebase-document>
+      <backend-ajax
+        id="checkIfPathIsThere"
+        refurl="[[backendPath]]"
+        ></backend-ajax>
+
   </template>
   <script>
   /*global ProjectBehavior*/
@@ -59,6 +65,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         _remoteOrderingPath: {
           type: String,
           computed: '_getOrderingPath(project, pullRequest)'
+        },
+        backendPath: {
+          type: String,
+          computed: '_updateBackendPath(project, pullRequest)'
         }
       },
       observers: [
@@ -131,7 +141,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/ordering';
       },
       _getOrderingFromFirebaseObj: function(fbOrdering) {
-        var defaultGroupName = 'Unsorted changes';
+        var defaultGroupName = 'Imported from Github';
         var ordering = [];
         if (fbOrdering.lastChanged) {
           defaultGroupName = 'New changes since: ' + fbOrdering.lastChanged;
@@ -159,6 +169,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         if (unsortedGroup.diff.length > 0) {
           allGroups.push(unsortedGroup);
         }
+        if (fbOrdering.groups === undefined && this.backendPath && defaultGroup.diff.length > 0) {
+          this.$.checkIfPathIsThere.body = defaultGroup;
+          this.$.checkIfPathIsThere.generateRequest();
+        }
+
         this.set('groups', allGroups);
       },
 
@@ -256,6 +271,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             return f(i, this.groups[i]);
           }
         }
+      },
+
+      _updateBackendPath: function(project, pullRequest) {
+        return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/check';
       },
 
       /**

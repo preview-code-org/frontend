@@ -115,7 +115,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             oldIndex: 1,
             newIndex: 0
           });
-          assert.equal(element.orderedGroups[0].info.title, 'Unsorted changes');
+          assert.equal(element.orderedGroups[0].info.title, 'Imported from Github');
           done();
         });
         element.addEventListener('iron-overlay-closed', function() {
@@ -157,7 +157,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       test('creates ordering from groups and hunks', function() {
         var ordering = element.getOrdering();
         assert.equal(ordering.length, 1);
-        assert.equal(ordering[0].info.title, 'Unsorted changes');
+        assert.equal(ordering[0].info.title, 'Imported from Github');
         assert.equal(ordering[0].diff.length, 2);
       })
 
