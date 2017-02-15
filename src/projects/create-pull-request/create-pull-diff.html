@@ -46,7 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <span class="subtitle">You can drag the diff sections to re-order them for reviewers.</span>
-    <pull-request-diff id="changes" editable diff="[[diff]]" base-url="[[baseUrl]]" sha="[[sha]]" github-user="[[githubUser]]"></pull-request-diff>
+    <pull-request-diff id="changes" editable diff="[[diff]]" base-url="[[baseUrl]]" github-user="[[githubUser]]"></pull-request-diff>
     <paper-spinner active="[[loading]]"></paper-spinner>
     <paper-button on-tap="_createPR" raised disabled="[[loading]]">Create pull request</paper-button>
   </template>
@@ -57,7 +57,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       properties: {
         diff: String,
         baseUrl: String,
-        sha: String,
         githubUser: Object,
         loading: {
           type: Boolean,

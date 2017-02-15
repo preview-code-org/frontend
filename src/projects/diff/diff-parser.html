@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     properties: {
       diff: String,
       baseUrl: String,
-      sha: String,
       hunks: {
         type: Array,
         computed: '_parseDiffToHunks(diff)',
@@ -102,7 +101,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             var fileHeader = getFileHeader(file, file[1].substring(2), file[2].substring(2));
 
             var fileNameUrl = fileHeader.moved ? 'from'+fileHeader.from+'to'+fileHeader.name : fileHeader.name
-            var fileUrl = this.baseUrl + '/blob/' + this.sha + '/' + fileNameUrl;
 
             // Default range fields to 1 when they are not present in the hunk.
             var linesChanged = {
@@ -114,11 +112,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             hunks.push({
               file: fileHeader,
-              fileUrl: fileUrl,
+              fileNameUrl: fileNameUrl,
               diffId: group[1],
               changes: group[6],
-              linesChanged: linesChanged,
-              sha: this.sha
+              linesChanged: linesChanged
             });
           }
         }
