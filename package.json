@@ -15,7 +15,7 @@
     "merge-stream": "^1.0.0",
     "plylog": "^0.4.0",
     "polymer-build": "^0.4.1",
-    "polyserve": "^0.16.0-prerelease.9",
+    "polyserve": "^0.16.0",
     "polymer-cli": "^0.17.0"
   },
   "scripts": {
