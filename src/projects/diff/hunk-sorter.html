@@ -160,7 +160,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var allGroups = [];
         for (var i = 0, l = ordering.length; i < l; i++) {
           var group = this._reconstructGroup(ordering[i], unsortedHunks);
-          if (group) {
+          if (group && group.diff && group.diff.length> 0) {
             allGroups.push(group);
           }
         }
