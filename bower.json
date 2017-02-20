@@ -35,7 +35,7 @@
     "iron-test-helpers": "fix-mockinteractions-track"
   },
   "devDependencies": {
-    "web-component-tester": "4.2.2",
+    "web-component-tester": "^5.0.0",
     "iron-test-helpers": "txsmith/iron-test-helpers#fix-mockinteractions-track"
   }
 }
