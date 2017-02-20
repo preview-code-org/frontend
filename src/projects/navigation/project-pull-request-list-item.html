@@ -102,15 +102,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
       <div class="main">
         <list-item-label type="title">
-          <span class="ci-placeholder" hidden$="[[_hasCIStatus]]"></span>
-          <span hidden$="[[!_hasCIStatus]]">
-            <a href$="{{_cistatus.target_url}}" target="_blank">
-              <iron-icon title="CI passed" class$="icon-passed [[_cistatus.state]]" icon="icons:check-circle"></iron-icon>
-            </a>
-            <a href$="{{_cistatus.target_url}}" target="_blank">
-              <iron-icon title="CI failed" class$="icon-failed [[_cistatus.state]]" icon="icons:cancel"></iron-icon>
-            </a>
-          </span>
           <span title$="[[pr.title]]">[[pr.title]]</span>
         </list-item-label>
         <list-item-label type="subtitle">[[pr.user.login]]</list-item-label>
@@ -121,6 +112,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <div class="info">
         <list-item-label type="info" title$="Last updated [[_updatedAtString]] ago" icon="device:access-time">[[_updatedAtString]]</list-item-label>
         <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.assignees.length]]</list-item-label>
+        <list-item-label type="info">
+          <span hidden$="[[!_hasCIStatus]]">
+            <a href$="{{_cistatus.target_url}}" target="_blank">
+              <iron-icon title="CI passed" class$="icon-passed [[_cistatus.state]]" icon="icons:check-circle"></iron-icon>
+            </a>
+            <a href$="{{_cistatus.target_url}}" target="_blank">
+              <iron-icon title="CI failed" class$="icon-failed [[_cistatus.state]]" icon="icons:cancel"></iron-icon>
+            </a>
+          </span>
+        </list-item-label>
         <!-- <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.assignee.login]]</list-item-label> -->
       </div>
     </column-list-item>
