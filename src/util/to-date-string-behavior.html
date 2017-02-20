@@ -31,53 +31,67 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /**
  * Behavior to transform a UTC timestamp into human readable timestamps.
  *
- * All breakpoints are equivalent to the breakpoints by defined the Moment library
+ * All breakpoints are equivalent to the breakpoints defined by the Moment library
  * @see http://momentjs.com/docs/#/displaying/fromnow/
  * @polymerBehavior
  */
 var ToDateStringBehavior = {
   toDateString: function(text) {
+    return this.toDateStringLength(text, 'medium')
+  },
+  toDateStringLength: function(text, length) {
+    if (length === 'short') {
+      return this._parseTime(text, ['<1mi', '1mi', 'mi', '1h', 'h', '1d', 'd', '1mo', 'mo', '1y', 'y'])
+    }
+    if (length === 'medium') {
+      return this._parseTime(text, ['<1mi', '1mi', 'mi', '1h', 'h', '1d', 'd', '1mo', 'mo', '1y', 'y']) + ' ago'
+    }
+    if (length === 'long') {
+      return this._parseTime(text, ['Less than a minute', '1 minute', ' minutes', '1 hour', ' hours', '1 day', ' days', '1 month', ' months', '1 year', ' years']) + ' ago'
+    }
+  },
+  _parseTime: function(text, array) {
     var diff = new Date(this._getCurrentTime() - new Date(text).getTime());
     var seconds = Math.ceil(diff / 1000);
     if (seconds < 45) {
-      return '<1mi';
+      return array[0];
     }
     if (seconds < 90) {
-      return '1mi';
+      return array[1];
     }
     var minutes = Math.ceil(seconds / 60);
     if (minutes < 45) {
-      return minutes + 'mi';
+      return minutes + array[2];
     }
     if (minutes < 90) {
-      return '1h';
+      return array[3];
     }
     var hours = Math.ceil(minutes / 60);
     if (hours < 22) {
-      return hours + 'h';
+      return hours + array[4];
     }
     // 1,5 day
     if (hours < 36) {
-      return '1d';
+      return array[5];
     }
     var days = Math.ceil(hours / 24);
     // 3,5 weeks
     if (days < 25) {
-      return days + 'd';
+      return days + array[6];
     }
     // 1,5 month
     if (days < 45) {
-      return '1mo';
+      return array[7];
     }
     // 11,5 months
     if (days < 345) {
-      return Math.ceil(days / 31) + 'mo';
+      return Math.ceil(days / 31) + array[8];
     }
     // 1,5 year
     if (days < 545) {
-      return '1y';
+      return array[9];
     }
-    return Math.ceil(days / 365) + 'y';
+    return Math.ceil(days / 365) + array[10];
   },
   _getCurrentTime: function() {
     return new Date().getTime();

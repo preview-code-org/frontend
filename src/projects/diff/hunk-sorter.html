@@ -28,8 +28,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
+
 <link rel="import" href="../../ajax/backend-ajax.html">
+<link rel="import" href="../../util/to-date-string-behavior.html">
 <link rel="import" href="../project-behavior.html">
+
+
 
 <dom-module id="hunk-sorter">
   <template>
@@ -45,10 +49,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   </template>
   <script>
-  /*global ProjectBehavior*/
+  /*global ProjectBehavior, ToDateStringBehavior*/
     Polymer({
       is: 'hunk-sorter',
-      behaviors: [ProjectBehavior],
+      behaviors: [ProjectBehavior, ToDateStringBehavior],
       properties: {
         pullRequest: Object,
         rawHunks: Array,
@@ -144,7 +148,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var defaultGroupName = 'Imported from Github';
         var ordering = [];
         if (fbOrdering.lastChanged) {
-          defaultGroupName = 'New changes since: ' + fbOrdering.lastChanged;
+          defaultGroupName = 'New changes since: ' + this.toDateStringLength(fbOrdering.lastChanged, 'long');
           ordering = fbOrdering.groups;
         }
         var defaultGroup = this._createHunkOrdering(defaultGroupName, []);

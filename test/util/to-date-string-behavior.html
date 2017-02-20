@@ -58,6 +58,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         assert.equal(output, expected);
       }
 
+      function assertTextLength(hours, expected, length) {
+        var output = behavior.toDateStringLength(ISOtimeAgo(hours), length)
+        assert.equal(output, expected);
+      }
+
       setup(function() {
         behavior = ToDateStringBehavior;
         behavior._getCurrentTime = function() {
@@ -65,49 +70,90 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       });
 
-      test('shows less than 1 minute when less than 45 seconds ago', function() {
-        assertText(42 / (60 * 60), '<1mi');
+      test('shows less than 1 minute when less than 45 seconds ago in normal mode', function() {
+        assertText(42 / (60 * 60), '<1mi ago');
       });
 
-      test('shows 1 minute when less than 90 seconds ago', function() {
-        assertText(85 / (60 * 60), '1mi');
+      test('shows 1 minute when less than 90 seconds ago in normal mode', function() {
+        assertText(85 / (60 * 60), '1mi ago');
       });
 
-      test('shows minutes when less than 45 minutes ago', function() {
-        assertText(40 / 60, '40mi');
+      test('shows minutes when less than 45 minutes ago in normal mode', function() {
+        assertText(40 / 60, '40mi ago');
       });
 
-      test('shows 1 hour when less than 90 minutes ago', function() {
-        assertText(85 / 60, '1h');
+      test('shows 1 hour when less than 90 minutes ago in normal mode', function() {
+        assertText(85 / 60, '1h ago');
       });
 
-      test('shows hours when less than 22 hours ago', function() {
-        assertText(3.5, '4h');
+      test('shows hours when less than 22 hours ago in normal mode', function() {
+        assertText(3.5, '4h ago');
       });
 
-      test('shows 1 day when less than 36 hours ago', function() {
-        assertText(30, '1d');
+      test('shows 1 day when less than 36 hours ago in normal mode', function() {
+        assertText(30, '1d ago');
       });
 
-      test('shows days when less than 25 days ago', function() {
-        assertText(20 * 24, '20d');
+      test('shows days when less than 25 days ago in normal mode', function() {
+        assertText(20 * 24, '20d ago');
       });
 
-      test('shows 1 month when less than 45 days ago', function() {
-        assertText(40 * 24, '1mo');
+      test('shows 1 month when less than 45 days ago in normal mode', function() {
+        assertText(40 * 24, '1mo ago');
       });
 
-      test('shows months when less than 345 days ago', function() {
-        assertText(8.5 * 31 * 24, '9mo');
+      test('shows months when less than 345 days ago in normal mode', function() {
+        assertText(8.5 * 31 * 24, '9mo ago');
       });
 
-      test('shows 1 year when less than 545 days ago', function() {
-        assertText(13 * 31 * 24, '1y');
+      test('shows 1 year when less than 545 days ago in normal mode', function() {
+        assertText(13 * 31 * 24, '1y ago');
       });
 
-      test('shows year when more than 545 days ago', function() {
-        assertText(15.5 * 12 * 31 * 24, '16y');
+      test('shows year when more than 545 days ago in normal mode', function() {
+        assertText(15.5 * 12 * 31 * 24, '16y ago');
       });
+
+      test('shows less than 1 minute when less than 45 seconds ago in normal mode', function() {
+        assertText(42 / (60 * 60), '<1mi ago');
+      });
+
+      test('shows 1 minute when less than 90 seconds ago in short mode', function() {
+        assertTextLength(85 / (60 * 60), '1mi', 'short');
+      });
+
+      test('shows minutes when less than 45 minutes ago in short mode', function() {
+        assertTextLength(40 / 60, '40mi', 'short');
+      });
+
+      test('shows 1 hour when less than 90 minutes ago in short mode', function() {
+        assertTextLength(85 / 60, '1h', 'short');
+      });
+
+      test('shows hours when less than 22 hours ago in medium mode', function() {
+        assertTextLength(3.5, '4h ago', 'medium');
+      });
+
+      test('shows 1 day when less than 36 hours ago in medium mode', function() {
+        assertTextLength(30, '1d ago', 'medium');
+      });
+
+      test('shows days when less than 25 days ago in medium mode', function() {
+        assertTextLength(20 * 24, '20d ago', 'medium');
+      });
+
+      test('shows months when less than 345 days ago in long mode', function() {
+        assertTextLength(8.5 * 31 * 24, '9 months ago', 'long');
+      });
+
+      test('shows 1 year when less than 545 days ago in long mode', function() {
+        assertTextLength(13 * 31 * 24, '1 year ago', 'long');
+      });
+
+      test('shows year when more than 545 days ago in long mode', function() {
+        assertTextLength(15.5 * 12 * 31 * 24, '16 years ago', 'long');
+      });
+
     });
   </script>
 
