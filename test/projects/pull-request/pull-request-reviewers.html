@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     test('shows reviewers, when reviewers are set', function() {
       elem.pullRequest = {
-        assignees: [
+        requested_reviewers: [
           {
             login: 'tnsmith',
             id: 2,
@@ -87,19 +87,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     test('triggers ajax when removing assignee', function(done) {
       stub('github-authenticated-ajax', {
         generateRequest: function() {
-          if (this.id === 'removeAssignees') {
+          if (this.id === 'removeReviewers') {
             this.fire('response', {
               response: {
-                assignees: ['eanker']
+                requested_reviewers: ['eanker']
               }
             });
-            assert.deepEqual(elem.pullRequest.assignees, ['eanker']);
+            assert.deepEqual(elem.pullRequest.requested_reviewers, ['eanker']);
             done();
           }
         }
       });
       elem.pullRequest = {
-        assignees: [
+        requested_reviewers: [
           {
             login: 'eanker',
             id: 3,

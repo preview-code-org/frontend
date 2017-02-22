@@ -29,8 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../project-behavior.html">
-<link rel="import" href="set-reviewers.html">
-
 
 <dom-module id="reviewers-list">
   <template>
@@ -105,7 +103,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <div class="image" style$="background-image: url([[reviewer.avatar_url]]); ">
           <div class="icons">
             <iron-icon class$="lgtm [[reviewer.approved]]" icon="icons:thumb-up"></iron-icon>
-            <paper-icon-button hidden$="[[!editable]]" title$="Unassign [[reviewer.login]]"  on-tap="_removeAssignee" icon="icons:clear"></paper-icon-button>
+            <paper-icon-button hidden$="[[!editable]]" title$="Unassign [[reviewer.login]]"  on-tap="_removeReviewers" icon="icons:clear"></paper-icon-button>
          </div>
         </div>
       </div>
@@ -130,8 +128,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         }
       },
-      _removeAssignee: function(e) {
-        this.fire('remove-assignee', e.model.reviewer);
+      _removeReviewers: function(e) {
+        this.fire('remove-reviewer', e.model.reviewer);
       }
     });
   </script>

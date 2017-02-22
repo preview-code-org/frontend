@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </style>
     <paper-dropdown-menu label="Add reviewer" value="{{reviewer}}">
       <paper-menu class="dropdown-content">
-        <template is="dom-repeat" items="[[project.assignees]]" index-as="index">
+        <template is="dom-repeat" items="[[reviewers]]" index-as="index">
           <paper-item><img height=45px src="[[item.avatar_url]]" alt="[[item.login]] user image" />[[item.login]]</paper-item>
         </template>
       </paper-menu>
@@ -55,7 +55,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         reviewer: {
           type: String,
           notify: true
+        },
+        reviewers: {
+          type: Array,
+          computed: '_getReviewers(project.assignees, owner)'
+        },
+        owner: {
+          type: String
         }
+      },
+      _getReviewers: function(assignees, owner) {
+        return assignees.filter(function(assignee) {
+          return assignee.login !== owner;
+        });
       }
     });
   </script>

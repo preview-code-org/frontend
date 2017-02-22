@@ -9,7 +9,7 @@
     "src/projects/projects-page.html",
     "src/home-page.html"
   ],
-  "includeDependencies": [
+  "extraDependencies": [
     "bower_components/webcomponentsjs/webcomponents-lite.min.js"
   ]
 }

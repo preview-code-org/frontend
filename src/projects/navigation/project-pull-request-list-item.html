@@ -111,7 +111,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </div>
       <div class="info">
         <list-item-label type="info" title$="Last updated [[_updatedAtString]]" icon="device:access-time">[[_updatedAtString]]</list-item-label>
-        <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.assignees.length]]</list-item-label>
+        <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.requested_reviewers.length]]</list-item-label>
         <list-item-label type="info">
           <span hidden$="[[!_hasCIStatus]]">
             <a href$="{{_cistatus.target_url}}" target="_blank">
@@ -122,7 +122,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </a>
           </span>
         </list-item-label>
-        <!-- <list-item-label type="info" title="Amount of reviewers" icon="social:people-outline">[[pr.assignee.login]]</list-item-label> -->
       </div>
     </column-list-item>
 

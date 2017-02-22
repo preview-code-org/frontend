@@ -38,23 +38,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <github-authenticated-ajax
-      id="removeAssignees"
+      id="removeReviewers"
       method="DELETE"
-      refurl="[[pullRequest._links.issue.href]]/assignees"
-      headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
-      on-response="_updateAssigneesList"
+      refurl="[[pullRequest._links.self.href]]/requested_reviewers"
+      headers='{"Accept": "application/vnd.github.black-cat-preview+json"}'
+      on-response="_updateReviewersList"
       ></github-authenticated-ajax>
 
     <github-authenticated-ajax
-      id="postAssignees"
+      id="postReviewers"
       method="POST"
-      refurl="[[pullRequest._links.issue.href]]/assignees"
-      headers='{"Accept": "application/vnd.github.cerberus-preview+json"}'
-      on-response="_updateAssigneesList"
+      refurl="[[pullRequest._links.self.href]]/requested_reviewers"
+      headers='{"Accept": "application/vnd.github.black-cat-preview+json"}'
+      on-response="_updateReviewersList"
       ></github-authenticated-ajax>
 
-    <reviewers-list id="list" editable reviewers="[[reviewers]]" on-remove-assignee="_removeAssignee"></reviewers-list>
-    <set-reviewers hidden$="[[!editable]]" on-reviewer-changed="_postReviewer"></set-reviewers>
+    <reviewers-list id="list" editable reviewers="[[reviewers]]" on-remove-reviewer="_removeReviewers"></reviewers-list>
+    <set-reviewers hidden$="[[!editable]]" owner="[[pullRequest.user.login]]" on-reviewer-changed="_postReviewer"></set-reviewers>
+
   </template>
   <script>
   /*global ProjectBehavior*/
@@ -62,41 +63,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'pull-request-reviewers',
       behaviors: [ProjectBehavior],
       properties: {
-        pullRequest: Object,
+        pullRequest: {
+          type: Object,
+          notify: true
+        },
         editable: Boolean,
         reviewers: {
           type: Array,
-          computed: '_getReviewers(pullRequest.assignees)'
+          computed: '_getReviewers(pullRequest.requested_reviewers)'
         }
       },
-      _removeAssignee: function(e) {
-        this.$.removeAssignees.body = {
-          assignees: [e.detail.login]
+      _removeReviewers: function(e) {
+        this.$.removeReviewers.body = {
+          reviewers: [e.detail.login]
         }
-        this.$.removeAssignees.generateRequest();
+        this.$.removeReviewers.generateRequest();
       },
       _postReviewer: function(e) {
         var reviewer = e.detail.value;
-        if (reviewer && this.pullRequest.assignees.indexOf(reviewer) === -1) {
-          this.$.postAssignees.body = {
-            assignees: [reviewer]
+        if (reviewer && this.reviewers.indexOf(reviewer) === -1) {
+          this.$.postReviewers.body = {
+
+            reviewers: [reviewer]
           }
-          this.$.postAssignees.generateRequest();
+          this.$.postReviewers.generateRequest();
         }
       },
-      _getReviewers: function(assignees) {
-        return assignees.map(function(assignee) {
+      _getReviewers: function(reviewers) {
+        return reviewers.map(function(reviewer) {
           return {
-            login: assignee.login,
+            login: reviewer.login,
             // TODO(Tim): Extract LGTM from backend
             approved: false,
-            avatar_url: assignee.avatar_url
+            avatar_url: reviewer.avatar_url
           };
         });
       },
-      _updateAssigneesList: function(e) {
-        this.set('pullRequest.assignees', e.detail.response.assignees);
-        this.fire('reviewers-updated', e.detail.response.assignees);
+      _updateReviewersList: function(e) {
+        this.set('pullRequest.requested_reviewers', e.detail.response.requested_reviewers);
+        this.fire('reviewers-updated', e.detail.response);
       }
     });
   </script>

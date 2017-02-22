@@ -217,7 +217,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         _canUserApprove: {
           type: Boolean,
           value: false,
-          computed: '_getCanUserApprove(pullRequest.assignees, githubUser, nonEdit)'
+          computed: '_getCanUserApprove(reviewers, githubUser, nonEdit)'
         },
         _approved: {
           type: Boolean,
@@ -236,7 +236,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         reviewers: {
           type: Array,
-          computed: '_getReviewers(pullRequest.assignees, _approvals)'
+          computed: '_getReviewers(pullRequest.requested_reviewers, _approvals)'
         }
       },
       observers: [
@@ -295,20 +295,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return project.owner + '/' + project.name + '/pulls/' + pullRequest.number + '/hunkApprovals/' + hunk.id;
         }
       },
-      _getReviewers: function(assignees, approvals) {
-        return assignees.map(function(assignee) {
+      _getReviewers: function(reviewers, approvals) {
+        return reviewers.map(function(reviewer) {
           return {
-            login: assignee.login,
-            approved: approvals[assignee.id],
-            avatar_url: assignee.avatar_url
+            login: reviewer.login,
+            approved: approvals[reviewer.id],
+            avatar_url: reviewer.avatar_url
           }
         });
       },
-      _getCanUserApprove: function(assignees, githubUser, isApprovable) {
-        var isAssignee = assignees.filter(function(assignee) {
-          return assignee.login === githubUser.login;
+      _getCanUserApprove: function(reviewers, githubUser, isApprovable) {
+        var isReviewer = reviewers.filter(function(reviewer) {
+          return reviewer.login === githubUser.login;
         }).length > 0;
-        return isAssignee && isApprovable;
+        return isReviewer && isApprovable;
       },
       _onApproveChange: function(isApproved) {
         if (this.hunk && (!this._approvals || isApproved !== this._approvals[this.githubUser.id])) {
@@ -334,7 +334,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _promptToMove: function() {
           this.fire('moveToGroup', {hunk: this.hunk});
       },
-
       _computeHunkFileUrl: function(head, hunk) {
         return head.repo.html_url + '/blob/' + head.sha + '/' + hunk.fileNameUrl;
       }

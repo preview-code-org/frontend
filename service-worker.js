@@ -92,7 +92,7 @@ self.addEventListener('fetch', function(event) {
       && request.url.match('^https://api.github.com')
       // Diff views are fetched from the same end-points as normal PRs, so ignore these.
       && request.headers.get('Accept') !== 'application/vnd.github.VERSION.diff'
-      && request.headers.get('Accept') !== 'application/vnd.github.cerberus-preview+json'
+      && request.headers.get('Accept') !== 'application/vnd.github.black-cat-preview+json'
       && request.headers.get('Accept') !== 'application/vnd.github.VERSION.raw') {
     event.respondWith(
       retrieveETagFromGitHubCache(request)

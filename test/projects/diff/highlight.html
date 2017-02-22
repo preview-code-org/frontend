@@ -111,15 +111,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             login: 'user2'
           };
           elem.pullRequest = {
-            assignees: [
+            number: 42,
+            requested_reviewers: [
               {
                 login: 'user1'
               },
               {
                 login: 'user2'
               }
-            ],
-            number: 42
+            ]
           };
           elem.hunk = {
             id: 'hunkId',
