@@ -138,7 +138,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <app-route route="{{route}}" pattern="/:page" data="{{page}}"></app-route>
 
-    <feature-bar selected-feature={{page.page}}>
+    <feature-bar selected-feature={{page.page}} collapsed="[[fBarCollapsed]]">
       <div class="content">
         <div class="title">
           <h2>[[project.owner]] / [[project.name]]</h2>
@@ -175,7 +175,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       is: 'project-overview-page',
       behaviors: [ProjectBehavior],
       observers: [
-        'initSshUrl(project._actual.ssh_url)'
+        'initSshUrl(project._actual.ssh_url)',
+        '_onPageChange(page.page)'
       ],
       properties: {
         githubUser: Object,
@@ -205,6 +206,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       initSshUrl: function(url) {
         this.displayCloneURL = url;
+      },
+
+      _onPageChange: function(page) {
+        if (page === 'createpull') {
+          this.fBarCollapsed = true;
+        } else {
+          this.fBarCollapsed = false;
+        }
       }
     });
   </script>
