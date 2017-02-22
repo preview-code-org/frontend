@@ -46,6 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         padding: 1.5em;
         padding-bottom: 0;
         align-self: stretch;
+        transition: all ease 0.3s;
       }
       paper-tabs {
         --paper-tabs-selection-bar-color: var(--anchor-color);
@@ -67,7 +68,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
 
-    <header>
+    <header id="header">
       <content select=".content"></content>
     </header>
     <paper-tabs
@@ -89,6 +90,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         selectedFeature: {
           type: String,
           notify: true
+        },
+        collapsed: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true,
+          observer: '_toggleCollapsed'
         }
       },
       attached: function() {
@@ -102,6 +109,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
           Polymer.dom(this.$.tabs).appendChild(tab);
         }.bind(this));
+      },
+
+      _toggleCollapsed: function(collapsed) {
+        if (collapsed) {
+          var header = this.$.header;
+          var height = header.getBoundingClientRect().height;
+          header.style.marginTop = (-height) + 'px';
+        } else {
+          var header = this.$.header;
+          header.style.marginTop = 0;
+        }
       }
     });
   </script>
