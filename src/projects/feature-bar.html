@@ -116,12 +116,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       _toggleCollapsed: function(collapsed) {
+        var header = this.$.header;
         if (collapsed) {
-          var header = this.$.header;
           var height = header.getBoundingClientRect().height;
           header.style.marginTop = (-height) + 'px';
         } else {
-          var header = this.$.header;
           header.style.marginTop = 0;
         }
       }

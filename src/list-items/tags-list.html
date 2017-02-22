@@ -82,10 +82,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.customStyle['--tag-color'] = '#' + color;
         //Selects a text color (black/white) depending on background color
         //Source: http://stackoverflow.com/a/4726403/4760422
-        var textcolor = "white"
-        if((255 - ((parseInt(color.substring(0, 2),16) * 0.299) + 
-                   (parseInt(color.substring(2, 4),16) * 0.587) + 
-                   (parseInt(color.substring(4, 6),16) * 0.114))) < 105){
+        var textcolor = 'white'
+        if ((255 - ((parseInt(color.substring(0, 2), 16) * 0.299) + 
+                   (parseInt(color.substring(2, 4), 16) * 0.587) + 
+                   (parseInt(color.substring(4, 6), 16) * 0.114))) < 105) {
           textcolor = '#555'
         }
         this.customStyle['--text-color'] = textcolor;
