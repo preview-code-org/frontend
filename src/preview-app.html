@@ -170,6 +170,7 @@ Prism.languages.diff.other = /.+/m;
     },
     _setToken: function(e) {
       this._storeToken(e);
+      this.newPage = 'projects';
       this.set('page.page', 'projects');
     },
     _toHome: function() {
