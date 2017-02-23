@@ -152,7 +152,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <paper-button
           class="merge-button" on-tap="_mergePR"
           raised disabled="[[!pullRequest.mergeable]]">
-        [[_getMergeButtonText(pullRequest.mergeable)]]
+        [[_getMergeButtonText(pullRequest)]]
       </paper-button>
     </div>
     <template is="dom-repeat" items="[[comments]]">
@@ -211,8 +211,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         };
         this.$.ajaxMergePR.generateRequest();
       },
-      _getMergeButtonText: function(mergeable) {
-        return mergeable ? 'Merge pull request' : 'This branch has conflicts that must be resolved';
+      _getMergeButtonText: function(pr) {
+        if(pr.mergeable){
+          return 'Merge pull request';
+        }
+        if(pr.merged){
+          var date = new Date((pr.merged_at || "").replace(/-/g,"/").replace(/[TZ]/g," "));
+          return 'Merged by ' + pr.merged_by.login + ' ' + this.toDateStringLength(date.getTime(), 'long');
+        }
+        return 'This branch has conflicts that must be resolved';
       },
       _prHasBeenMerged: function(e) {
         if (e.detail.response.merged) {
