@@ -67,7 +67,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         requested_reviewers: [{
           html_url: 'https://example.com/',
           login: 'reviewer'
-        }]
+        }],
+        _links : {
+          statuses : {
+            href: 'https://example.com'
+          }
+        }
       };
       var elem;
 

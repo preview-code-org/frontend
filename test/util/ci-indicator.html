@@ -1,4 +1,4 @@
-<!-- Copyright (c) 2016, preview-code
+    <!-- Copyright (c) 2016, preview-code
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,47 +29,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!doctype html>
 <html>
 <head>
-  <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
-  <title>project-pull-request-list-item tests</title>
-  <script src='../../../bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
-  <script src='../../../bower_components/web-component-tester/browser.js'></script>
-  <script src='../../../bower_components/iron-test-helpers/mock-interactions.js'></script>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>ci-indicator tests</title>
+
+  <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../bower_components/web-component-tester/browser.js"></script>
 
   <!-- Import the element to test -->
-  <link rel='import' href='../../../src/projects/navigation/project-pull-request-list-item.html'>
+  <link rel="import" href="../../src/util/ci-indicator.html">
 
 </head>
 <body>
-
-  <test-fixture id="basic">
-    <template>
-      <project-pull-request-list-item></project-pull-request-list-item>
-    </template>
-  </test-fixture>
-<script>
-  suite('<project-pull-request-list-item>', function() {
-    var elem;
+  <script>
+    suite('<ci-indicator>', function() {
+       var elem;
 
     setup(function() {
       elem = fixture('basic');
-      elem.pr = {
-        title: 'First PR',
-        status: 'Under review',
-        user: {
-          login: 'User1'
-        },
-        number: 1
-      }
-      elem.issue = {
-        labels: [
-          {
-            name: 'CL Accepted'
-          },
-          {
-            name: 'Work In Progress'
-          }
-        ]
-      };
       elem.statuses = [
         {
           state: 'started',
@@ -91,15 +67,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       ]
     });
-
-    test('shows labels of the pull request', function() {
-      elem.showStatus = true;
-      var labels = Polymer.dom(elem.root).querySelector('[title="Status"]');
-      assert.include(labels.textContent, 'CL Accepted');
-      assert.include(labels.textContent, 'Work In Progress');
+    
+    test('shows latest success ci status', function() {
+      var passed = Polymer.dom(elem.root).querySelector('.icon-passed');
+      assert.include(passed.className, 'success');
     });
-  })
-</script>
 
-</body>
-</html>
+    test('shows nothing when there is no ci status', function() {
+      elem.statuses = [
+        {
+          state: 'Accepted',
+          target_url: 'https://cla.google.com',
+          id: 1,
+          context: 'CLA'
+        }
+      ]
+      var passed = Polymer.dom(elem.root).querySelector('.icon-passed');
+      assert.notInclude(passed.className, 'success');
+      var failed = Polymer.dom(elem.root).querySelector('.icon-failed');
+      assert.notInclude(failed.className, 'failure');
+      var pending = Polymer.dom(elem.root).querySelector('.icon-pending');
+      assert.notInclude(failed.className, 'pending');
+    });
+
+    test('shows latest failure ci status', function() {
+      elem.statuses = elem.statuses.concat([{
+        state: 'failure',
+        target_url: 'https://ci.example.com/1000/output',
+        id: 4,
+        context: 'continuous-integration/jenkins'
+      }]);
+      var failed = Polymer.dom(elem.root).querySelector('.icon-failed');
+      assert.include(failed.className, 'failure');
+    });
+});

@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="import" href="../../list-items/tags-list.html">
 <link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../../util/to-date-string-behavior.html">
+<link rel="import" href="../../util/ci-indicator.html">
 
 <dom-module id="project-pull-request-list-item">
   <template>
@@ -53,26 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .indicator.true {
         background-color: var(--primary-action-red);
       }
-      .icon-failed {
-        fill: var(--primary-action-red);
-      }
-      .icon-passed {
-        fill: var(--primary-action-green);
-      }
-      /* We hide by default, to prevent double icons if the data is still loading */
-      .icon-failed:not(.failure):not(.error) {
-        display: none;
-      }
-      .icon-passed:not(.success) {
-        display: none;
-      }
-      .main iron-icon, .ci-placeholder {
-        width: 20px;
-        height: 20px;
-        margin-top: -4px;
-        display: inline-block;
-      }
-      .main iron-icon {
+      ci-indicator {
         animation: fadein 1s;
       }
       .main span {
@@ -115,10 +97,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <list-item-label type="info">
           <span hidden$="[[!_hasCIStatus]]">
             <a href$="{{_cistatus.target_url}}" target="_blank">
-              <iron-icon title="CI passed" class$="icon-passed [[_cistatus.state]]" icon="icons:check-circle"></iron-icon>
-            </a>
-            <a href$="{{_cistatus.target_url}}" target="_blank">
-              <iron-icon title="CI failed" class$="icon-failed [[_cistatus.state]]" icon="icons:cancel"></iron-icon>
+              <ci-indicator status="[[_cistatus.state]]" icon-passed="icons:check" icon-failed="icons:close" icon-pending="icons:radio-button-unchecked" ></ci-indicator>
             </a>
           </span>
         </list-item-label>
