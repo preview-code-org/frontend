@@ -34,11 +34,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <style>
       :host {
         margin-bottom: 4px;
-        height: 24px;
         width: 100%;
         white-space: nowrap;
         overflow-x: hidden;
         text-overflow: ellipsis;
+      }
+      div {
+        display:inline-block;
+        height: 24px;
       }
       :host:last-child {
         margin-bottom: 0px;
@@ -56,14 +59,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         text-align: right;
         font-size: 0.9em;
       }
-      :host([type=box]) span {
-        display: inline-block;
+      :host([type=box]) div {
+        display: inherit;
         padding: 3px 6px;
         border-radius: 6px;
-        color: var(--primary-background-color);
-        color: var(--tag-text-color);
-        background-color: var(--pr-status-color);
-        background-color: var(--tag-color);
+        color: var(--primary-background-color, --tag-text-color);
+        background-color: var(--pr-status-color, --tag-color);
+        overflow-x: hidden;
+        text-overflow: ellipsis;
       }
       iron-icon {
         vertical-align: text-bottom;
@@ -73,7 +76,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <template is="dom-if" if="[[icon]]">
       <iron-icon icon="[[icon]]"></iron-icon>
     </template>
-    <span><content></content></span>
+    <div><content></content></div>
   </template>
 
   <script>
