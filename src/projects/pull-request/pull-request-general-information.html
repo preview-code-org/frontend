@@ -94,7 +94,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
       .CIlist{
         margin-left: 12px;
-        display: flex;  
+        display: flex;
       }
     </style>
 
@@ -140,7 +140,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </div>
 
     <div class="secondary-container">
-      <div hidden$="[[hideCI]]"> 
+      <div hidden$="[[hideCI]]">
         <ci-indicator show-content="true" status="[[CIstatus.state]]" size="48px" icon-passed="icons:check-circle" icon-failed="icons:cancel" icon-pending="icons:radio-button-unchecked" ></ci-indicator>
         <template is="dom-repeat" items="[[CIstatus.statuses]]">
           <div class="CIlist">
@@ -212,11 +212,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         this.$.ajaxMergePR.generateRequest();
       },
       _getMergeButtonText: function(pr) {
-        if(pr.mergeable){
+        if (pr.mergeable) {
           return 'Merge pull request';
         }
-        if(pr.merged){
-          var date = new Date((pr.merged_at || "").replace(/-/g,"/").replace(/[TZ]/g," "));
+        if (pr.merged) {
+        var date = new Date((pr.merged_at || '').replace(/-/g, '/').replace(/[TZ]/g, ' '));
           return 'Merged by ' + pr.merged_by.login + ' ' + this.toDateStringLength(date.getTime(), 'long');
         }
         return 'This branch has conflicts that must be resolved';

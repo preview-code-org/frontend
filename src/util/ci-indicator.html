@@ -24,7 +24,7 @@ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
 SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
@@ -56,18 +56,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         display: none;
       }
     </style>
-        <div class$="icondiv-passed [[status]]"> 
+        <div class$="icondiv-passed [[status]]">
           <iron-icon  title="CI passed" class="icon-passed" icon="[[iconPassed]]"></iron-icon>
           <span hidden$="[[!showContent]]">All checks have passed:</span>
         </div>
-        <div class$="icondiv-failure [[status]]"> 
+        <div class$="icondiv-failure [[status]]">
           <iron-icon title="CI failure" class="icon-failure" icon="[[iconFailed]]"></iron-icon>
           <span hidden$="[[!showContent]]">There are failed checks:</span>
         </div>
-        <div class$="icondiv-pending [[status]]"> 
+        <div class$="icondiv-pending [[status]]">
           <iron-icon title="CI pending" class="icon-pending" icon="[[iconPending]]"></iron-icon>
           <span hidden$="[[!showContent]]">Not all checks have completed yet:</span>
-        </div>        
+        </div>
   </template>
   <script>
     Polymer({
@@ -82,7 +82,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
         size: {
           type: String,
-          value: "24px"
+          value: '24px'
         },
         iconPass: {
           type: String
@@ -94,8 +94,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           type: String
         }
       },
-      observers:['_setIconSize(size)'],
-      _setIconSize: function(size){
+      observers: ['_setIconSize(size)'],
+      _setIconSize: function(size) {
         this.customStyle['--icon-size'] = size;
       }
     });
