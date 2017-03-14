@@ -99,14 +99,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       test('adds group with popup', function(done) {
         element.$.addGroupDialog.addEventListener('iron-overlay-closed', function() {
           var groups = element.orderedGroups;
-          assert.equal(groups.length, 2);
+          assert.equal(groups.length, 1);
           assert.equal(groups[0].info.title, 'New group!');
           done();
         });
         addGroup();
       });
 
-      test('reorders group using dialog', function(done) {
+      test.only('reorders group using dialog', function(done) {
         var dialog = element.$.orderGroupDialog;
         dialog.addEventListener('iron-overlay-opened', function() {
           dialog.fire('order', {
@@ -138,7 +138,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           newIndex: 1
         });
         var groupHunks = element.orderedGroups[0].diff;
-        assert.equal(groupHunks.length, 3);
+        assert.equal(groupHunks.length, 2);
         assert.equal(groupHunks[1].file, hunks[0].file);
       });
 
@@ -148,7 +148,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           groupId: element.orderedGroups[0].id
         });
         var groupHunks = element.orderedGroups[0].diff;
-        assert.equal(groupHunks.length, 1);
+        assert.equal(groupHunks.length, 0);
+        assert.equal(element.unorderedGroup.length, 0);
         assert.equal(groupHunks[0].file, hunks[1].file);
       });
 

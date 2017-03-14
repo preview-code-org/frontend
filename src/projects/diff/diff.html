@@ -86,7 +86,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" hunks="{{hunks}}"></diff-parser>
-    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}" pull-request="[[pullRequest]]"></hunk-sorter>
+    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" ordered-groups="{{orderedGroups}}" pull-request="[[pullRequest]]"></hunk-sorter>
 
     <div id="hunkGroups">
       <template is="dom-repeat" items="[[orderedGroups]]">
@@ -170,6 +170,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
       _setGroupTitles: function(groups) {
         this._groupTitles = groups.base.map(function(group) {
+          if (!group) {
+            debugger;
+          }
           return group.info.title;
         });
       },

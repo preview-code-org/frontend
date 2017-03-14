@@ -60,7 +60,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     test('has default group when there is no ordering on firebase', function() {
       sorter.rawHunks = testDiffs;
-      assert.equal(testDiffs.length, sorter.groups[0].diff.length);
+      assert.equal(0, sorter.orderedGroups.length);
+      assert.equal(testDiffs.length, sorter.unorderedGroup.diff.length);
     });
 
     test('has default ordering when there is no ordering on firebase', function() {
@@ -68,17 +69,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.equal(testDiffs.length, sorter.getOrdering()[0].diff.length);
     });
 
-    test('orders new hunks into groups', function() {
+    test('orders new hunks into unorderedGroup', function() {
       sorter.rawHunks = [testDiffs[0]];
-      assert.deepEqual(testDiffs[0], sorter.groups[0].diff[0]);
+      assert.deepEqual(testDiffs[0], sorter.unorderedGroup.diff[0]);
     });
 
     test('adds group to the front', function() {
       sorter.rawHunks = [testDiffs[0]];
       sorter.addGroup('01');
       sorter.addGroup('02');
-      assert.equal('02', sorter.groups[0].info.title);
-      assert.equal('01', sorter.groups[1].info.title);
+      assert.equal('02', sorter.orderedGroups[0].info.title);
+      assert.equal('01', sorter.orderedGroups[1].info.title);
     });
 
     test('adds group to the front of ordering', function() {
@@ -92,7 +93,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     test('adds new empty group', function() {
       sorter.rawHunks = [testDiffs[0]];
       sorter.addGroup('01');
-      assert.equal(0, sorter.groups[0].diff.length);
+      assert.equal(0, sorter.orderedGroups[0].diff.length);
     });
 
     test('adds new empty group to ordering', function() {
@@ -105,7 +106,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.rawHunks = [testDiffs[0]];
       var id = sorter.addGroup('group');
       sorter.removeGroup(id);
-      assert.equal(1, sorter.groups.length);
+      assert.equal(0, sorter.orderedGroups.length);
     });
 
     test('removes group by id from ordering', function() {
@@ -120,8 +121,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.addGroup('01');
       sorter.addGroup('02');
       sorter.addGroup('03');
-      sorter.removeGroup(sorter.groups[0].id);
-      assert.equal(3, sorter.groups.length);
+      sorter.removeGroup(sorter.orderedGroups[0].id);
+      assert.equal(2, sorter.orderedGroups.length);
     });
 
     test('does not remove too much from ordering', function() {
@@ -129,7 +130,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.addGroup('01');
       sorter.addGroup('02');
       sorter.addGroup('03');
-      sorter.removeGroup(sorter.groups[0].id);
+      sorter.removeGroup(sorter.orderedGroups[0].id);
       assert.equal(3, sorter.getOrdering().length);
     });
 
@@ -145,8 +146,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.addGroup('01');
       sorter.addGroup('02');
       sorter.addGroup('03');
-      sorter.removeGroup(sorter.groups[1].id);
-      assert.equal('01', sorter.groups[1].info.title);
+      sorter.removeGroup(sorter.orderedGroups[1].id);
+      assert.equal('01', sorter.orderedGroups[1].info.title);
     });
 
     test('can remove middle group from ordering', function() {
@@ -154,28 +155,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       var id = sorter.addGroup('01');
       sorter.addGroup('02');
       sorter.addGroup('03');
-      sorter.removeGroup(sorter.groups[1].id);
+      sorter.removeGroup(sorter.orderedGroups[1].id);
       assert.equal(id, sorter.getOrdering()[1].id);
     });
 
-    test('can remove default group', function() {
+    test('can not remove default group', function() {
       sorter.rawHunks = [testDiffs[0]];
       sorter.addGroup('bla');
-      sorter.removeGroup(sorter.groups[1].id);
-      assert.equal(1, sorter.groups.length);
+      var id = sorter.unorderedGroup.id
+      sorter.removeGroup(id);
+      assert.equal(id, sorter.unorderedGroup.id);
     });
 
-    test('can remove default group from ordering', function() {
+    test('can not remove default group from ordering', function() {
       sorter.rawHunks = [testDiffs[0]];
       sorter.addGroup('bla');
-      sorter.removeGroup(sorter.groups[1].id);
-      assert.equal(1, sorter.getOrdering().length);
+      var id = sorter.unorderedGroup.id
+      sorter.removeGroup(id);
+      assert.equal(2, sorter.getOrdering().length);
     });
 
     test('fills the default group when assigning unsorted hunks', function() {
       sorter.rawHunks = testDiffs;
       sorter.addGroup('bla');
-      assert.equal(testDiffs.length, sorter.groups[1].diff.length);
+      assert.equal(testDiffs.length, sorter.unorderedGroup.diff.length);
     });
 
     test('fills the default group in ordering when assigning unsorted hunks', function() {
@@ -188,7 +191,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.rawHunks = testDiffs;
       var id = sorter.addGroup('group');
       sorter.addHunkToGroup(testDiffs[0], id, 0);
-      assert.equal(1, sorter.groups[0].diff.length);
+      assert.equal(1, sorter.orderedGroups[0].diff.length);
     });
 
     test('adds hunk to correct group in ordering', function() {
@@ -202,7 +205,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.rawHunks = testDiffs;
       sorter.addGroup('group');
       sorter.addHunkToGroup(testDiffs[0], 'illegal-group-id', 0);
-      assert.equal(0, sorter.groups[0].diff.length);
+      assert.equal(0, sorter.orderedGroups[0].diff.length);
     });
 
     test('does add hunk to non-existing group in ordering', function() {
@@ -212,18 +215,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.equal(0, sorter.getOrdering()[0].diff.length);
     });
 
-    test('can add hunk to default group', function() {
-      sorter.rawHunks = [testDiffs[0]];
-      var id = sorter.groups[0].id;
+    test('can not add hunk to default group', function() {
+      sorter.rawHunks = [];
+      var id = sorter.unorderedGroup.id;
       sorter.addHunkToGroup(testDiffs[1], id, 0);
-      assert.equal(2, sorter.groups[0].diff.length);
+      assert.equal(0, sorter.unorderedGroup.diff.length);
     });
 
-    test('adds hunk to default group in ordering', function() {
+    test('does not add hunk to default group in ordering', function() {
       sorter.rawHunks = [testDiffs[0]];
-      var id = sorter.groups[0].id;
+      var id = sorter.unorderedGroup.id;
       sorter.addHunkToGroup(testDiffs[1], id, 0);
-      assert.equal(2, sorter.getOrdering()[0].diff.length);
+      assert.equal(1, sorter.getOrdering()[0].diff.length);
     });
 
     test('adds hunk to correct location in group', function() {
@@ -233,7 +236,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.addHunkToGroup(testDiffs[0], id, 0);
       sorter.addHunkToGroup(testDiffs[1], id, 1);
       sorter.addHunkToGroup(expectedHunk, id, expectedIndex);
-      assert.deepEqual(expectedHunk, sorter.groups[0].diff[expectedIndex]);
+      assert.deepEqual(expectedHunk, sorter.orderedGroups[0].diff[expectedIndex]);
     });
 
     test('adds hunk to correct location in ordering', function() {
@@ -252,17 +255,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.addHunkToGroup(testDiffs[0], id, 0);
       sorter.addHunkToGroup(testDiffs[1], id, 0);
       sorter.removeHunkFromGroup(id, testDiffs[0]);
-      assert.equal(1, sorter.groups[0].diff.length);
+      assert.equal(1, sorter.orderedGroups[0].diff.length);
     });
 
-    test('does not remove hunk from other groups', function() {
+    test('does not remove hunk from wrong group', function() {
       sorter.rawHunks = testDiffs;
       var id1 = sorter.addGroup('group-1');
       var id2 = sorter.addGroup('group-2');
       sorter.addHunkToGroup(testDiffs[0], id1, 0);
       sorter.addHunkToGroup(testDiffs[0], id2, 0);
       sorter.removeHunkFromGroup(id1, testDiffs[0]);
-      assert.equal(1, sorter.groups[0].diff.length);
+      assert.equal(1, sorter.orderedGroups[0].diff.length);
     });
 
 
@@ -280,7 +283,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       var id = sorter.addGroup('group');
       sorter.addHunkToGroup(testDiffs[0], id, 0);
       sorter.removeHunkFromGroup(id, testDiffs[1]);
-      assert.equal(1, sorter.groups[0].diff.length);
+      assert.equal(1, sorter.orderedGroups[0].diff.length);
     });
 
     test('does not remove non-existing hunk from ordering', function() {
@@ -293,13 +296,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     test('can remove hunk from default group', function() {
       sorter.rawHunks = testDiffs;
-      sorter.removeHunkFromGroup(sorter.groups[0].id, testDiffs[0]);
-      assert.equal(testDiffs.length-1, sorter.groups[0].diff.length);
+      sorter.removeHunkFromGroup(sorter.unorderedGroup.id, testDiffs[0]);
+      assert.equal(testDiffs.length-1, sorter.unorderedGroup.diff.length);
     });
 
     test('removes hunk from default group in ordering', function() {
       sorter.rawHunks = testDiffs;
-      sorter.removeHunkFromGroup(sorter.groups[0].id, testDiffs[0]);
+      sorter.removeHunkFromGroup(sorter.unorderedGroup.id, testDiffs[0]);
       assert.equal(testDiffs.length-1, sorter.getOrdering()[0].diff.length);
     });
 
@@ -308,7 +311,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       var id = sorter.addGroup('group');
       sorter.addHunkToGroup(testDiffs[0], id, 0);
       sorter.removeHunkFromGroup(id, testDiffs[0]);
-      assert.equal(1, sorter.groups.length);
+      assert.equal(0, sorter.orderedGroups.length);
     });
 
     test('removes group from ordering when it becomes empty', function() {
@@ -319,70 +322,88 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       assert.equal(1, sorter.getOrdering().length);
     });
 
-    test('moves correct hunk inside groups', function() {
+    test('moves correct hunk inside orderedGroups', function() {
       sorter.rawHunks = testDiffs;
-      var id = sorter.groups[0].id;
+      var id = sorter.addGroup('group');
+      sorter.addHunkToGroup(testDiffs[0], id, 0);
+      sorter.addHunkToGroup(testDiffs[1], id, 1);
       sorter.moveHunk(id, 0, 1);
-      assert.deepEqual(testDiffs[0], sorter.groups[0].diff[1]);
-      assert.deepEqual(testDiffs[1], sorter.groups[0].diff[0]);
+      assert.deepEqual(testDiffs[0], sorter.orderedGroups[0].diff[1]);
+      assert.deepEqual(testDiffs[1], sorter.orderedGroups[0].diff[0]);
+    });
+
+    test('cannot move hunks inside unorderedGroup', function() {
+      sorter.rawHunks = testDiffs;
+      var id = sorter.unorderedGroup.id;
+      sorter.moveHunk(id, 0, 1);
+      assert.deepEqual(testDiffs[0], sorter.unorderedGroup.diff[0]);
+      assert.deepEqual(testDiffs[1], sorter.unorderedGroup.diff[1]);
     });
 
     test('moves correct hunk inside ordering', function() {
       sorter.rawHunks = testDiffs;
-      var id = sorter.groups[0].id;
+      var id = sorter.addGroup('group');
+      sorter.addHunkToGroup(testDiffs[0], id, 0);
+      sorter.addHunkToGroup(testDiffs[1], id, 1);
       sorter.moveHunk(id, 0, 1);
       assert.deepEqual(getHunkId(testDiffs[0]), sorter.getOrdering()[0].diff[1]);
       assert.deepEqual(getHunkId(testDiffs[1]), sorter.getOrdering()[0].diff[0]);
     });
 
-    test('does not move hunk outside bounds in groups', function() {
+    test('does not move hunk outside bounds in orderedGroups', function() {
       sorter.rawHunks = testDiffs;
-      var id = sorter.groups[0].id;
-      sorter.moveHunk(id, 0, testDiffs.length+10);
-      assert.deepEqual(testDiffs[0], sorter.groups[0].diff[testDiffs.length-1]);
-      assert.deepEqual(testDiffs[1], sorter.groups[0].diff[0]);
+      var id = sorter.addGroup('group');
+      sorter.addHunkToGroup(testDiffs[0], id, 0);
+      sorter.addHunkToGroup(testDiffs[1], id, 1);
+      sorter.moveHunk(id, 0, 2);
+      assert.deepEqual(testDiffs[0], sorter.orderedGroups[0].diff[1]);
+      assert.deepEqual(testDiffs[1], sorter.orderedGroups[0].diff[0]);
     });
 
     test('does not move hunk for same position', function() {
       sorter.rawHunks = testDiffs;
-      var id = sorter.groups[0].id;
+      var id = sorter.addGroup('group');
+      sorter.addHunkToGroup(testDiffs[0], id, 0);
+      sorter.addHunkToGroup(testDiffs[1], id, 1);
       sorter.moveHunk(id, 0, 0);
-      assert.deepEqual(testDiffs[0], sorter.groups[0].diff[0]);
+      assert.deepEqual(testDiffs[0], sorter.orderedGroups[0].diff[0]);
     });
 
     test('does not move hunk outside bounds in ordering', function() {
       sorter.rawHunks = testDiffs;
-      var id = sorter.groups[0].id;
-      sorter.moveHunk(id, 0, testDiffs.length+10);
-      assert.deepEqual(getHunkId(testDiffs[0]), sorter.getOrdering()[0].diff[testDiffs.length-1]);
+      var id = sorter.addGroup('group');
+      sorter.addHunkToGroup(testDiffs[0], id, 0);
+      sorter.addHunkToGroup(testDiffs[1], id, 1);
+      sorter.moveHunk(id, 0, 2);
+      assert.deepEqual(getHunkId(testDiffs[0]), sorter.getOrdering()[0].diff[1]);
       assert.deepEqual(getHunkId(testDiffs[1]), sorter.getOrdering()[0].diff[0]);
     });
 
     test('correctly moves group', function() {
       sorter.rawHunks = testDiffs;
-      var id = sorter.addGroup('new-group');
-      var defaultId = sorter.groups[1].id;
+      var id1 = sorter.addGroup('new-group1');
+      var id2 = sorter.addGroup('new-group2');
       sorter.moveGroup(0, 1);
-      assert.equal(id, sorter.groups[1].id);
-      assert.equal(defaultId, sorter.groups[0].id);
+      assert.equal(id2, sorter.orderedGroups[1].id);
+      assert.equal(id1, sorter.orderedGroups[0].id);
     });
 
     test('correctly moves group inside ordering', function() {
       sorter.rawHunks = testDiffs;
-      var id = sorter.addGroup('new-group');
-      var defaultId = sorter.groups[1].id;
+      var id1 = sorter.addGroup('new-group1');
+      var id2 = sorter.addGroup('new-group2');
       sorter.moveGroup(0, 1);
-      assert.equal(id, sorter.getOrdering()[1].id);
-      assert.equal(defaultId, sorter.getOrdering()[0].id);
+      assert.equal(id2, sorter.getOrdering()[1].id);
+      assert.equal(id1, sorter.getOrdering()[0].id);
     });
 
     test('does not move group outside bounds', function() {
       sorter.rawHunks = testDiffs;
-      var idFirst = sorter.addGroup('new-group');
+      var idFirst = sorter.addGroup('new-group1');
       var idLast = sorter.addGroup('new-group2');
       sorter.moveGroup(0, 10);
-      assert.deepEqual(idFirst, sorter.groups[0].id);
-      assert.deepEqual(idLast, sorter.groups[2].id);
+      assert.deepEqual(idFirst, sorter.orderedGroups[0].id);
+      assert.deepEqual(idLast, sorter.orderedGroups[1].id);
     });
 
     test('does not move group for same position', function() {
@@ -400,7 +421,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       var idLast = sorter.addGroup('new-group2');
       sorter.moveGroup(0, 10);
       assert.deepEqual(idFirst, sorter.getOrdering()[0].id);
-      assert.deepEqual(idLast, sorter.getOrdering()[2].id);
+      assert.deepEqual(idLast, sorter.getOrdering()[1].id);
     });
 
     suite('interacts with Firebase', function() {
