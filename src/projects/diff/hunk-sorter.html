@@ -42,10 +42,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       path="[[_remoteOrderingPath]]"
       data="{{_remoteOrdering}}"
       ></firebase-document>
-      <backend-ajax
-        id="checkIfPathIsThere"
-        refurl="[[backendPath]]"
-        ></backend-ajax>
+    <backend-ajax
+      id="checkIfPathIsThere"
+      refurl="[[backendPath]]"
+      ></backend-ajax>
 
   </template>
   <script>
@@ -56,11 +56,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       properties: {
         pullRequest: Object,
         rawHunks: Array,
-        groups: {
+        orderedGroups: {
           type: Array,
           value: function() {
             return [];
           },
+          notify: true
+        },
+        unorderedGroup: {
+          type: Object,
           notify: true
         },
         _remoteOrdering: {
@@ -80,7 +84,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ],
 
       getOrdering: function() {
-        return this.groups.map(function(group) {
+        return this.orderedGroups.concat([this.unorderedGroup]).map(function(group) {
           return {
             id: group.id,
             info: group.info,
@@ -93,13 +97,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       addGroup: function(groupTitle) {
         var ordering = this._createHunkOrdering(groupTitle, []);
-        this.unshift('groups', this._createGroupFromOrdering(ordering, []));
+        this.unshift('orderedGroups', this._createGroupFromOrdering(ordering, []));
         return ordering.id;
       },
 
       removeGroup: function(groupId) {
         if (this._groupExists(groupId)) {
-          this.groups = this.groups.filter(function(g) {
+          this.orderedGroups = this.orderedGroups.filter(function(g) {
             return g.id !== groupId;
           })
         }
@@ -107,15 +111,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       addHunkToGroup: function(hunk, groupId, index) {
         this._doForGroup(groupId, function(i, group) {
-          group.diff.splice(index, 0, hunk);
+          group.diff.splice(Math.min(Math.max(index, 0), group.diff.length), 0, hunk);
         }.bind(this));
       },
 
       removeHunkFromGroup: function(groupId, hunk) {
+        if (groupId === this.unorderedGroup.id) {
+          for (var j = 0, m = this.unorderedGroup.diff.length; j < m; j++) {
+            if (this._getHunkId(hunk) === this._getHunkId(this.unorderedGroup.diff[j])) {
+              this.unorderedGroup.diff.splice(j, 1);
+              return;
+            }
+          }
+        }
         this._doForGroup(groupId, function(i, group) {
           for (var j = 0, m = group.diff.length; j < m; j++) {
             if (this._getHunkId(hunk) === this._getHunkId(group.diff[j])) {
-              this.groups[i].diff.splice(j, 1);
+              group.diff.splice(j, 1);
               this._removeGroupIfEmpty(i);
               return;
             }
@@ -126,16 +138,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       moveHunk: function(groupId, oldIndex, newIndex) {
         if (oldIndex !== newIndex) {
           this._doForGroup(groupId, function(index, group) {
-            var hunk = group.diff.splice(oldIndex, 1)[0];
-            group.diff.splice(Math.max(newIndex, 0), 0, hunk);
+            var size = group.diff.length-1;
+            var hunk = group.diff.splice(Math.min(Math.max(oldIndex, 0), size), 1)[0];
+            group.diff.splice(Math.min(Math.max(newIndex, 0),size), 0, hunk);
           });
         }
       },
 
       moveGroup: function(oldIndex, newIndex) {
         if (oldIndex !== newIndex) {
-          var group = this.groups.splice(oldIndex, 1)[0];
-          this.groups.splice(Math.max(newIndex, 0), 0, group);
+          var size = this.orderedGroups.length-1;
+          var group = this.orderedGroups.splice(Math.min(Math.max(oldIndex, 0), size), 1)[0];
+          this.orderedGroups.splice(Math.min(Math.max(newIndex, 0), size), 0, group);
           this.fire('orderUpdate');
         }
       },
@@ -160,24 +174,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var defaultGroup = tuple[1];
         var unsortedHunks = this._hunksToMap(rawHunks);
 
-        var allGroups = [];
+        var sortedGroups = [];
         for (var i = 0, l = ordering.length; i < l; i++) {
           var group = this._reconstructGroup(ordering[i], unsortedHunks);
           if (group && group.diff && group.diff.length> 0) {
-            allGroups.push(group);
+            sortedGroups.push(group);
           }
         }
 
         var unsortedGroup = this._distributeUnsortedHunks(defaultGroup, unsortedHunks);
-        if (unsortedGroup.diff.length > 0) {
-          allGroups.push(unsortedGroup);
-        }
         if (fbOrdering.groups === undefined && this.backendPath && defaultGroup.diff.length > 0) {
           this.$.checkIfPathIsThere.body = defaultGroup;
           this.$.checkIfPathIsThere.generateRequest();
         }
 
-        this.set('groups', allGroups);
+        this.set('orderedGroups', sortedGroups);
+        this.set('unorderedGroup', unsortedGroup);
       },
 
       _hunksToMap: function(hunks) {
@@ -248,8 +260,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       },
 
       _removeGroupIfEmpty: function(index) {
-        if (this.groups[index].diff.length === 0) {
-          this.groups.splice(index, 1);
+        if (this.orderedGroups[index].diff.length === 0) {
+          this.orderedGroups.splice(index, 1);
           this.fire('orderUpdate');
         }
       },
@@ -260,16 +272,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       _searchGroup: function(field) {
         return function(entry) {
-          return this.groups.filter(function(g) {
+          return this.orderedGroups.filter(function(g) {
             return g[field] === entry;
           }).length > 0;
         }.bind(this);
       },
 
       _doForGroup: function(groupId, f) {
-        for (var i = 0, l = this.groups.length; i < l; i++) {
-          if (this.groups[i].id === groupId) {
-            return f(i, this.groups[i]);
+        for (var i = 0, l = this.orderedGroups.length; i < l; i++) {
+          if (this.orderedGroups[i].id === groupId) {
+            return f(i, this.orderedGroups[i]);
           }
         }
       },

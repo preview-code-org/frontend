@@ -86,7 +86,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
     </style>
     <diff-parser diff="[[diff]]" base-url="[[baseUrl]]" hunks="{{hunks}}"></diff-parser>
-    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" groups="{{orderedGroups}}" pull-request="[[pullRequest]]"></hunk-sorter>
+    <hunk-sorter id="sorter" raw-hunks="[[hunks]]" ordered-groups="{{orderedGroups}}" unordered-group="{{unorderedGroup}}" pull-request="[[pullRequest]]"></hunk-sorter>
 
     <div id="hunkGroups">
       <template is="dom-repeat" items="[[orderedGroups]]">
@@ -94,29 +94,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           pull-request="[[pullRequest]]" group-comments="{{groupComments}}"
           github-user="[[githubUser]]"></pull-request-group>
       </template>
+      <template is="dom-if" if="[[unorderedGroup]]">
+        <pull-request-group id$="group-unordered" 
+          group="[[unorderedGroup]]"
+          pull-request="[[pullRequest]]"
+          github-user="[[githubUser]]"></pull-request-group>
+      </template>
     </div>
-
-    <div class="actions" hidden$="[[!editable]]">
-      <paper-fab icon="icons:add" on-tap="_openAddGroupDialog" title="Add a group"></paper-fab>
-      <paper-fab icon="icons:list" on-tap="_openGroupOrderDialog" title="Reorder groups"></paper-fab>
-    </div>
-
-    <order-dialog
-      id="orderGroupDialog"
-      action-title="Drag groups to reorder them"
-      items="[[_groupTitles]]"
-    ></order-dialog>
-
-    <input-dialog
-      id="addGroupDialog"
-      label="Enter a title for this group"
-      on-confirm="_addGroup"
-    ></input-dialog>
-
-    <move-dialog id="moveGroupDialog"
-      action-title="Move commit to another group"
-      items="[[orderedGroups]]"
-    ></move-dialog>
 
   </template>
   <script>
@@ -129,7 +113,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: false
         },
         baseUrl: String,
-        number: Number,
         diff: String,
         hunks: {
           type: Array,
@@ -142,37 +125,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           notify: true
         },
         _groupTitles: Array,
-        _sortable: Object,
         groupComments: {
           type: Array,
           notify: true
         },
         pullRequest: Object
       },
+
       observers: [
         '_setGroupTitles(orderedGroups.*)'
       ],
+
       listeners: {
-        'order': '_groupMove',
-        'remove': '_hunkRemoved',
-        'add': '_hunkAdded',
-        'update': '_hunkUpdate',
-        'orderUpdate': '_updateUI',
-        'rename': '_updateUI',
-        'moveToGroup': '_moveToGroup',
-        'groupSelected': '_groupSelected'
+        'orderUpdate': '_updateUI'
       },
-      _openAddGroupDialog: function() {
-        this.$.addGroupDialog.open();
-      },
-      _openGroupOrderDialog: function() {
-        this.$.orderGroupDialog.open();
-      },
+
       _setGroupTitles: function(groups) {
         this._groupTitles = groups.base.map(function(group) {
           return group.info.title;
         });
       },
+
       jumpToHunk: function(groupId, hunkId) {
         var headerHeight = 48;
         var additionalMargin = 16;
@@ -204,47 +177,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         updateFrame();
       },
-      _addGroup: function(e) {
-        this.$.sorter.addGroup(e.detail);
-      },
-      _hunkAdded: function(e) {
-        this.$.sorter.addHunkToGroup(e.detail.hunk, e.detail.groupId, e.detail.newIndex);
-      },
-      _hunkRemoved: function(e) {
-        this.$.sorter.removeHunkFromGroup(e.detail.groupId, e.detail.hunk);
-      },
-      _hunkUpdate: function(e) {
-        this.$.sorter.moveHunk(e.detail.groupId, e.detail.oldIndex, e.detail.newIndex);
-      },
-      _groupMove: function(e) {
-        this.$.sorter.moveGroup(e.detail.oldIndex, e.detail.newIndex);
-      },
+
       _updateUI: function() {
         var groups = this.orderedGroups;
         this.set('orderedGroups', []);
         this.set('orderedGroups', groups);
       },
-      _groupSelected: function(sender, args) {
-        var oldGroup = this.$$('#group-' + args.oldGroupId);
-        var newGroup = this.$$('#group-' + args.newGroupId);
-        var hunk = oldGroup.$$('#hunk-'+args.hunk.id.split('=').join('')).parentElement;
-        var oldHunks = oldGroup.$$('#hunks');
-        var newHunks = newGroup.$$('#hunks');
-        oldHunks.removeChild(hunk);
-        newHunks.appendChild(hunk);
-        this.$.sorter.addHunkToGroup(args.hunk, args.newGroupId, newHunks.children.length - 1);
-        this.$.sorter.removeHunkFromGroup(args.oldGroupId, args.hunk);
-      },
+
       getOrdering: function() {
         return this.$.sorter.getOrdering();
-      },
-      _moveToGroup: function(sender, args) {
-        var prg = sender.path.find(function(e) {
-           return e.localName === 'pull-request-group';
-         });
-        this.$.moveGroupDialog.hunk = args.hunk;
-        this.$.moveGroupDialog.selected = prg.group.id;
-        this.$.moveGroupDialog.open();
       }
     });
   </script>
