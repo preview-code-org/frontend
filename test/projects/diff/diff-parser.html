@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <!doctype html>
 <html>
+
 <head>
   <meta name='viewport' content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes'>
   <title>diff-parser tests</title>
@@ -39,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <link rel='import' href='../../../src/projects/diff/diff-parser.html'>
 
 </head>
+
 <body>
 
   <test-fixture id="basic">
@@ -48,47 +50,52 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </test-fixture>
 
   <script>
-  /*global actualDiffs,testDiffsWithDelete*/
-    suite('<diff-parser>', function() {
-      actualDiffs.forEach(function(diff) {
-        suite('Actual diff ' + diff.file, function() {
+    /*global actualDiffs,testDiffsWithDelete*/
+    suite('<diff-parser>', function () {
+      actualDiffs.forEach(function (diff) {
+        suite('Actual diff ' + diff.file, function () {
           var diffElem;
 
           function assertForEachHunk(field) {
             var hunks = diffElem.hunks;
-            for (var j=0, l=hunks.length;j<l;j++) {
+            for (var j = 0, l = hunks.length; j < l; j++) {
               var expectedIndex = diff.expected ? diff.expected[j] : actualDiffs.indexOf(diff);
               assert.deepEqual(hunks[j][field], testDiffsWithDelete[expectedIndex][field]);
             }
           }
 
-          setup(function() {
+          setup(function () {
             diffElem = fixture('basic');
             diffElem.diff = diff.diff;
           });
 
-          test('has correct line changes', function() {
-            assertForEachHunk('linesChanged');
+          test('has correct line changes', function () {
+            assertForEachHunk('beforeStart');
           });
 
-          test('has correct file name', function() {
+          test('has correct line changes', function () {
+            assertForEachHunk('afterStart');
+          });
+
+          test('has correct file name', function () {
             assertForEachHunk('file');
           });
 
-          test('has correct file url', function() {
+          test('has correct file url', function () {
             assertForEachHunk('fileNameUrl');
           });
 
-          test('has correct diffId', function() {
+          test('has correct diffId', function () {
             assertForEachHunk('diffId');
           });
 
-          test('has correct changes', function() {
-            assertForEachHunk('changes');
+          test('has correct changes', function () {
+            assertForEachHunk('code');
           });
         });
       });
     });
   </script>
 </body>
+
 </html>

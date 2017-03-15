@@ -26,22 +26,19 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/code-highlighter/hunk-element.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../../bower_components/prism-element/prism-theme-default.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
-<link rel="import" href="../../util/collapsible-content.html">
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../ajax/backend-ajax.html">
-<link rel="import" href="../pull-request/reviewers-list.html">
+<link rel="import" href="../../util/collapsible-content.html">
 <link rel="import" href="../project-behavior.html">
+<link rel="import" href="../pull-request/reviewers-list.html">
 <link rel="import" href="hunk-file.html">
-<link rel="import" href="hunk-ghost.html">
-<link rel="import" href="move-dialog.html">
 
-<dom-module id='pull-request-diff-highlight'>
+<dom-module id="hunk-controls">
   <template>
-    <style is="custom-style" include="prism-theme-default"></style>
     <style>
       [hidden] {
         display: none !important;
@@ -49,12 +46,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       :host {
         display: block;
         margin: 1em 0;
-        overflow: hidden;
-        -webkit-transition: all 0.3s ease;
-        -moz-transition: all 0.3s ease;
-        -ms-transition: all 0.3s ease;
-        -o-transition: all 0.3s ease;
-        transition: all 0.3s ease;
         border: solid 1px var(--secondary-background-color);
         background-color: var(--primary-background-color);
       }
@@ -68,60 +59,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           background-color: var(--tertiary-background-color);
         };
       }
-      pre {
-        margin: 0;
-        line-height: 18px;
-        overflow-x: auto;
-        flex: 1;
-      }
-      pre span {
-        width: 100%;
-        display: inline-block;
-      }
-      .token.inserted {
-        background-color: var(--addition-color);
-        color: inherit;
-      }
-      .deleted {
-        background-color: var(--deletion-color);
-      }
       :host([collapsed]) {
         height: 2em;
       }
-      .content {
-        display: flex;
-        align-items: stretch;
-      }
-      .lines {
-        display: flex;
-        width: 96px;
-      }
-      #beforeColumn, #afterColumn {
-        padding-top: 18px;
-        width: 47px;
-        border-right: solid 1px var(--secondary-background-color);
-      }
-      #beforeColumn > span,
-      #afterColumn > span {
-        color: var(--secondary-text-color);
-        display: block;
-        height: 18px;
-        line-height: 18px;
-        font-size: 12px;
-        text-align: center;
-      }
-      paper-button {
-        border: solid 1px var(--secondary-background-color);
-        background-color: var(--tertiary-background-color);
-        border-top: none;
-        margin: 0;
-        font-size: 14px;
-        border-bottom-right-radius: 8px;
-        border-bottom-left-radius: 8px;
-        position: relative;
-        top: -1px;
-      }
-      iron-icon {
+      .reply {
         width: 20px;
         height: 20px;
       }
@@ -145,23 +86,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         color: var(--primary-background-color);
         background-color: var(--primary-action-green);
       }
-      :host(.flash) {
-        -webkit-box-shadow: 0 0 0px 8px rgba(255, 222, 60, 0.55);
-        box-shadow: 0 0 0px 8px rgba(255, 222, 60, 0.55);
-      }
-      hunk-file {
-        --background-color: var(--pr-status-color);
-      }
-      hunk-file iron-icon {
-        height: 16px;
-        transform: scaleX(-1);
-        vertical-align: top;
-      }
     </style>
 
     <backend-ajax
       id="approveAjax"
-      refurl="[[_backendApprovalPath]]"></backend-ajax>
+      refurl="[[_backendApprovalPath]]"
+      ></backend-ajax>
 
     <firebase-document
       app-name="preview-code"
@@ -174,50 +104,42 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <span>
           <a href$="[[fileUrl]]" target="_blank">
             <hunk-file title="View file on GitHub" hunk="[[hunk]]">
-              <iron-icon icon="reply"></iron-icon>
+              <iron-icon class="reply" icon="reply"></iron-icon>
             </hunk-file>
           </a>
         </span>
         <span class="btns">
-          <paper-icon-button noink icon="icons:tab" title="Move this change to another group" on-tap="_promptToMove" hidden$="[[nonEdit]]"></paper-icon-button>
           <paper-icon-button noink icon="icons:thumb-up" title="Approve this change"
             hidden$="[[!_canUserApprove]]" toggles active="{{_approved}}"></paper-icon-button>
         </span>
         <reviewers-list small reviewers="[[reviewers]]"></reviewers-list>
       </div>
-      <div class="content">
-        <div class="lines">
-          <div id="beforeColumn"></div>
-          <div id="afterColumn"></div>
-        </div>
-        <pre><code id="codeView"></code></pre>
-      </div>
+      <hunk-element hunks="[[hunks]]"></hunk-element>
     </collapsible-content>
-    <hunk-ghost id="ghost" hunk-text="[[hunk.file.name]]"></hunk-ghost>
-  </template>
 
+  </template>
   <script>
-  /*global ProjectBehavior*/
+    /*global ProjectBehavior*/
     Polymer({
-      is: 'pull-request-diff-highlight',
+      is: 'hunk-controls',
       behaviors: [ProjectBehavior],
       properties: {
-        githubUser: Object,
+        hunks: {
+          type: Array,
+          computed: '_computedhunks(hunk)'
+        },
         hunk: Object,
+        githubUser: Object,
         fileUrl: {
           type: String,
           computed: '_computeHunkFileUrl(pullRequest.head, hunk)'
         },
         pullRequest: Object,
         collapsed: Boolean,
-        nonEdit: {
-          type: Boolean,
-          value: false
-        },
         _canUserApprove: {
           type: Boolean,
           value: false,
-          computed: '_getCanUserApprove(reviewers, githubUser, nonEdit)'
+          computed: '_getCanUserApprove(reviewers, githubUser)'
         },
         _approved: {
           type: Boolean,
@@ -225,7 +147,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           observer: '_onApproveChange'
         },
         _approvals: Object,
-        _hasRendered: Boolean,
         _backendApprovalPath: {
           type: String,
           computed: '_getBackendApprovalPath(project, pullRequest)'
@@ -239,51 +160,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           computed: '_getReviewers(pullRequest.requested_reviewers, _approvals)'
         }
       },
-      observers: [
-        '_observeLinesChanged(hunk.linesChanged, hunk.changes)'
-      ],
-      _observeLinesChanged: function(linesChanged, code) {
-        var lines = code.split('\n');
-        // The first line is always empty and should be ignored.
-        lines.shift();
-        // The last line is only sometimes empty.
-        if (code.charAt(code.length-1) === '\n') {
-          lines.pop();
-        }
-
-        var before = linesChanged.startLineBefore;
-        var after = linesChanged.startLineAfter;
-
-        var createSpan = function(content) {
-          return '<span>' + content + '</span>';
-        }
-
-        var beforeContent = '';
-        var afterContent = '';
-        lines.forEach(function(line) {
-          beforeContent += createSpan(line.startsWith('+') ? '' : before++);
-          afterContent += createSpan(line.startsWith('-') ? '' : after++);
-        });
-
-        Polymer.dom(this.$.beforeColumn).innerHTML = beforeContent;
-        Polymer.dom(this.$.afterColumn).innerHTML = afterContent;
-      },
-      attached: function() {
-        if (this.hunk) {
-          this._render(this.hunk.changes);
-          var img = new Image();
-          img.src = 'data:image/svg+xml;char-set=utf-8,' + this.$.ghost.getSVG();
-          this.hunk.img = img;
-        }
-      },
-      _render: function(code) {
-        this.async(function() {
-          Polymer.dom(this.$.codeView).innerHTML = this.highlight(code);
-        });
-      },
-      highlight: function(code) {
-        var event = this.fire('syntax-highlight', {code: code, lang: 'diff'});
-        return event.detail.code || code;
+      _computedhunks: function (hunk) {
+        return [hunk];
       },
       _getBackendApprovalPath: function(project, pullRequest) {
         if (project && pullRequest) {
@@ -304,11 +182,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         });
       },
-      _getCanUserApprove: function(reviewers, githubUser, isApprovable) {
-        var isReviewer = reviewers.filter(function(reviewer) {
+      _getCanUserApprove: function(reviewers, githubUser) {
+        var a = reviewers.filter(function(reviewer) {
           return reviewer.login === githubUser.login;
         }).length > 0;
-        return isReviewer && isApprovable;
+        return a;
       },
       _onApproveChange: function(isApproved) {
         if (this.hunk && (!this._approvals || isApproved !== this._approvals[this.githubUser.id])) {
@@ -323,16 +201,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       _onFirebaseApprovalsChange: function(e) {
         this._approvals = e.detail.value;
         this._approved = this.githubUser && !!this._approvals[this.githubUser.id];
-      },
-      flash: function() {
-        this.toggleClass('flash', true);
-        setTimeout(function() {
-          this.toggleClass('flash', false);
-          this.fire('stopped-flashing');
-        }.bind(this), 800);
-      },
-      _promptToMove: function() {
-          this.fire('moveToGroup', {hunk: this.hunk});
       },
       _computeHunkFileUrl: function(head, hunk) {
         return head.repo.html_url + '/blob/' + head.sha + '/' + hunk.fileNameUrl;

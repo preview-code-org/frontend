@@ -55,19 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       groupElem = fixture('basic');
     });
 
-    test('disables sorting when group is not editable', function() {
-      groupElem.editable = false;
-      var sortable = getSortable();
-      assert.isTrue(sortable.disabled);
-    });
-
-    test('hides comments when group is editable', function() {
-      groupElem.editable = true;
-      var display = getComputedStyle(get('.toggle-comments')).display;
-      assert.equal(display, 'none');
-    });
-
-    test('hides comments by default', function() {
+       test('hides comments by default', function() {
       assert.isTrue(get('.toggle-comments').collapse);
     });
 
@@ -98,10 +86,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     var get = function(elem) {
       return Polymer.dom(groupElem.root).querySelector(elem);
-    }
-
-    var getSortable = function() {
-      return get('#hunks');
     }
   });
 

@@ -26,16 +26,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../util/markdown-input.html">
 <link rel="import" href="../../util/editable-title.html">
 <link rel="import" href="../../util/collapsible-content.html">
-<link rel="import" href="../../util/dom-repeat-once.html">
-<link rel="import" href="../../ajax/github-authenticated-ajax.html">
 <link rel="import" href="../pull-request/pull-request-add-comments.html">
 <link rel="import" href="../pull-request/pull-request-comment.html">
-<link rel="import" href="sortable-import.html">
-<link rel="import" href="highlight.html">
+<link rel="import" href="hunk-controls.html">
 
 <dom-module id="pull-request-group">
   <template>
@@ -52,11 +48,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         position: relative;
         margin: 2em 0;
         padding: 1em 2em;
-        -webkit-transition: all 0.3s ease;
-        -moz-transition: all 0.3s ease;
-        -ms-transition: all 0.3s ease;
-        -o-transition: all 0.3s ease;
-        transition: all 0.3s ease;
       }
       header {
         min-height: 2em;
@@ -67,75 +58,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       markdown-input[disabled] {
         margin-bottom: 0;
       }
-      #hunks {
-        width: 100%;
-        display: block;
-        min-height: 2em;
-      }
-      #hunks:empty {
-        box-sizing: border-box;
-        margin-top: 1em;
-        display: block;
-        color: #ccc;
-        border: dashed 3px #ccc;
-        padding: 3em 1em;
-        text-align: center;
-      }
-      #hunks:empty::before {
-        content: "Drag some diffs here!";
-        font-size: 1.4em;
-        font-weight: 600;
-      }
-      .hunk {
-        width: 100%;
-        -webkit-transition: all 0.4s;
-        -moz-transition: all 0.4s;
-        -o-transition: all 0.4s;
-        -ms-transition: all 0.4s;
-        transition: all 0.4s;
-        margin-bottom: 1em;
-      }
-      pull-request-diff-highlight.edit-mode {
-        margin: -2em 0 0 0 !important;
-      }
-      pull-request-diff-highlight {
-        position: relative;
-        z-index: 0;
-      }
-      .hunk-ghost {
-        z-index: 100;
-        margin-left: 1em;
-        -webkit-box-shadow: 0 8px 16px 0 rgba(0,0,0,0.25);
-        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.25);
-      }
-      .drag-handle {
-        -webkit-transition: all 0.2s;
-        -moz-transition: all 0.2s;
-        -o-transition: all 0.2s;
-        -ms-transition: all 0.2s;
-        transition: all 0.2s;
-        z-index: 1;
-        position: relative;
-        width: calc(100% - 50px);
-        height: 2em;
-        opacity: 0;
-        cursor: pointer;
-      }
-      .drag-handle::before {
-        content: "";
-        position: relative;
-        margin: 0 auto;
-        width: 2em;
-        height: 0.75em;
-        display: block;
-        background-color: var(--secondary-text-color);
-        border-radius: 1em;
-        top: 12px;
-      }
-      .drag-handle:hover,
-      .hunk-ghost .drag-handle {
-        opacity: 1;
-      }
     </style>
 
     <collapsible-content collapse="{{collapsed}}">
@@ -143,23 +65,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <editable-title id="editTitleDialog" editable="[[editable]]" value="{{group.info.title}}"></editable-title>
       </div>
       <div class="content">
-        <markdown-input
-          hidden$="[[hideDescription]]"
-          disabled="[[!editable]]"
-          label="Enter a description for these changes. Markdown is supported."
-          markdown="{{group.info.description}}"
-        ></markdown-input>
-        <dom-repeat-once id="hunks" items="[[group.diff]]" disabled="[[!editable]]"></dom-repeat-once>
-        <collapsible-content class="toggle-comments" collapse="{{collapseComments}}" hidden$="[[editable]]">
-          <span class="header">comments</span>
-          <template is="dom-repeat" items="[[comments]]" as="comment">
-            <pull-request-comment
-            text="[[comment.body]]" author="[[comment.user]]"
-            date="[[comment.created_at]]"></pull-request-comment>
+        <markdown-input hidden$="[[hideDescription]]" disabled="[[!editable]]" label="Enter a description for these changes. Markdown is supported."
+          markdown="{{group.info.description}}"></markdown-input>
+          <template is="dom-repeat" items="[[group.diff]]">
+            <hunk-controls hunk="[[item]]" pull-request="[[pullRequest]]" github-user="[[githubUser]]"></hunk-controls>
           </template>
-          <pull-request-add-comments comments="{{groupComments}}"
-          group="[[group]]" number="[[pullRequest.number]]"></pull-request-add-comments>
-        </collapsible-content>
+
+          <collapsible-content class="toggle-comments" collapse="{{collapseComments}}" hidden$="[[editable]]">
+            <span class="header">comments</span>
+            <template is="dom-repeat" items="[[comments]]" as="comment">
+              <pull-request-comment text="[[comment.body]]" author="[[comment.user]]" date="[[comment.created_at]]"></pull-request-comment>
+            </template>
+            <pull-request-add-comments comments="{{groupComments}}" group="[[group]]" number="[[pullRequest.number]]"></pull-request-add-comments>
+          </collapsible-content>
       </div>
     </collapsible-content>
   </template>
@@ -188,7 +106,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           value: false,
           reflectToAttribute: true
         },
-        _isAlreadyInitialized: Boolean,
         groupComments: {
           type: Array,
           notify: true
@@ -196,67 +113,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         comments: {
           type: Array,
           notfiy: true,
-          value: function() {
+          value: function () {
             return [];
           }
         }
       },
       observers: [
         '_resetCollapsed(group)',
-        '_groupChanged(group, editable, githubUser)',
-        '_updateComments(groupComments.*, group)'
+        '_updateComments(groupComments.*, group)',
       ],
-      attached: function() {
-        this.initSortable();
+      attached: function () {
         this.$.editTitleDialog.addEventListener('confirm', this._renameGroup.bind(this));
       },
-      initSortable: function() {
-        if (this.editable && !this._isAlreadyInitialized) {
-          Sortable.create(this.$.hunks, {
-            group: 'hunks',
-            ghostClass: 'hunk-ghost',
-            handle: '.drag-handle',
-            animation: 500,
-            setData: function(dataTransfer, dragEl) {
-              dataTransfer.setDragImage(dragEl.querySelector('pull-request-diff-highlight').hunk.img, 50, 50);
-            }
-          });
-          this.$.hunks.addEventListener('remove', this._fire('remove').bind(this));
-          this.$.hunks.addEventListener('add', this._fire('add').bind(this));
-          this.$.hunks.addEventListener('update', this._fire('update').bind(this));
-          this._isAlreadyInitialized = true;
-          this.updateStyles();
-        }
-      },
-      _groupChanged: function(group, editable, githubUser) {
-        this.$.hunks.reset(function(hunk) {
-          return this._createDraggableHunk(hunk, editable, githubUser);
-        }.bind(this));
-        this.displayTitle = this.group.info.title;
-      },
-      _shouldHideDescription: function(editable, group) {
+      _shouldHideDescription: function (editable, group) {
         return !editable && (!group || !group.info.description);
       },
-      _createDraggableHunk: function(hunk, editable, githubUser) {
-        var container = document.createElement('div');
-        container.setAttribute('class', 'hunk');
-        var hunkElem = document.createElement('pull-request-diff-highlight');
-        hunkElem.setAttribute('id', 'hunk-' + hunk.id.split('=').join(''));
-        hunkElem.githubUser = githubUser
-        hunkElem.pullRequest = this.pullRequest;
-        hunkElem.hunk = hunk;
-        if (editable) {
-          var dragHandle = document.createElement('div');
-          dragHandle.setAttribute('class', 'drag-handle');
-          container.appendChild(dragHandle);
-          hunkElem.setAttribute('class', 'edit-mode');
-        } else {
-          hunkElem.nonEdit = true;
-        }
-        container.appendChild(hunkElem);
-        return container;
-      },
-      _renameGroup: function(e) {
+      _renameGroup: function (e) {
         if (this.group) {
           this.fire('rename', {
             groupId: this.group.id,
@@ -264,8 +136,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           });
         }
       },
-      _fire: function(name) {
-        return function(e) {
+      _fire: function (name) {
+        return function (e) {
           e.stopPropagation();
           this.fire(name, {
             hunk: e.item.children[1].hunk,
@@ -275,25 +147,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           });
         }
       },
-      _resetCollapsed: function() {
+      _resetCollapsed: function () {
         this.collapsed = false;
         this.collapseComments = true;
       },
-      _updateComments: function(groupComments, group) {
+      _updateComments: function (groupComments, group) {
         if (group) {
           var newComments = [];
-          for (var i = 0;i< groupComments.base.length; i++) {
+          for (var i = 0; i < groupComments.base.length; i++) {
             if (groupComments.base[i].groupID === group.id) {
               newComments.push(groupComments.base[i].comment);
             }
           }
           this.comments = newComments;
         }
-      },
-      jumpToHunk: function(hunkId) {
-        var hunkElem = this.$$('#hunk-'+hunkId.split('=').join(''));
-        hunkElem.flash();
-        return hunkElem.offsetTop + this.offsetTop;
       }
     });
   </script>

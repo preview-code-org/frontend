@@ -74,7 +74,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       // [6] = all changes matched by ANTYHING
       var DIGITS = '(\\d+)(?:,(\\d+))?';
       var GROUP_DELIMETER = '@@ \\-' + DIGITS + ' \\+' + DIGITS + ' @@';
-      var GROUP_EXPRESSION = '(' + GROUP_DELIMETER  + ').*(' + ANYTHING + ')' + '(?:(?=\n' + GROUP_DELIMETER + ')|$)';
+      var GROUP_EXPRESSION = '(' + GROUP_DELIMETER  + ').*\n(' + ANYTHING + ')' + '(?:(?=\n' + GROUP_DELIMETER + ')|$)';
       var GROUP_REGEX = new RegExp(GROUP_EXPRESSION, 'g');
 
       function getFileHeader(file, fromFile, toFile) {
@@ -102,20 +102,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             var fileNameUrl = fileHeader.moved ? 'from'+fileHeader.from+'to'+fileHeader.name : fileHeader.name
 
-            // Default range fields to 1 when they are not present in the hunk.
-            var linesChanged = {
-              startLineBefore: parseInt(group[2]),
-              rangeBefore: parseInt(group[3] || 1),
-              startLineAfter: parseInt(group[4]),
-              rangeAfter: parseInt(group[5] || 1)
-            };
-
             hunks.push({
               file: fileHeader,
               fileNameUrl: fileNameUrl,
               diffId: group[1],
-              changes: group[6],
-              linesChanged: linesChanged
+              code: group[6],
+              comments: [],
+              beforeStart: parseInt(group[2]),
+              afterStart: parseInt(group[4])
             });
           }
         }

@@ -158,21 +158,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         assert.equal(ordering[0].info.title, 'Imported from Github');
         assert.equal(ordering[0].diff.length, 2);
       })
-
-      test('fires offset when jumping to hunk', function(done) {
-        addGroup();
-        element.addEventListener('finished-scrolling', function() {
-          //TODO(Thomas): add verification for scrollTop
-          done();
-        });
-        element.$.addGroupDialog.addEventListener('iron-overlay-closed', function() {
-          flush(function() {
-            var group = element.orderedGroups[1];
-            element.jumpToHunk(group.id, group.diff[0].id);
-          });
-        });
-      });
-
     });
   </script>
 

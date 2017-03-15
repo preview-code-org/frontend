@@ -406,14 +406,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     suite('interacts with Firebase', function() {
       var data = {
         'groups': [{
-          'diff': ['YSwzNDAsNiwzMzgsOA=='],
+          'diff': ['YSwwLDE='],
           'id': 'c1987394-4733-4d18-ba7f-c78eee2f112f',
           'info': {
             'description': 'Some description',
             'title': 'First group!'
           }
         }, {
-          'diff': ['YSwzNDMsMywzNDEsNQ=='],
+          'diff': ['YiwxLDE='],
           'id': 'c1987394-4733-4d18-ba7f-c78eee2f113f',
           'info': {
             'description': 'World',
@@ -460,12 +460,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         assert.equal(firstGroup.info.description, 'Some description');
         assert.equal(firstGroup.info.title, 'First group!');
         assert.equal(firstGroup.diff.length, 1);
-        assert.equal(firstGroup.diff[0], 'YSwzNDAsNiwzMzgsOA==');
+        assert.equal(firstGroup.diff[0], 'YSwwLDE=');
         var secondGroup = ordered[1];
         assert.equal(secondGroup.info.description, 'World');
         assert.equal(secondGroup.info.title, 'Hello');
         assert.equal(secondGroup.diff.length, 1);
-        assert.equal(secondGroup.diff[0], 'YSwzNDMsMywzNDEsNQ==');
+        assert.equal(secondGroup.diff[0], 'YiwxLDE=');
       });
 
       test('does not sort when there are no groups stored', function() {
@@ -485,10 +485,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     var getHunkId = function(hunk) {
       return btoa(hunk.file.name + ',' +
-        hunk.linesChanged.startLineBefore + ',' +
-        hunk.linesChanged.rangeBefore + ',' +
-        hunk.linesChanged.startLineAfter + ',' +
-        hunk.linesChanged.rangeAfter);
+        hunk.beforeStart + ',' +
+        hunk.afterStart);
     }
   });
 

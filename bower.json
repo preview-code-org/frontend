@@ -27,7 +27,8 @@
     "prism-element": "polymerelements/prism-element#^1.1.0",
     "polymerfire": "firebase/polymerfire#^0.9.2",
     "prism": "1.5.1",
-    "paths-js": "andreaferretti/paths-js#^0.4.4"
+    "paths-js": "andreaferretti/paths-js#^0.4.4",
+    "code-highlighter": "https://github.com/preview-code/code-highlighter.git#dev"
   },
   "resolutions": {
     "app-route": "parent-active-propagation",
