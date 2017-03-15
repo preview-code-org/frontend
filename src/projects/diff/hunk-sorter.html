@@ -63,7 +63,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           },
           notify: true
         },
-        unorderedGroup: Object,
+        unorderedGroup: {
+          type: Object,
+          notify: true
+        },
         _remoteOrdering: {
           type: Object
         },
@@ -108,7 +111,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       addHunkToGroup: function(hunk, groupId, index) {
         this._doForGroup(groupId, function(i, group) {
-          group.diff.splice(index, 0, hunk);
+          group.diff.splice(Math.min(Math.max(index, 0), group.diff.length), 0, hunk);
         }.bind(this));
       },
 
@@ -135,16 +138,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       moveHunk: function(groupId, oldIndex, newIndex) {
         if (oldIndex !== newIndex) {
           this._doForGroup(groupId, function(index, group) {
-            var hunk = group.diff.splice(oldIndex, 1)[0];
-            group.diff.splice(Math.max(newIndex, 0), 0, hunk);
+            var size = group.diff.length-1;
+            var hunk = group.diff.splice(Math.min(Math.max(oldIndex, 0), size), 1)[0];
+            group.diff.splice(Math.min(Math.max(newIndex, 0),size), 0, hunk);
           });
         }
       },
 
       moveGroup: function(oldIndex, newIndex) {
         if (oldIndex !== newIndex) {
-          var group = this.orderedGroups.splice(oldIndex, 1)[0];
-          this.orderedGroups.splice(Math.max(newIndex, 0), 0, group);
+          var size = this.orderedGroups.length-1;
+          var group = this.orderedGroups.splice(Math.min(Math.max(oldIndex, 0), size), 1)[0];
+          this.orderedGroups.splice(Math.min(Math.max(newIndex, 0), size), 0, group);
           this.fire('orderUpdate');
         }
       },

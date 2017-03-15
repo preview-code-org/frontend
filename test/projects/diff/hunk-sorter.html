@@ -367,6 +367,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.addHunkToGroup(testDiffs[1], id, 1);
       sorter.moveHunk(id, 0, 0);
       assert.deepEqual(testDiffs[0], sorter.orderedGroups[0].diff[0]);
+      assert.deepEqual(testDiffs[1], sorter.orderedGroups[0].diff[1]);
     });
 
     test('does not move hunk outside bounds in ordering', function() {
@@ -422,6 +423,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       sorter.moveGroup(0, 10);
       assert.deepEqual(idFirst, sorter.getOrdering()[0].id);
       assert.deepEqual(idLast, sorter.getOrdering()[1].id);
+    });
+
+    test('move does not change the amount of groups', function() {
+      sorter.rawHunks = testDiffs;
+      var idFirst = sorter.addGroup('new-group');
+      sorter.moveGroup(1, 0);
+      assert.deepEqual(1, sorter.orderedGroups.length);
     });
 
     suite('interacts with Firebase', function() {
