@@ -125,7 +125,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <template is="dom-repeat" items="[[_filteredPullRequests]]" as="pr">
         <a href$="[[route.prefix]]/pulls/[[pr.number]]/overview" tabindex="-1">
           <project-pull-request-list-item tabindex="0" pr="[[pr]]"
-                show-status="[[_equals('All', status)]]" selected="[[_equals(selectedPull.number, pr.number)]]"
+                selected="[[_equals(selectedPull.number, pr.number)]]"
                 on-keydown="maybeSelectPR"></project-pull-request-list-item>
         </a>
       </template>

@@ -31,8 +31,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <style>
       :host {
         --tag-color: #bbb;
+        overflow: hidden;
       }
       li {
+        overflow-wrap: break-word;
         list-style-type:  none;
         line-height: 24px;
         font-size: 0.9em;
@@ -41,6 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         padding: 0 6px 0 0;
         background-color: var(--tag-color);
         border-radius: 5px;
+        box-shadow:1px 1px 1px 1px #bbb;
       }
       li:before {
         content: "";
@@ -52,22 +55,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         border-color: transparent var(--tag-color) transparent transparent;
         border-style: solid;
         border-width: 12px 12px 12px 0;
+      }
 
+      :host([small]) li{
+        display: inline;
+        padding: 3px 6px;
+        margin: 3px;
       }
-      li:after {
-        content:"";
-        margin-top: 9px;
-        margin-right: 6px;
-        float:left;
-        width:6px;
-        height:6px;
-        -moz-border-radius:2px;
-        -webkit-border-radius:2px;
-        border-radius:2px;
-        background:#fff;
+
+      :host([small]) li:before, :host([small]) li:after{
+        display: none;
       }
+
     </style>
-    <li><content></content></li>
+    <li>
+      <content></content>
+    </li>
   </template>
   <script>
     Polymer({
@@ -76,16 +79,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         backgroundcolor: {
           type: String,
           observer: '_updateColor'
+        },
+        small: {
+          type: Boolean,
+          value: false
         }
       },
-      _updateColor: function(color) {
+      _updateColor: function (color) {
         this.customStyle['--tag-color'] = '#' + color;
         //Selects a text color (black/white) depending on background color
         //Source: http://stackoverflow.com/a/4726403/4760422
         var textcolor = 'white'
-        if ((255 - ((parseInt(color.substring(0, 2), 16) * 0.299) + 
-                   (parseInt(color.substring(2, 4), 16) * 0.587) + 
-                   (parseInt(color.substring(4, 6), 16) * 0.114))) < 105) {
+        if ((255 - ((parseInt(color.substring(0, 2), 16) * 0.299) +
+          (parseInt(color.substring(2, 4), 16) * 0.587) +
+          (parseInt(color.substring(4, 6), 16) * 0.114))) < 105) {
           textcolor = '#555'
         }
         this.customStyle['--text-color'] = textcolor;

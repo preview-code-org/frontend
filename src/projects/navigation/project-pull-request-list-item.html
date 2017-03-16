@@ -66,20 +66,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       .main .labels {
         height: 24px;
       }
-      .list-labels {
-        display:block;
+      .labels {
+        overflow:hidden;
+        display: flex;
+        flex-wrap: wrap;
       }
     </style>
 
-    <github-authenticated-ajax
-      id="ajaxIssue"
-      refurl="[[pr._links.issue.href]]"
-      last-response="{{issue}}"></github-authenticated-ajax>
+    <github-authenticated-ajax id="ajaxIssue" refurl="[[pr._links.issue.href]]" last-response="{{issue}}"></github-authenticated-ajax>
 
-    <github-authenticated-ajax
-      id="ajaxStatuses"
-      refurl="[[pr._links.statuses.href]]"
-      last-response="{{statuses}}"></github-authenticated-ajax>
+    <github-authenticated-ajax id="ajaxStatuses" refurl="[[pr._links.statuses.href]]" last-response="{{statuses}}"></github-authenticated-ajax>
 
     <column-list-item selected="[[selected]]" focused="[[focused]]">
       <div class$="margin indicator [[pr.notification]]">
@@ -91,7 +87,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </list-item-label>
         <list-item-label type="subtitle">[[pr.user.login]]</list-item-label>
         <span class="labels">
-          <list-item-label class="list-labels" type="box" title="Status" hidden$="[[_shouldHideLabels]]">[[_getLabelNames(issue.labels)]]</list-item-label>
+          <template is="dom-repeat" items="[[issue.labels]]">
+            <tag-list-item small=true backgroundcolor="[[item.color]]">[[item.name]]</tag-list-item>
+          </template>
         </span>
       </div>
       <div class="info">
@@ -116,7 +114,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     -->
   </template>
   <script>
-  /*global ToDateStringBehavior*/
+    /*global ToDateStringBehavior*/
     Polymer({
       is: 'project-pull-request-list-item',
       behaviors: [ToDateStringBehavior, Polymer.IronControlState],
@@ -126,11 +124,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         showStatus: Boolean,
         selected: Boolean,
         statuses: Array,
-        _shouldHideLabels: {
-          type: Boolean,
-          value: true,
-          computed: '_hasNoLabels(showStatus, issue)'
-        },
         _cistatus: {
           type: String,
           computed: '_getCIStatus(statuses)'
@@ -153,22 +146,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         '_fireAjax(pr)',
         '_setStatus(pr, issue)'
       ],
-      _hasNoLabels: function(showStatus, issue) {
-        return !showStatus || !issue.labels.length;
-      },
-      _has: function(value) {
+      _has: function (value) {
         return !!value;
       },
-      _getLabelNames: function(labels) {
-        return labels.map(function(label) {
-          return label.name;
-        });
-      },
-      _getCIStatus: function(statuses) {
-        var ci = statuses.filter(function(status) {
+      _getCIStatus: function (statuses) {
+        var ci = statuses.filter(function (status) {
           return status.context.includes('continuous-integration');
         });
-        var latestci = ci.reduce(function(prev, next) {
+        var latestci = ci.reduce(function (prev, next) {
           if (!prev || prev.id < next.id) {
             return next;
           }
@@ -176,11 +161,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }, '');
         return latestci;
       },
-      _fireAjax: function() {
+      _fireAjax: function () {
         this.$.ajaxIssue.generateRequest();
         this.$.ajaxStatuses.generateRequest();
       },
-      _setStatus: function(pr, issue) {
+      _setStatus: function (pr, issue) {
         pr.labels = issue.labels;
       }
     });

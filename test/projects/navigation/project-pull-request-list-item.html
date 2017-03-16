@@ -70,33 +70,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
         ]
       };
-      elem.statuses = [
-        {
-          state: 'started',
-          target_url: 'https://ci.example.com/1000/output',
-          id: 1,
-          context: 'continuous-integration/jenkins'
-        },
-        {
-          state: 'success',
-          target_url: 'https://ci.example.com/1000/output',
-          id: 3,
-          context: 'continuous-integration/jenkins'
-        },
-        {
-          state: 'in progress',
-          target_url: 'https://ci.example.com/1000/output',
-          id: 2,
-          context: 'continuous-integration/jenkins'
-        }
-      ]
     });
 
-    test('shows labels of the pull request', function() {
-      elem.showStatus = true;
-      var labels = Polymer.dom(elem.root).querySelector('[title="Status"]');
-      assert.include(labels.textContent, 'CL Accepted');
-      assert.include(labels.textContent, 'Work In Progress');
+    test('shows labels of the pull request', function(done) {
+      flush(function() {
+        var labels = Polymer.dom(elem.root).querySelectorAll('tag-list-item');
+        assert.include(labels[0].textContent, 'CL Accepted');
+        assert.include(labels[1].textContent, 'Work In Progress');
+        done();
+      });
     });
   })
 </script>

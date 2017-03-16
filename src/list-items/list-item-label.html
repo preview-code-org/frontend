@@ -60,11 +60,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         font-size: 0.9em;
       }
       :host([type=box]) div {
-        display: inherit;
+        display: inline;
         padding: 3px 6px;
         border-radius: 6px;
-        color: var(--primary-background-color, --tag-text-color);
-        background-color: var(--pr-status-color, --tag-color);
+        color: var(--tag-text-color, --primary-background-color);
+        background-color: var(--tag-color, --pr-status-color);
         overflow-x: hidden;
         text-overflow: ellipsis;
       }
