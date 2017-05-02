@@ -1,6 +1,8 @@
-PReview Code frontend [![Build Status](https://travis-ci.org/preview-code/frontend.svg?branch=master)](https://travis-ci.org/preview-code/frontend) [![Issues ready for review](https://badge.waffle.io/preview-code/frontend.png?label=ready%20for%20review&title=Ready%20for%20review)](http://waffle.io/preview-code/frontend)
+Old version of PReview Code frontend [![Build Status](https://travis-ci.org/preview-code/frontend.svg?branch=master)](https://travis-ci.org/preview-code/frontend) [![Issues ready for review](https://badge.waffle.io/preview-code/frontend.png?label=ready%20for%20review&title=Ready%20for%20review)](http://waffle.io/preview-code/frontend)
 =========
-This is the frontend code for https://preview-code.com implemented with Polymer.
+This was the frontend code for https://preview-code.com implemented with Polymer.
+
+This version is not up-to-date with the current website.
 
 # Installation for testing
 
